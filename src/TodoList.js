@@ -9,7 +9,7 @@ export default function TodoList() {
     );
     return (
         <div>
-            Hell "{JSON.stringify(response)}","{""+error}", "{JSON.stringify(loading)}"
+            Hello "{JSON.stringify(response)}","{""+error}", "{JSON.stringify(loading)}"
         </div>
     )
 }
