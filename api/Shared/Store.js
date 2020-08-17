@@ -1,6 +1,9 @@
-let Logs = ['first']
+let logs = ['first']
 
-module.exports = GetLogs = () => {
-    return Logs
+exports.getLogs = () => {
+    return logs
 }
 
+exports.addLog = (msg) => {
+    logs.push(msg)
+}
