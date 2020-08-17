@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-const useFetch = (url, options) => {
+const useFetch = (url, options, count) => {
     const [response, setResponse] = useState(null)
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ const useFetch = (url, options) => {
         return () => {
             abortController.abort();
         };
-    }, [url, options]);
+    }, [url, options, count]);
     return { response, error, loading };
 };
 export default useFetch;

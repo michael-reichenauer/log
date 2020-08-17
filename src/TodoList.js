@@ -3,13 +3,13 @@ import useFetch from './utils/useFetch';
 
 
 
-export default function TodoList() {
+export default function TodoList({count}) {
     const { response, loading, error } = useFetch(
-        "/api/GetLog?name=Michael"
+        "/api/GetLog?name=Michael", null, count
     );
     return (
         <div>
-            Hello "{JSON.stringify(response)}","{""+error}", "{JSON.stringify(loading)}"
+            Hello {count} "{JSON.stringify(response)}","{""+error}", "{JSON.stringify(loading)}"
         </div>
     )
 }
