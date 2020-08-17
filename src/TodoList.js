@@ -3,13 +3,19 @@ import useFetch from './utils/useFetch';
 
 
 
-export default function TodoList({count}) {
+export default function TodoList({ count }) {
     const { response, loading, error } = useFetch(
         "/api/GetLog?name=Michael", null, count
     );
+    if (!response || !response.logs) {
+        return null
+    }
+
     return (
-        <div>
-            Hello {count} "{JSON.stringify(response)}","{""+error}", "{JSON.stringify(loading)}"
-        </div>
+        <ul>
+            {response.logs.map(item => {
+                return <li key={item.id}> {item.id} {item.time} - {item.msg}</li>;
+            })}
+        </ul>
     )
 }
