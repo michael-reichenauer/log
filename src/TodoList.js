@@ -10,6 +10,12 @@ export default function TodoList({ count }) {
     if (!response || !response.logs) {
         return null
     }
+    if (loading) {
+        return <div>Loading ...</div>
+    }
+    if (error) {
+        return <div>Error: {error}</div>
+    }
 
     return (
         <ul>
