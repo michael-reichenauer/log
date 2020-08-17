@@ -5,7 +5,7 @@ module.exports = async function (context, req) {
 
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: JSON.stringify(GetLogs())
+        body: JSON.stringify({ time: new Date().toLocaleString(), logs: GetLogs() })
     };
 
 };
