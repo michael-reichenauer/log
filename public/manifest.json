@@ -1,6 +1,7 @@
 {
   "short_name": "Log",
   "name": "Log",
+  "version": "%REACT_APP_VERSION%",
   "icons": [
     {
       "src": "favicon.ico",
