@@ -6,9 +6,13 @@ export default function App() {
   const refresh = () => {
     setCount(c => c + 1)
   }
+  const reload = () => {
+    window.location.reload(true)
+  }
 
   return (
     <>
+      <button onClick={reload}>Reload</button>
       <button onClick={refresh}>Refresh</button>
       <TodoList count={count} />
     </>
