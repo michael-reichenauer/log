@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <>
-      <p>local ui sha: "{"" + process.env.REACT_APP_SHA}"</p>
+      <p>Local ui sha: "{"" + process.env.REACT_APP_SHA}"</p>
       <p>Remote ui sha: "{response && "" + response.sha}"</p>
       <button onClick={reload}>Reload</button>
       <button onClick={refresh}>Refresh</button>
