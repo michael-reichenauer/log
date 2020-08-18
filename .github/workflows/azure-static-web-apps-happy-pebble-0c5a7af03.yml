@@ -20,7 +20,7 @@ jobs:
           submodules: true
       - shell: bash
         run: |
-          echo REACT_APP_VERSION=54321 > .env
+          echo REACT_APP_VERSION=$GITHUB_SHA > .env
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v0.0.1-preview
