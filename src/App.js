@@ -26,7 +26,7 @@ export default function App() {
   return (
     <>
       <p>Build Date: {preval`module.exports = new Date().toLocaleString();`}</p>
-      <p>Server Version2: "{response && "" + response.version}"</p>
+      <p>Server Version2: "{response && "" + process.env.REACT_APP_VERSION}"</p>
       <button onClick={reload}>Reload</button>
       <button onClick={refresh}>Refresh</button>
       <TodoList count={count} />

@@ -18,6 +18,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Update version
+          run: |
+            echo REACT_APP_VERSION=456 > .env"
+      shell: bash
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v0.0.1-preview
