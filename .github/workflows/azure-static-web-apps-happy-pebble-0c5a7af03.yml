@@ -19,8 +19,8 @@ jobs:
         with:
           submodules: true
       - name: Update version
-          run: |
-            echo REACT_APP_VERSION=456 > .env"
+        run: |
+            echo REACT_APP_VERSION=45d6 > .env"
       shell: bash
       - name: Build And Deploy
         id: builddeploy
