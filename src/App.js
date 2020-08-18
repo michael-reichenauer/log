@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import TodoList from './TodoList';
-import preval from 'preval.macro'
 import useFetch from './utils/useFetch';
 
 export default function App() {
@@ -14,19 +13,19 @@ export default function App() {
     window.location.reload(true)
   }
   const { response, loading, error } = useFetch(
-    "/api/GetVersion", null, count
+    "/manifest.json", null, count
   );
   if (error) {
-    return <div>Error: {"" + error}</div>
+    return <div>Fetch manifest Error: {"" + error}</div>
   }
   if (loading) {
-    return <div>Loading ...</div>
+    return <div>Loading manifest ...</div>
   }
 
   return (
     <>
-      <p>Build Date: {preval`module.exports = new Date().toLocaleString();`}</p>
-      <p>Server Version2: "{response && "" + process.env.REACT_APP_VERSION}"</p>
+      <p>local ui sha: "{"" + process.env.REACT_APP_SHA}"</p>
+      <p>Remote ui sha: "{response && "" + response.sha}"</p>
       <button onClick={reload}>Reload</button>
       <button onClick={refresh}>Refresh</button>
       <TodoList count={count} />
