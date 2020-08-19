@@ -4,17 +4,24 @@ exports.getLogs = () => {
     return logs
 }
 
-exports.addLog = (msg) => {
-    const time = dateToLocalISO(new Date())
-    logs.push({ id: logs.length, time: time, msg: msg })
+// exports.addLog = (msg) => {
+//     const time = dateToLocalISO(new Date())
+//     logs.push({ id: logs.length, time: time, msg: msg })
+// }
+exports.addLogs = (msgs) => {
+    logs.push(...msgs)
+}
+
+exports.clearLogs = () => {
+    logs = []
 }
 
 
-function dateToLocalISO(date) {
-    const off = date.getTimezoneOffset()
-    const absoff = Math.abs(off)
-    return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(0, 23) +
-        (off > 0 ? '-' : '+') +
-        (absoff / 60).toFixed(0).padStart(2, '0') + ':' +
-        (absoff % 60).toString().padStart(2, '0'))
-}
+// function dateToLocalISO(date) {
+//     const off = date.getTimezoneOffset()
+//     const absoff = Math.abs(off)
+//     return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(0, 23) +
+//         (off > 0 ? '-' : '+') +
+//         (absoff / 60).toFixed(0).padStart(2, '0') + ':' +
+//         (absoff % 60).toString().padStart(2, '0'))
+// }

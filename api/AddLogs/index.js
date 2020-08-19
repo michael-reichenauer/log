@@ -1,16 +1,24 @@
-module.exports = async function (context, req) {
-    context.log('JavaScript HTTP trigger function processed a request.');
+var log = require('../Shared/Store.js');
 
-    if (req.query.name || (req.body && req.body.name)) {
+module.exports = async function (context, req) {
+    context.log(`## Request: AddLogs`);
+
+    if (req.query.logs || (req.body && req.body.logs)) {
+        let logsText = (req.query.logs) ? req.query.logs : req.body.logs
+
+        var logs = JSON.parse(logsText);
+        log.addLogs(logs)
+        context.log(`## AddLogs: ${logsText}`);
+
         context.res = {
             // status: 200, /* Defaults to 200 */
-            body: "Hello " + (req.query.name || req.body.name)
+            body: ""
         };
     }
     else {
         context.res = {
             status: 400,
-            body: "Please pass a name on the query string or in the request body"
+            body: "Missing logs"
         };
     }
 };
