@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 let isWindowShown = false
 export function usePageVisibility() {
     const [isVisible, setIsVisible] = useState(getIsDocumentHidden())
-    const onVisibilityChange = () => setIsVisible(getIsDocumentHidden())
+    //const onVisibilityChange = () => setIsVisible(getIsDocumentHidden())
     const onVisibilityShow = (e) => setIsVisible(true)
 
 
