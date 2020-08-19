@@ -8,7 +8,7 @@ export function usePageVisibility() {
 
 
     React.useEffect(() => {
-        const visibilityChange = getBrowserVisibilityProp()
+        //const visibilityChange = getBrowserVisibilityProp()
         // window.addEventListener(visibilityChange, onVisibilityChange, false)
         window.onpageshow = onVisibilityShow
 
