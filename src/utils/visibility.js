@@ -4,13 +4,16 @@ let isWindowShown = false
 export function usePageVisibility() {
     const [isVisible, setIsVisible] = useState(getIsDocumentHidden())
     const onVisibilityChange = () => setIsVisible(getIsDocumentHidden())
+    const onVisibilityShow = (e) => setIsVisible(true)
+
 
     React.useEffect(() => {
         const visibilityChange = getBrowserVisibilityProp()
-        window.addEventListener(visibilityChange, onVisibilityChange, false)
+        // window.addEventListener(visibilityChange, onVisibilityChange, false)
+        window.onpageshow = onVisibilityShow
 
         return () => {
-            window.removeEventListener(visibilityChange, onVisibilityChange)
+            // window.removeEventListener(visibilityChange, onVisibilityChange)
         }
     })
     const isShown = isVisible && !isWindowShown
