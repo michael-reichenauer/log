@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLogs, info } from './utils/log';
+import { useLogs } from './utils/log';
 
 
 export default function TodoList({ count }) {
