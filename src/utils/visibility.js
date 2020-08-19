@@ -1,14 +1,22 @@
+import React, { useState } from 'react';
+
+let isWindowShown = false
 export function usePageVisibility() {
-    const [isVisible, setIsVisible] = React.useState(getIsDocumentHidden())
+    const [isVisible, setIsVisible] = useState(getIsDocumentHidden())
     const onVisibilityChange = () => setIsVisible(getIsDocumentHidden())
+
     React.useEffect(() => {
         const visibilityChange = getBrowserVisibilityProp()
         window.addEventListener(visibilityChange, onVisibilityChange, false)
+
         return () => {
             window.removeEventListener(visibilityChange, onVisibilityChange)
         }
     })
-    return isVisible
+    const isShown = isVisible && !isWindowShown
+    const isHidden = !isVisible && isWindowShown
+    isWindowShown = isVisible
+    return [isVisible, isShown, isHidden]
 }
 
 function getBrowserVisibilityProp() {

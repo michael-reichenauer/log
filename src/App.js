@@ -2,23 +2,41 @@ import React, { useState } from 'react';
 import TodoList from './TodoList';
 import useFetch from './utils/useFetch';
 import { info, clear } from './utils/log'
+import { usePageVisibility } from './utils/visibility'
+
+let versionCount = 0
 
 export default function App() {
   const [count, setCount] = useState(0)
+  const [isVisible, isShown, isHidden] = usePageVisibility();
+  const { response, loading, error } = useFetch(
+    "/manifest.json", null, versionCount
+  );
+
   const refresh = () => {
     info("Refresh")
     setCount(c => c + 1)
   }
+
   const reload = () => {
     window.location.reload(true)
   }
+
   const clearLogs = () => {
     clear()
     refresh()
   }
-  const { response, loading, error } = useFetch(
-    "/manifest.json", null, 0
-  );
+
+  if (isShown) {
+    info(`Is Shown (isVisible= ${isVisible})`)
+    refresh()
+  }
+  if (isHidden) {
+    info(`Is Hidden (isVisible= ${isVisible})`)
+  }
+
+
+
   if (error) {
     return <div>Fetch manifest Error: {"" + error}</div>
   }
