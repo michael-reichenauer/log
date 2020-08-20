@@ -2,6 +2,7 @@
   "short_name": "Log",
   "name": "Log",
   "sha": "%REACT_APP_SHA%",
+  "buildTime:" : "%REACT_APP_BUILD_TIME%"
   "icons": [
     {
       "src": "favicon.ico",

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TodoList from './TodoList';
 import { info, clear } from './utils/log'
 import { usePageVisibility } from './utils/visibility'
-import { updateUIIfRemoteVersionNewer, localSha, remoteSha } from './utils/remoteVersion'
+import { updateUIIfRemoteVersionNewer, localSha, remoteSha, localBuildTime, remoteBuildTime } from './utils/remoteVersion'
 
 export default function App() {
   const [count, setCount] = useState(0)
@@ -34,8 +34,8 @@ export default function App() {
 
   return (
     <>
-      <p>Local ui sha: "{localSha}"</p>
-      <p>Remote ui sha: "{remoteSha}"</p>
+      <p>Local ui sha: "{localSha}, time: "{localBuildTime}"</p>
+      <p>Remote ui sha: "{remoteSha}", time: "{remoteBuildTime}"</p>
       <button onClick={reload}>Reload</button>
       <button onClick={clearLogs}>Clear</button>
       <button onClick={refresh}>Refresh</button>
