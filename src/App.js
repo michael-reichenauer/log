@@ -15,6 +15,11 @@ export default function App() {
   );
 
   const updateUIIfRemoteVersionNewer = () => {
+    if (localSha === "%REACT_APP_SHA%") {
+      // Running in developer mode, skip check
+      return
+    }
+    info(`local:  "${localSha}"`)
     fetch(`/manifest.json`)
       .then(response => {
         if (response.status !== 200) {
@@ -24,7 +29,7 @@ export default function App() {
         response.json()
           .then(data => {
             const remoteSha = data.sha;
-            info(`local:  "${localSha}"`)
+
             info(`remote: "${remoteSha}"`)
             if (localSha && remoteSha && localSha !== remoteSha) {
 
