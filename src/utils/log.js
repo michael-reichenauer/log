@@ -1,6 +1,6 @@
 import useFetch from './useFetch';
 
-export const info = msg => {
+export const logInfo = msg => {
     const lm = { time: new Date(), msg: msg }
     const uri = `/api/AddLogs?logs=[${JSON.stringify(lm)}]`
 
@@ -18,7 +18,7 @@ export const info = msg => {
         });
 }
 
-export const clear = () => {
+export const clearLogs = () => {
     fetch(`/api/ClearLogs`)
         .then(response => {
             if (response.status !== 200) {

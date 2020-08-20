@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import TodoList from './TodoList';
-import { info, clear } from './utils/log'
+import { logInfo, clearLogs } from './utils/log'
 import { usePageVisibility } from './utils/visibility'
 import { updateUIIfRemoteVersionNewer, localSha, remoteSha, localBuildTime, remoteBuildTime } from './utils/remoteVersion'
 
@@ -9,7 +9,7 @@ export default function App() {
   const [isVisible, isShown, isHidden] = usePageVisibility();
 
   const refresh = () => {
-    info(`Refresh ${count}`)
+    logInfo(`Refresh ${count}`)
     window.setTimeout(() => { setCount(c => c + 1) }, 300);
   }
 
@@ -17,27 +17,28 @@ export default function App() {
     window.location.reload(true)
   }
 
-  const clearLogs = () => {
-    clear()
+  const clear = () => {
+    clearLogs()
     refresh()
   }
 
   if (isShown) {
-    info(`Is Shown (isVisible= ${isVisible})`)
+    logInfo(`Is Shown (isVisible= ${isVisible})`)
     updateUIIfRemoteVersionNewer()
     refresh()
   }
 
   if (isHidden) {
-    info(`Is Hidden (isVisible= ${isVisible})`)
+    logInfo(`Is Hidden (isVisible= ${isVisible})`)
   }
 
   return (
     <>
+      <button onClick={reload}>Reload</button>
       <p>Local ui sha: "{localSha}, time: "{localBuildTime}"</p>
       <p>Remote ui sha: "{remoteSha}", time: "{remoteBuildTime}"</p>
-      <button onClick={reload}>Reload</button>
-      <button onClick={clearLogs}>Clear</button>
+
+      <button onClick={clear}>Clear</button>
       <button onClick={refresh}>Refresh</button>
       <TodoList count={count} />
     </>

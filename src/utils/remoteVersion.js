@@ -1,4 +1,4 @@
-import { info } from './log'
+import { logInfo } from './log'
 
 export const localSha = process.env.REACT_APP_SHA
 export let remoteSha = "%REACT_APP_SHA%"
@@ -10,7 +10,7 @@ export const updateUIIfRemoteVersionNewer = () => {
         // Running in developer mode, skip check.
         return
     }
-    info(`local:  "${localSha}" "${localBuildTime}" `)
+    logInfo(`local:  "${localSha}" "${localBuildTime}" `)
     fetch(`/manifest.json`)
         .then(response => {
             if (response.status !== 200) {
@@ -21,7 +21,7 @@ export const updateUIIfRemoteVersionNewer = () => {
                 .then(data => {
                     remoteSha = data.sha;
                     remoteBuildTime = data.buildTime
-                    info(`remote: "${remoteSha}" "${remoteBuildTime}"`)
+                    logInfo(`remote: "${remoteSha}" "${remoteBuildTime}"`)
                     if (localSha && remoteSha && localSha !== remoteSha) {
                         window.setTimeout(() => { window.location.reload(true) }, 300);
                     }
