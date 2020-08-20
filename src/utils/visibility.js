@@ -4,13 +4,17 @@ let isWindowShown = false
 export function usePageVisibility() {
     const [isVisible, setIsVisible] = useState(getIsDocumentHidden())
     //const onVisibilityChange = () => setIsVisible(getIsDocumentHidden())
-    const onVisibilityShow = (e) => setIsVisible(true)
+    const onVisibilityShow1 = (e) => setIsVisible(true)
+    const onVisibilityShow2 = (e) => {
+        setIsVisible(!document.hidden)
+    }
 
 
     React.useEffect(() => {
         //const visibilityChange = getBrowserVisibilityProp()
         // window.addEventListener(visibilityChange, onVisibilityChange, false)
-        window.onpageshow = onVisibilityShow
+        window.onpageshow = onVisibilityShow1
+        document.onvisibilitychange = onVisibilityShow2
 
         return () => {
             // window.removeEventListener(visibilityChange, onVisibilityChange)
@@ -22,16 +26,16 @@ export function usePageVisibility() {
     return [isVisible, isShown, isHidden]
 }
 
-function getBrowserVisibilityProp() {
-    if (typeof document.hidden !== "undefined") {
-        // Opera 12.10 and Firefox 18 and later support
-        return "visibilitychange"
-    } else if (typeof document.msHidden !== "undefined") {
-        return "msvisibilitychange"
-    } else if (typeof document.webkitHidden !== "undefined") {
-        return "webkitvisibilitychange"
-    }
-}
+// function getBrowserVisibilityProp() {
+//     if (typeof document.hidden !== "undefined") {
+//         // Opera 12.10 and Firefox 18 and later support
+//         return "visibilitychange"
+//     } else if (typeof document.msHidden !== "undefined") {
+//         return "msvisibilitychange"
+//     } else if (typeof document.webkitHidden !== "undefined") {
+//         return "webkitvisibilitychange"
+//     }
+// }
 
 function getBrowserDocumentHiddenProp() {
     if (typeof document.hidden !== "undefined") {
