@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import TodoList from './TodoList';
-import useFetch from './utils/useFetch';
 import { info, clear } from './utils/log'
 import { usePageVisibility } from './utils/visibility'
 import { updateUIIfRemoteVersionNewer, localSha, remoteSha } from './utils/remoteVersion'
-
-let versionCount = 0
-
 
 export default function App() {
   const [count, setCount] = useState(0)
