@@ -5,6 +5,7 @@ import { info, clear } from './utils/log'
 import { usePageVisibility } from './utils/visibility'
 
 let versionCount = 0
+const localSha = process.env.REACT_APP_SHA
 
 export default function App() {
   const [count, setCount] = useState(0)
@@ -12,6 +13,30 @@ export default function App() {
   const { response, loading, error } = useFetch(
     "/manifest.json", null, versionCount
   );
+
+  const updateUIIfRemoteVersionNewer = () => {
+    fetch(`/manifest.json`)
+      .then(response => {
+        if (response.status !== 200) {
+          console.error('Error: Failed to get manifest, Status Code: ' + response.status);
+          return;
+        }
+        response.json()
+          .then(data => {
+            const remoteSha = data.sha;
+            info(`local:  "${localSha}"`)
+            info(`remote: "${remoteSha}"`)
+            if (localSha && remoteSha && localSha !== remoteSha) {
+
+              window.setTimeout(() => { window.location.reload(true) }, 300);
+            }
+          });
+      })
+      .catch(err => {
+        console.error('Error: Failed to get manifest:-S', err);
+      });
+  }
+
 
   const refresh = () => {
     info(`Refresh ${count}`)
@@ -29,8 +54,10 @@ export default function App() {
 
   if (isShown) {
     info(`Is Shown (isVisible= ${isVisible})`)
+    updateUIIfRemoteVersionNewer()
     refresh()
   }
+
   if (isHidden) {
     info(`Is Hidden (isVisible= ${isVisible})`)
   }
