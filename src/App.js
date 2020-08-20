@@ -14,8 +14,8 @@ export default function App() {
   );
 
   const refresh = () => {
-    info("Refresh")
-    setCount(c => c + 1)
+    info(`Refresh ${count}`)
+    window.setTimeout(() => { setCount(c => c + 1) }, 300);
   }
 
   const reload = () => {
