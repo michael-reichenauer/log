@@ -16,7 +16,7 @@ export default function App() {
 
   const updateUIIfRemoteVersionNewer = () => {
     if (localSha === "%REACT_APP_SHA%") {
-      // Running in developer mode, skip check
+      // Running in developer mode, skip check.
       return
     }
     info(`local:  "${localSha}"`)
