@@ -21,6 +21,7 @@ export const updateUIIfRemoteVersionNewer = () => {
                 .then(data => {
                     remoteSha = data.sha;
                     remoteBuildTime = data.buildTime
+                    console.log(`Manifest: "${JSON.stringify(data)}"`)
                     logInfo(`remote: "${remoteSha}" "${remoteBuildTime}"`)
                     if (localSha && remoteSha && localSha !== remoteSha) {
                         window.setTimeout(() => { window.location.reload(true) }, 300);
