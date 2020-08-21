@@ -20,9 +20,9 @@ jobs:
           submodules: true
       - shell: bash
         run: |
-          sed -i "s/%REACT_APP_SHA%/$(git show -s --format=%H "$GITHUB_SHA")/g" .env
+          sed -i "s/%REACT_APP_SHA%/${{github.event.pull_request.head.sha }}/g" .env
           sed -i "s/%REACT_APP_BUILD_TIME%/$(git show -s --format=%ai "$GITHUB_SHA")/g" .env
-          sed -i "s/%REACT_APP_SHA%/$(git show -s --format=%H "$GITHUB_SHA")/g" public/manifest.json
+          sed -i "s/%REACT_APP_SHA%/${{ github.event.pull_request.head.sha }}/g" public/manifest.json
           sed -i "s/%REACT_APP_BUILD_TIME%/$(git show -s --format=%ai "$GITHUB_SHA")/g" public/manifest.json
       - name: Build And Deploy
         id: builddeploy
