@@ -1,36 +1,77 @@
 import useFetch from './useFetch';
 
+
+let logs = []
+let logsSending = []
+let isSending = false
+
 export const logInfo = msg => {
     const lm = { time: new Date(), msg: msg }
-    const uri = `/api/AddLogs?logs=[${JSON.stringify(lm)}]`
-
-    fetch(uri)
-        .then(response => {
-            if (response.status !== 200) {
-                console.error('Error: Status Code: ' + response.status);
-                return;
-            }
-            console.log('info: ' + uri)
-        }
-        )
-        .catch(err => {
-            console.error('Fetch Error :-S', err);
-        });
+    logs.push(lm)
+    sendLogs()
 }
 
-export const clearLogs = () => {
-    fetch(`/api/ClearLogs`)
-        .then(response => {
-            if (response.status !== 200) {
-                console.error('Error: Status Code: ' + response.status);
-                return;
-            }
-            console.log('clear: Cleared')
+const sendLogs = async () => {
+    if (isSending) {
+        console.log("Is already sending");
+        return
+    }
+    if (logs.length === 0 && logsSending.length === 0) {
+        console.log("Nothing to send");
+        return
+    }
+
+    try {
+        console.log("Sending logs ...");
+        isSending = true
+
+        // Allow a few more log rows to be collected before sending
+        await delay(100)
+
+        // Copy logs to send for this batch
+        logsSending.push(...logs)
+        logs = []
+
+        const logsText = JSON.stringify(logsSending)
+        const uri = `/api/AddLogs?logs=${logsText}`
+        const response = await fetch(uri)
+
+        if (response.status !== 200) {
+            console.error('Error: Status Code: ' + response.status);
+            throw new Error('Error: Status Code: ' + response.status);
         }
-        )
-        .catch(err => {
-            console.error('Fetch Error :-S', err);
-        });
+
+        // Sent logs, retry again soon if more logs are to be sent
+        logsSending = []
+        if (logs.length !== 0) {
+            setTimeout(sendLogs, 1000)
+        }
+    }
+    catch (err) {
+        console.error("Failed to send logs: " + err)
+        if (logs.length !== 0 && logsSending.length !== 0) {
+            // Retry in a while again
+            setTimeout(sendLogs, 30000)
+        }
+    }
+    finally {
+        console.log("Sent logs");
+        isSending = false
+    }
+}
+
+
+export const clearLogs = async () => {
+    try {
+        const response = await fetch(`/api/ClearLogs`)
+        if (response.status !== 200) {
+            console.error('Error: Status Code: ' + response.status);
+            throw new Error('Error: Status Code: ' + response.status);
+        }
+        console.log('clear: Cleared')
+    } catch (err) {
+        console.error("Failed to clear: " + err)
+    }
 }
 
 
@@ -39,4 +80,8 @@ export const useLogs = (count) => {
         "/api/GetLog", null, count
     );
     return { response, loading, error }
+}
+
+const delay = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
