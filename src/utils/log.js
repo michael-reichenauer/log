@@ -4,14 +4,22 @@ import useFetch from './useFetch';
 let logs = []
 let logsSending = []
 let isSending = false
+let sendPromise = null
 
 export const logInfo = msg => {
     const lm = { time: new Date(), msg: msg }
     logs.push(lm)
-    sendLogs()
+    postLogs()
 }
 
-const sendLogs = async () => {
+export const flushLogs = async () => {
+    if (sendPromise != null) {
+        await sendPromise
+    }
+    await sendLogs(false)
+}
+
+const postLogs = () => {
     if (isSending) {
         console.log("Is already sending");
         return
@@ -20,17 +28,25 @@ const sendLogs = async () => {
         console.log("Nothing to send");
         return
     }
+    sendPromise = sendLogs()
+}
 
+const sendLogs = async (isDelayed = true) => {
     try {
         console.log("Sending logs ...");
         isSending = true
 
         // Allow a few more log rows to be collected before sending
-        await delay(100)
+        if (isDelayed) {
+            await delay(100)
+        }
 
         // Copy logs to send for this batch
         logsSending.push(...logs)
         logs = []
+        if (logsSending.length === 0) {
+            return
+        }
 
         const logsText = JSON.stringify(logsSending)
         const uri = `/api/AddLogs?logs=${logsText}`
@@ -63,6 +79,8 @@ const sendLogs = async () => {
 
 export const clearLogs = async () => {
     try {
+        logs = []
+        logsSending = []
         const response = await fetch(`/api/ClearLogs`)
         if (response.status !== 200) {
             console.error('Error: Status Code: ' + response.status);

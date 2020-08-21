@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 const useFetch = (url, options, count) => {
     const [response, setResponse] = useState(null)
     const [error, setError] = useState(null);
@@ -35,4 +36,5 @@ const useFetch = (url, options, count) => {
     }, [url, options, count]);
     return { response, error, loading };
 };
+
 export default useFetch;

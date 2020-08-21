@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import TodoList from './TodoList';
-import { logInfo, clearLogs } from './utils/log'
+import { logInfo, clearLogs, flushLogs } from './utils/log'
 import { usePageVisibility } from './utils/visibility'
 import { updateUIIfRemoteVersionNewer, localSha, remoteSha, localBuildTime, remoteBuildTime } from './utils/remoteVersion'
 
@@ -10,11 +10,11 @@ export default function App() {
 
   const refresh = () => {
     logInfo(`Refresh ${count}`)
-    window.setTimeout(() => { setCount(c => c + 1) }, 300);
+    window.setTimeout(() => { flushLogs().then(() => setCount(c => c + 1)) }, 300);
   }
 
   const reload = () => {
-    window.location.reload(true)
+    flushLogs().then(() => window.location.reload(true))
   }
 
   const clear = () => {
