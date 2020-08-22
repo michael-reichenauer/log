@@ -9,7 +9,6 @@ export default function App() {
   const [isVisible, isShown, isHidden] = usePageVisibility();
 
   const refresh = () => {
-    logInfo(`Refresh ${count}`)
     flushLogs().then(() => setCount(c => c + 1))
   };
 
@@ -17,8 +16,8 @@ export default function App() {
     flushLogs().then(() => window.location.reload(true))
   }
 
-  const clear = () => {
-    clearLogs()
+  const clear = async () => {
+    await clearLogs()
     refresh()
   }
 

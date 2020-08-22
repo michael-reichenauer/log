@@ -53,7 +53,6 @@ const postLogs = () => {
 
 const sendLogs = async (isDelayed = true) => {
     try {
-        console.log("Sending logs ...");
         isSending = true
 
         // Allow a few more log rows to be collected before sending
@@ -67,7 +66,7 @@ const sendLogs = async (isDelayed = true) => {
         if (logsSending.length === 0) {
             return
         }
-
+        console.log("Sending logs ...");
         const logsText = JSON.stringify(logsSending)
         const uri = `/api/AddLogs?logs=${logsText}`
         const response = await fetch(uri)
@@ -79,18 +78,19 @@ const sendLogs = async (isDelayed = true) => {
         // Sent logs, retry again soon if more logs are to be sent
         logsSending = []
         if (logs.length !== 0) {
-            setTimeout(sendLogs, 1000)
+            setTimeout(postLogs, 1000)
         }
+        console.log("Sent logs");
     }
     catch (err) {
         console.error("Failed to send logs: " + err)
         if (logs.length !== 0 && logsSending.length !== 0) {
             // Retry in a while again
-            setTimeout(sendLogs, 30000)
+            setTimeout(postLogs, 30000)
         }
     }
     finally {
-        console.log("Sent logs");
+
         isSending = false
     }
 }

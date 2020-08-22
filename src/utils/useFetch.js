@@ -4,10 +4,12 @@ const useFetch = (url, options, count) => {
     const [response, setResponse] = useState(null)
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const abortController = new AbortController();
         const signal = abortController.signal;
         const doFetch = async () => {
+            console.log(`useFetch: Fetching ${url} ...`)
             setLoading(true);
             try {
                 const res = await fetch(url, options);
@@ -15,11 +17,12 @@ const useFetch = (url, options, count) => {
                 else {
                     const json = await res.json();
                     if (!signal.aborted) {
+                        console.log(`useFetch: Fetched ${url}`)
                         setResponse(json);
                     }
                 }
             } catch (e) {
-                console.log("Error:", e)
+                console.log("useFetch: Error:", e)
                 if (!signal.aborted) {
                     setError(e);
                 }
