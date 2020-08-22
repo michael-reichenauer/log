@@ -34,8 +34,7 @@ export default function App() {
   return (
     <>
       <button onClick={reload}>Reload</button>
-      <p>Local ui sha: "{localSha}, time: "{localBuildTime}"</p>
-      <p>Remote ui sha: "{remoteSha}", time: "{remoteBuildTime}"</p>
+      <p>ui: "{localSha}", "{localBuildTime}", "{remoteSha}", "{remoteBuildTime}"</p>
 
       <button onClick={clear}>Clear</button>
       <button onClick={refresh}>Refresh</button>

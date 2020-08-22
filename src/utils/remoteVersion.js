@@ -1,17 +1,24 @@
 import { logInfo } from './log'
 
-export const localSha = process.env.REACT_APP_SHA
+const isDevelop = process.env.REACT_APP_SHA === "%REACT_APP_SHA%"
+const startTime = dateToLocalISO(new Date().toISOString())
+export let localSha = process.env.REACT_APP_SHA
 export let remoteSha = "%REACT_APP_SHA%"
 export let localBuildTime = process.env.REACT_APP_BUILD_TIME
 export let remoteBuildTime = "%REACT_APP_BUILD_TIME%"
 export let checkTime = Date.now()
 
 export const updateUIIfRemoteVersionNewer = () => {
-    if (localSha === "%REACT_APP_SHA%") {
+    if (isDevelop) {
         // Running in developer mode, skip check.
+        localSha = ""
+        remoteSha = ""
+        localBuildTime = startTime
+        remoteBuildTime = startTime
         console.log("Local debug version, no need to check remote version")
         return
     }
+
     // Limit remote check to max every 5 minutes
     if (checkTime + 5 * 60 * 1000 > Date.now()) {
         console.log("No need to check remote version yet")
