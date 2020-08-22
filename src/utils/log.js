@@ -48,7 +48,7 @@ const postLogs = () => {
         console.log("Nothing to send");
         return
     }
-    sendPromise = sendLogs(isDelayed: true)
+    sendPromise = sendLogs(true)
 }
 
 const sendLogs = async (isDelayed = true) => {
