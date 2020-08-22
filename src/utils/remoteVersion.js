@@ -2,7 +2,7 @@ import { logInfo } from './log'
 
 export const localSha = process.env.REACT_APP_SHA
 export let remoteSha = "%REACT_APP_SHA%"
-export const localBuildTime = process.env.REACT_APP_BUILD_TIME
+export let localBuildTime = process.env.REACT_APP_BUILD_TIME
 export let remoteBuildTime = "%REACT_APP_BUILD_TIME%"
 
 export const updateUIIfRemoteVersionNewer = () => {
@@ -10,7 +10,9 @@ export const updateUIIfRemoteVersionNewer = () => {
         // Running in developer mode, skip check.
         return
     }
+    localBuildTime = dateToLocalISO(process.env.REACT_APP_BUILD_TIME)
     logInfo(`local:  "${localSha}" "${localBuildTime}" `)
+
     fetch(`/manifest.json`)
         .then(response => {
             if (response.status !== 200) {
@@ -20,7 +22,7 @@ export const updateUIIfRemoteVersionNewer = () => {
             response.json()
                 .then(data => {
                     remoteSha = data.sha;
-                    remoteBuildTime = data.buildTime
+                    remoteBuildTime = dateToLocalISO(data.buildTime)
                     console.log(`Manifest: "${JSON.stringify(data)}"`)
                     logInfo(`remote: "${remoteSha}" "${remoteBuildTime}"`)
                     if (localSha && remoteSha && localSha !== remoteSha) {
@@ -33,13 +35,13 @@ export const updateUIIfRemoteVersionNewer = () => {
         });
 }
 
-// function dateToLocalISO(dateText) {
-//     const date = new Date(dateText)
-//     const off = date.getTimezoneOffset()
-//     const absoff = Math.abs(off)
-//     return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(0, 23) +
-//         (off > 0 ? '-' : '+') +
-//         (absoff / 60).toFixed(0).padStart(2, '0') + ':' +
-//         (absoff % 60).toString().padStart(2, '0'))
-// }
+function dateToLocalISO(dateText) {
+    const date = new Date(dateText)
+    const off = date.getTimezoneOffset()
+    const absoff = Math.abs(off)
+    return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(0, 23) +
+        (off > 0 ? '-' : '+') +
+        (absoff / 60).toFixed(0).padStart(2, '0') + ':' +
+        (absoff % 60).toString().padStart(2, '0'))
+}
 
