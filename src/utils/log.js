@@ -16,11 +16,12 @@ export const clearLogs = async () => {
     try {
         logs = []
         logsSending = []
+        console.log('clearLogs: clearing ...')
         const response = await fetch(`/api/ClearLogs`)
         if (!response.ok) {
             throw new Error('Error: Status Code: ' + response.status);
         }
-        console.log('clearLogs: Cleared')
+        console.log('clearLogs: cleared')
     } catch (err) {
         console.error("Failed to clear: " + err)
     }
@@ -68,9 +69,12 @@ const sendLogs = async (isDelayed = true) => {
             return
         }
         console.log("Sending logs ...");
-        const logsText = JSON.stringify(logsSending)
-        const uri = `/api/AddLogs?logs=${logsText}`
-        const response = await fetch(uri)
+        const data = { logs: logsSending }
+        const response = await fetch(`/api/AddLogs`,
+            {
+                method: 'post',
+                body: JSON.stringify(data)
+            })
 
         if (!response.ok) {
             throw new Error('Error: Status Code: ' + response.status);

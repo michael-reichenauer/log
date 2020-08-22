@@ -4,11 +4,15 @@ module.exports = async function (context, req) {
     context.log(`## Request: AddLogs`);
 
     if (req.query.logs || (req.body && req.body.logs)) {
-        let logsText = (req.query.logs) ? req.query.logs : req.body.logs
+        let logs = []
+        if (req.query.logs) {
+            logs = JSON.parse(req.query.logs);
+        } else {
+            logs = req.body.logs
+        }
 
-        var logs = JSON.parse(logsText);
         log.addLogs(logs)
-        context.log(`## AddLogs: ${logsText}`);
+        context.log(`## AddLogs: added ${logs.length} logs`);
 
         context.res = {
             // status: 200, /* Defaults to 200 */
