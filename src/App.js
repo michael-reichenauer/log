@@ -10,8 +10,8 @@ export default function App() {
 
   const refresh = () => {
     logInfo(`Refresh ${count}`)
-    window.setTimeout(() => { flushLogs().then(() => setCount(c => c + 1)) }, 300);
-  }
+    flushLogs().then(() => setCount(c => c + 1))
+  };
 
   const reload = () => {
     flushLogs().then(() => window.location.reload(true))
