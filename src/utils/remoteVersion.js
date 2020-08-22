@@ -20,8 +20,6 @@ export const updateUIIfRemoteVersionNewer = () => {
     console.log("Checking remote version ...")
     checkTime = Date.now()
 
-
-
     localBuildTime = dateToLocalISO(process.env.REACT_APP_BUILD_TIME)
     logInfo(`local:  "${localSha}" "${localBuildTime}" `)
 

@@ -1,6 +1,5 @@
 import useFetch from './useFetch';
 
-
 let logs = []
 let logsSending = []
 let isSending = false
@@ -10,6 +9,27 @@ export const logInfo = msg => {
     const lm = { time: new Date(), msg: msg }
     logs.push(lm)
     postLogs()
+}
+
+export const clearLogs = async () => {
+    try {
+        logs = []
+        logsSending = []
+        const response = await fetch(`/api/ClearLogs`)
+        if (!response.ok) {
+            throw new Error('Error: Status Code: ' + response.status);
+        }
+        console.log('clearLogs: Cleared')
+    } catch (err) {
+        console.error("Failed to clear: " + err)
+    }
+}
+
+export const useLogs = (count) => {
+    const { response, loading, error } = useFetch(
+        "/api/GetLog", null, count
+    );
+    return { response, loading, error }
 }
 
 export const flushLogs = async () => {
@@ -28,7 +48,7 @@ const postLogs = () => {
         console.log("Nothing to send");
         return
     }
-    sendPromise = sendLogs()
+    sendPromise = sendLogs(isDelayed: true)
 }
 
 const sendLogs = async (isDelayed = true) => {
@@ -52,8 +72,7 @@ const sendLogs = async (isDelayed = true) => {
         const uri = `/api/AddLogs?logs=${logsText}`
         const response = await fetch(uri)
 
-        if (response.status !== 200) {
-            console.error('Error: Status Code: ' + response.status);
+        if (!response.ok) {
             throw new Error('Error: Status Code: ' + response.status);
         }
 
@@ -74,30 +93,6 @@ const sendLogs = async (isDelayed = true) => {
         console.log("Sent logs");
         isSending = false
     }
-}
-
-
-export const clearLogs = async () => {
-    try {
-        logs = []
-        logsSending = []
-        const response = await fetch(`/api/ClearLogs`)
-        if (response.status !== 200) {
-            console.error('Error: Status Code: ' + response.status);
-            throw new Error('Error: Status Code: ' + response.status);
-        }
-        console.log('clear: Cleared')
-    } catch (err) {
-        console.error("Failed to clear: " + err)
-    }
-}
-
-
-export const useLogs = (count) => {
-    const { response, loading, error } = useFetch(
-        "/api/GetLog", null, count
-    );
-    return { response, loading, error }
 }
 
 const delay = (milliseconds) => {
