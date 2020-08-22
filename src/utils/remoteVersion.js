@@ -1,4 +1,4 @@
-import { logInfo } from './log'
+import { logInfo, flushLogs } from './log'
 
 const isDevelop = process.env.REACT_APP_SHA === "%REACT_APP_SHA%"
 const startTime = dateToLocalISO(new Date().toISOString())
@@ -43,7 +43,8 @@ export const updateUIIfRemoteVersionNewer = () => {
                     console.log(`Manifest: "${JSON.stringify(data)}"`)
                     logInfo(`remote: "${remoteSha}" "${remoteBuildTime}"`)
                     if (localSha && remoteSha && localSha !== remoteSha) {
-                        window.setTimeout(() => { window.location.reload(true) }, 300);
+                        logInfo("Remote version differs, reloading ...")
+                        flushLogs.then(() => window.location.reload(true))
                     }
                 });
         })

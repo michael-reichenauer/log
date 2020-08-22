@@ -8,6 +8,7 @@ let sendPromise = null
 export const logInfo = msg => {
     const lm = { time: new Date(), msg: msg }
     logs.push(lm)
+    console.log(`logInfo: ${JSON.stringify(lm)}`)
     postLogs()
 }
 
