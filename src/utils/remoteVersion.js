@@ -44,7 +44,7 @@ export const updateUIIfRemoteVersionNewer = () => {
                     logInfo(`remote: "${remoteSha}" "${remoteBuildTime}"`)
                     if (localSha && remoteSha && localSha !== remoteSha) {
                         logInfo("Remote version differs, reloading ...")
-                        flushLogs.then(() => setTimeout(() => window.location.reload(true), 100))
+                        flushLogs.then(() => setTimeout(() => { window.location.reload(true) }, 100))
                     }
                 });
         })
