@@ -19,8 +19,8 @@ export const updateUIIfRemoteVersionNewer = () => {
         return
     }
 
-    // Limit remote check to max every 5 minutes
-    if (checkTime + 5 * 60 * 1000 > Date.now()) {
+    // Limit remote check
+    if (checkTime + 1 * 60 * 1000 > Date.now()) {
         console.log("No need to check remote version yet")
         return
     }
@@ -44,7 +44,7 @@ export const updateUIIfRemoteVersionNewer = () => {
                     logInfo(`remote: "${remoteSha}" "${remoteBuildTime}"`)
                     if (localSha && remoteSha && localSha !== remoteSha) {
                         logInfo("Remote version differs, reloading ...")
-                        flushLogs.then(() => setTimeout(() => { window.location.reload(true) }, 100))
+                        flushLogs().then(() => setTimeout(() => { window.location.reload(true) }, 100))
                     }
                 });
         })
