@@ -43,11 +43,9 @@ export const flushLogs = async () => {
 
 const postLogs = () => {
     if (isSending) {
-        console.log("Is already sending");
         return
     }
     if (logs.length === 0 && logsSending.length === 0) {
-        console.log("Nothing to send");
         return
     }
     sendPromise = sendLogs(true)
@@ -70,6 +68,7 @@ const sendLogs = async (isDelayed = true) => {
         }
         console.log("Sending logs ...");
         const data = { logs: logsSending }
+        const startSend = Date.now()
         const response = await fetch(`/api/AddLogs`,
             {
                 method: 'post',
@@ -80,22 +79,22 @@ const sendLogs = async (isDelayed = true) => {
             throw new Error('Error: Status Code: ' + response.status);
         }
 
+        console.log(`Sent ${logsSending.length} logs in ${Date.now() - startSend} ms`);
+
         // Sent logs, retry again soon if more logs are to be sent
         logsSending = []
         if (logs.length !== 0) {
-            setTimeout(postLogs, 1000)
+            setTimeout(postLogs, 10000)
         }
-        console.log("Sent logs");
     }
     catch (err) {
         console.error("Failed to send logs: " + err)
         if (logs.length !== 0 && logsSending.length !== 0) {
             // Retry in a while again
-            setTimeout(postLogs, 30000)
+            setTimeout(postLogs, 0)
         }
     }
     finally {
-
         isSending = false
     }
 }
