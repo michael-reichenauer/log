@@ -14,9 +14,9 @@ export const logInfo = msg => {
 
 export const clearLogs = async () => {
     try {
+        console.log('clearLogs: clearing ...')
         logs = []
         logsSending = []
-        console.log('clearLogs: clearing ...')
         const response = await fetch(`/api/ClearLogs`)
         if (!response.ok) {
             throw new Error('Error: Status Code: ' + response.status);
