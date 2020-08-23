@@ -8,6 +8,7 @@ const useFetch = (url, options, count) => {
     useEffect(() => {
         const abortController = new AbortController();
         const signal = abortController.signal;
+        const startSend = Date.now()
         const doFetch = async () => {
             console.log(`useFetch: Fetching ${url} ...`)
             setLoading(true);
@@ -17,12 +18,12 @@ const useFetch = (url, options, count) => {
                 else {
                     const json = await res.json();
                     if (!signal.aborted) {
-                        console.log(`useFetch: Fetched ${url}`)
+                        console.log(`useFetch: Fetched ${url} in ${Date.now() - startSend} ms`)
                         setResponse(json);
                     }
                 }
             } catch (e) {
-                console.log("useFetch: Error:", e)
+                console.log(`useFetch: Error after ${Date.now() - startSend} ms,`, e)
                 if (!signal.aborted) {
                     setError(e);
                 }
