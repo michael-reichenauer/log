@@ -15,7 +15,7 @@ export const updateUIIfRemoteVersionNewer = () => {
         remoteSha = ""
         localBuildTime = startTime
         remoteBuildTime = startTime
-        console.log("Local debug version, no need to check remote version")
+        console.log("Local debug version, no need to check remote version.")
         return
     }
 
