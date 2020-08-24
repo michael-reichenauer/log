@@ -44,6 +44,9 @@ export default function LogList({ count }) {
 
 
 export const useTableStyles = makeStyles((theme) => ({
+    table: {
+        background: theme.palette.background
+    },
     tableRow: {
         height: rowHeight,
     },
