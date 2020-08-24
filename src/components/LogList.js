@@ -52,7 +52,6 @@ export const useTableStyles = makeStyles((theme) => ({
         border: "none",
     },
     idText: {
-        color: "white",
         fontSize: fontSize,
     },
     timeColumn: {
@@ -60,7 +59,6 @@ export const useTableStyles = makeStyles((theme) => ({
         border: "none",
     },
     timeText: {
-        color: "white",
         fontSize: fontSize,
     },
     msgColumn: {

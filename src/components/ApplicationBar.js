@@ -10,14 +10,14 @@ import { fade } from "@material-ui/core";
 //import {ApplicationMenu} from "./ApplicationMenu";
 
 
-export const ApplicationBar = props => {
+export const ApplicationBar = ({ isActive }) => {
     const classes = useAppBarStyles();
 
     return (
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>
-                    gmc
+                    log - {isActive ? "active" : "inactive"}
                 </Typography>
 
                 <div className={classes.search}>
