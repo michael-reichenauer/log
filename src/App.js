@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import TodoList from './TodoList';
-import { clearLogs, flushLogs } from './utils/log'
-import { usePageVisibility } from './utils/visibility'
+import { clearLogs, flushLogs, logInfo } from './utils/log'
+import { useActivity } from './utils/activity'
 import { updateUIIfRemoteVersionNewer, localSha, localBuildTime } from './utils/remoteVersion'
 import { logRandom } from "./demo/randomLogs"
 
 export default function App() {
   const [count, setCount] = useState(0)
-  const [isVisible, isShown, isHidden] = usePageVisibility();
+  const [isActive, isChanged] = useActivity();
 
   const refresh = () => {
     flushLogs().then(() => setCount(c => c + 1))
@@ -26,20 +26,23 @@ export default function App() {
     logRandom()
   }
 
-  if (isShown) {
-    console.log(`Is Shown (isVisible= ${isVisible})`)
+  if (isChanged && isActive) {
+    console.log(`Active = ${isActive}`)
+    logInfo("Active")
     updateUIIfRemoteVersionNewer()
     refresh()
   }
 
-  if (isHidden) {
-    console.log(`Is Hidden (isVisible= ${isVisible})`)
+  if (isChanged && !isActive) {
+    logInfo("Inactive")
+    refresh()
+    console.log(`Active = ${isActive}`)
   }
 
   return (
     <>
       <button onClick={reload}>Reload</button>
-      <p>ui: "{localSha}", "{localBuildTime}"</p>
+      <p>ui: active={"" + isActive} "{localSha}", "{localBuildTime}"</p>
 
       <button onClick={clear}>Clear</button>
       <button onClick={refresh}>Refresh</button>

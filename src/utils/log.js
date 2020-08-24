@@ -3,7 +3,7 @@ import useFetch from './useFetch';
 let logs = []
 let logsSending = []
 let isSending = false
-let sendPromise = null
+let sendPromise = new Promise((resolve, reject) => { resolve() })
 
 export const logInfo = msg => {
     const lm = { time: new Date(), msg: msg }
@@ -35,10 +35,9 @@ export const useLogs = (count) => {
 }
 
 export const flushLogs = async () => {
-    if (sendPromise != null) {
-        await sendPromise
-    }
-    await sendLogs(false)
+    await sendPromise
+    sendPromise = sendLogs(false)
+    await sendPromise
 }
 
 const postLogs = () => {
@@ -53,6 +52,9 @@ const postLogs = () => {
 
 const sendLogs = async (isDelayed = true) => {
     try {
+        if (isSending) {
+            return
+        }
         isSending = true
 
         // Allow a few more log rows to be collected before sending
