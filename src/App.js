@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import TodoList from './TodoList';
+import Paper from "@material-ui/core/Paper";
+import LogList from './components/LogList';
 import { clearLogs, flushLogs, logInfo } from './utils/log'
 import { useActivity } from './utils/activity'
 import { updateUIIfRemoteVersionNewer, localSha, localBuildTime } from './utils/remoteVersion'
 import { logRandom } from "./demo/randomLogs"
+import { ApplicationBar } from "./components/ApplicationBar"
 
 export default function App() {
   const [count, setCount] = useState(0)
@@ -40,15 +42,16 @@ export default function App() {
   }
 
   return (
-    <>
+    <Paper style={{ height: "100vh", backgroundColor: "gray" }}>
+      <ApplicationBar />
       <button onClick={reload}>Reload</button>
       <p>ui: active={"" + isActive} "{localSha}", "{localBuildTime}"</p>
 
       <button onClick={clear}>Clear</button>
       <button onClick={refresh}>Refresh</button>
       <button onClick={logSome}>Log Some</button>
-      <TodoList count={count} />
-    </>
+      <LogList count={count} />
+    </Paper>
   );
 }
 

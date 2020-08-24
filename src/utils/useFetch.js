@@ -35,7 +35,6 @@ const useFetch = (url, options, count) => {
         };
         doFetch();
         return () => {
-            console.log(`useFetch: Closing`)
             abortController.abort();
         };
     }, [url, options, count]);
