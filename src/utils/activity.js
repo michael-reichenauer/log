@@ -11,69 +11,72 @@ let isDocumentActive = false
 export function useActivity() {
     const [isActive, setIsActive] = useState(!document.hidden)
 
-    const onVisibilityShow = (e) => {
-        setIsActive(!document.hidden)
-        if (!document.hidden) {
-            onActive()
-        } else {
+    React.useEffect(() => {
+
+        const onVisibilityShow = (e) => {
+            setIsActive(!document.hidden)
+            console.log(`visibility=${!document.hidden}`)
+            if (!document.hidden) {
+                onActive()
+            } else {
+                cancelCheckIfInactive()
+            }
+        }
+
+        const onActive = () => {
+            const now = Date.now()
+            const previousActivityTime = activityTime
+            activityTime = now
+            if (now - previousActivityTime < activityTimeout) {
+                return
+            }
+            activityTime = now
             cancelCheckIfInactive()
-        }
-    }
 
-    const checkIfInactive = () => {
-        const now = Date.now()
-        if (now - activityTime < activityTimeout) {
-            const timeout = activityTimeout + activityMargin - (now - activityTime)
-            console.log(`Recheck in ${timeout} ms`)
+            console.log("Active")
+            setIsActive(true)
+            const timeout = activityTimeout + activityMargin
+            console.log(`Check in ${timeout} ms`)
             checkTimer = setTimeout(checkIfInactive, timeout)
-            return
         }
-        console.log("Inactive")
-        setIsActive(false)
-        checkTimer = null
-    }
 
-    const onActive = () => {
-        const now = Date.now()
-        const previousActivityTime = activityTime
-        activityTime = now
-        if (now - previousActivityTime < activityTimeout) {
-            return
+        const cancelCheckIfInactive = () => {
+            if (checkTimer != null) {
+                console.log("Inactive")
+                setIsActive(false)
+                clearTimeout(checkTimer);
+            }
         }
-        activityTime = now
-        cancelCheckIfInactive()
 
-        console.log("Active")
-        setIsActive(true)
-        const timeout = activityTimeout + activityMargin
-        console.log(`Check in ${timeout} ms`)
-        checkTimer = setTimeout(checkIfInactive, timeout)
-    }
-
-    const cancelCheckIfInactive = () => {
-        if (checkTimer != null) {
+        const checkIfInactive = () => {
+            const now = Date.now()
+            if (now - activityTime < activityTimeout) {
+                const timeout = activityTimeout + activityMargin - (now - activityTime)
+                console.log(`Recheck in ${timeout} ms`)
+                checkTimer = setTimeout(checkIfInactive, timeout)
+                return
+            }
             console.log("Inactive")
             setIsActive(false)
-            clearTimeout(checkTimer);
+            checkTimer = null
         }
-    }
 
-
-    React.useEffect(() => {
         document.onvisibilitychange = onVisibilityShow
         document.addEventListener("mousemove", onActive)
         document.addEventListener("mousedown", onActive)
+        document.addEventListener("touchstart", onActive)
         document.addEventListener("keydown", onActive)
-        // if (!document.hidden) {
-        //     onActive()
-        // }
+
+        setTimeout(onActive, 1)
+
         return () => {
             document.onvisibilitychange = null
             document.removeEventListener("mousemove", onActive)
             document.removeEventListener("mousedown", onActive)
+            document.removeEventListener("touchstart", onActive)
             document.removeEventListener("keydown", onActive)
         }
-    })
+    }, [])
 
     const isChanged = (isActive && !isDocumentActive) || (!isActive && isDocumentActive)
     isDocumentActive = isActive
