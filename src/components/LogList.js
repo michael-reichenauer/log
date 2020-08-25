@@ -17,7 +17,6 @@ function createData(id, dessert, calories, fat, carbs, protein) {
     return { id, dessert, calories, fat, carbs, protein };
 }
 
-const rows = [];
 
 // for (let i = 0; i < 20000; i += 1) {
 //     const randomSelection = sample[Math.floor(Math.random() * sample.length)];
@@ -27,7 +26,7 @@ const rows = [];
 
 export default function LogList({ count }) {
     const [items, setItems] = useState(new HashTable())
-    const [rowsCount, setRowsCount] = useState(20000)
+    const [rowsCount] = useState(20000)
 
     // const classes = useTableStyles();
     // const { response, error } = useLogs(count);
