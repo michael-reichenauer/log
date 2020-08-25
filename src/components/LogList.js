@@ -62,7 +62,7 @@ export default function LogList({ count }) {
 
 
     return (
-        <Paper style={{ height: 200, width: '100%' }}>
+        <Paper style={{ height: '85%', width: '100%' }}>
             <VirtualizedTable
                 rowCount={rowsCount}
                 rowGetter={rowGetter}
