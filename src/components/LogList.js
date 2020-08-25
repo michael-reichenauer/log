@@ -23,21 +23,9 @@ function createData(id, dessert, calories, fat, carbs, protein) {
 }
 
 
-// for (let i = 0; i < 20000; i += 1) {
-//     const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-//     rows.push(createData(i, ...randomSelection));
-// }
-
-
 export default function LogList({ count }) {
     const [items, setItems] = useState(new HashTable())
     const [rowsCount] = useState(20000)
-
-    // const classes = useTableStyles();
-    // const { response, error } = useLogs(count);
-    // if (error) {
-    //     return <div>Error: {"" + error}</div>
-    // }
 
     const rowGetter = ({ index }) => {
         //console.log(`Get index: ${index}`)
@@ -52,7 +40,7 @@ export default function LogList({ count }) {
         start = startIndex
         stop = stopIndex
         return delay(50).then(() => {
-            if (start != startIndex && stop != stopIndex) {
+            if (start !== startIndex && stop !== stopIndex) {
                 console.log(`Canceled load ${startIndex},${stopIndex}`)
                 return
             }
