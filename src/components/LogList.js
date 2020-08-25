@@ -1,20 +1,11 @@
 import React from 'react'
 //import { useLogs } from '../utils/log';
-// import TableContainer from "@material-ui/core/TableContainer";
 import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { withStyles } from '@material-ui/core/styles';
-//import Table from "@material-ui/core/Table";
-// import TableBody from "@material-ui/core/TableBody";
-// import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-// import Typography from "@material-ui/core/Typography";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { AutoSizer, Column, Table } from 'react-virtualized';
+import { VirtualizedTable } from "./VirtualizedTable";
+
 
 export const rowHeight = 0
-const fontSize = 13
+//const fontSize = 13
 
 const sample = [
     ['Frozen yoghurt', 159, 6.0, 24, 4.0],
@@ -30,146 +21,10 @@ function createData(id, dessert, calories, fat, carbs, protein) {
 
 const rows = [];
 
-for (let i = 0; i < 200; i += 1) {
+for (let i = 0; i < 20000; i += 1) {
     const randomSelection = sample[Math.floor(Math.random() * sample.length)];
     rows.push(createData(i, ...randomSelection));
 }
-
-const styles = (theme) => ({
-    flexContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        boxSizing: 'border-box',
-    },
-    table: {
-        // temporary right-to-left patch, waiting for
-        // https://github.com/bvaughn/react-virtualized/issues/454
-        '& .ReactVirtualized__Table__headerRow': {
-            flip: false,
-            paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
-        },
-    },
-    tableRow: {
-        cursor: 'pointer',
-    },
-    tableRowHover: {
-        '&:hover': {
-            backgroundColor: theme.palette.grey[200],
-        },
-    },
-    tableCell: {
-        flex: 1,
-    },
-    noClick: {
-        cursor: 'initial',
-    },
-});
-
-class MuiVirtualizedTable extends React.PureComponent {
-    static defaultProps = {
-        headerHeight: 48,
-        rowHeight: 48,
-    };
-
-    getRowClassName = ({ index }) => {
-        const { classes, onRowClick } = this.props;
-
-        return clsx(classes.tableRow, classes.flexContainer, {
-            [classes.tableRowHover]: index !== -1 && onRowClick != null,
-        });
-    };
-
-    cellRenderer = ({ cellData, columnIndex }) => {
-        const { columns, classes, rowHeight, onRowClick } = this.props;
-        return (
-            <TableCell
-                component="div"
-                className={clsx(classes.tableCell, classes.flexContainer, {
-                    [classes.noClick]: onRowClick == null,
-                })}
-                variant="body"
-                style={{ height: rowHeight }}
-                align={(columnIndex != null && columns[columnIndex].numeric) || false ? 'right' : 'left'}
-            >
-                {cellData}
-            </TableCell>
-        );
-    };
-
-    headerRenderer = ({ label, columnIndex }) => {
-        const { headerHeight, columns, classes } = this.props;
-
-        return (
-            <TableCell
-                component="div"
-                className={clsx(classes.tableCell, classes.flexContainer, classes.noClick)}
-                variant="head"
-                style={{ height: headerHeight }}
-                align={columns[columnIndex].numeric || false ? 'right' : 'left'}
-            >
-                <span>{label}</span>
-            </TableCell>
-        );
-    };
-
-    render() {
-        const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
-        return (
-            <AutoSizer>
-                {({ height, width }) => (
-                    <Table
-                        height={height}
-                        width={width}
-                        rowHeight={rowHeight}
-                        gridStyle={{
-                            direction: 'inherit',
-                        }}
-                        headerHeight={headerHeight}
-                        className={classes.table}
-                        {...tableProps}
-                        rowClassName={this.getRowClassName}
-                    >
-                        {columns.map(({ dataKey, ...other }, index) => {
-                            return (
-                                <Column
-                                    key={dataKey}
-                                    headerRenderer={(headerProps) =>
-                                        this.headerRenderer({
-                                            ...headerProps,
-                                            columnIndex: index,
-                                        })
-                                    }
-                                    className={classes.flexContainer}
-                                    cellRenderer={this.cellRenderer}
-                                    dataKey={dataKey}
-                                    {...other}
-                                />
-                            );
-                        })}
-                    </Table>
-                )}
-            </AutoSizer>
-        );
-    }
-}
-
-MuiVirtualizedTable.propTypes = {
-    classes: PropTypes.object.isRequired,
-    columns: PropTypes.arrayOf(
-        PropTypes.shape({
-            dataKey: PropTypes.string.isRequired,
-            label: PropTypes.string.isRequired,
-            numeric: PropTypes.bool,
-            width: PropTypes.number.isRequired,
-        }),
-    ).isRequired,
-    headerHeight: PropTypes.number,
-    onRowClick: PropTypes.func,
-    rowHeight: PropTypes.number,
-};
-
-
-const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
 
 
 export default function LogList({ count }) {
@@ -180,7 +35,8 @@ export default function LogList({ count }) {
     // }
 
     return (
-        <Paper style={{ height: 400, width: '100%' }}>
+
+        <Paper style={{ height: '88vh', width: '100%' }}>
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
@@ -209,72 +65,17 @@ export default function LogList({ count }) {
                         numeric: true,
                     },
                     {
-                        width: 120,
                         label: 'Protein\u00A0(g)',
                         dataKey: 'protein',
-                        numeric: true,
                     },
                 ]}
             />
         </Paper>
+
     );
 }
 
 
-// return (
-//     <TableContainer className={classes.container}>
-//         <Table className={classes.table} size="small" padding="none">
-//             <TableBody>
-//                 {response && response.logs && response.logs.map((item, index) => (
-//                     <TableRow key={index} hover={true} className={classes.idColumn}>
-//                         <TableCell align={"left"} className={classes.idColumn}>
-//                             <Typography className={classes.idText}>{index}</Typography>
-//                         </TableCell>
-
-//                         <TableCell align={"left"} className={classes.timeColumn}>
-//                             <Typography className={classes.timeText}>{dateToLocalISO(item.time)}</Typography>
-//                         </TableCell>
-//                         <TableCell align={"left"} className={classes.msgColumn}>
-//                             <Typography className={classes.msgText}>{item.msg}xx</Typography>
-//                         </TableCell>
-//                     </TableRow>
-//                 ))}
-//             </TableBody>
-//         </Table>
-//     </TableContainer>
-// )
-//}
-
-
-export const useTableStyles = makeStyles((theme) => ({
-    table: {
-        background: theme.palette.background
-    },
-    tableRow: {
-        height: rowHeight,
-    },
-    idColumn: {
-        width: 50,
-        border: "none",
-    },
-    idText: {
-        fontSize: fontSize,
-    },
-    timeColumn: {
-        width: 140,
-        border: "none",
-    },
-    timeText: {
-        fontSize: fontSize,
-    },
-    msgColumn: {
-        width: "auto",
-        border: "none",
-    },
-    msgText: {
-        fontSize: fontSize,
-    },
-}));
 
 // function dateToLocalISO(dateText) {
 //     const date = new Date(dateText)

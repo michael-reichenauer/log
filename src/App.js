@@ -9,7 +9,10 @@ import { updateUIIfRemoteVersionNewer, localSha, localBuildTime } from './utils/
 import { logRandom } from "./demo/randomLogs"
 import { ApplicationBar } from "./components/ApplicationBar"
 
+
 export default function App() {
+
+
   const [count, setCount] = useState(0)
   const [isActive, isChanged] = useActivity();
   const [theme,] = useState(darkTheme)
@@ -46,6 +49,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
+
       <Paper style={{ height: "100vh", backgroundColor: "black" }}>
         <ApplicationBar isActive={isActive} />
         <button onClick={reload}>Reload</button>
