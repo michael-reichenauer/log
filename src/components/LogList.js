@@ -4,6 +4,11 @@ import Paper from '@material-ui/core/Paper';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { HashTable } from "../utils/hashTable"
 
+const batchSize = 100
+const maxBatches = 20
+let batches = []
+let start = 0
+let stop = 0
 
 const sample = [
     ['Frozen yoghurt', 159, 6.0, 24, 4.0],
@@ -44,14 +49,32 @@ export default function LogList({ count }) {
 
     const loadMore = ({ startIndex, stopIndex }) => {
         console.log(`load ${startIndex},${stopIndex} ...`)
+        start = startIndex
+        stop = stopIndex
         return delay(50).then(() => {
+            if (start != startIndex && stop != stopIndex) {
+                console.log(`Canceled load ${startIndex},${stopIndex}`)
+                return
+            }
             const it = items
             for (let i = startIndex; i <= stopIndex; i += 1) {
                 const randomSelection = sample[Math.floor(Math.random() * sample.length)];
                 it.setItem(i, createData(i, ...randomSelection))
             }
-            setItems(it)
+            batches.push({ startIndex: startIndex, stopIndex: stopIndex })
             console.log(`loaded ${startIndex},${stopIndex}`)
+
+            // Clean old loaded batches if needed
+            if (batches.length > maxBatches) {
+                for (let i = 0; i < maxBatches / 2; i += 1) {
+                    const b = batches.shift()
+                    console.log(`Unloading ${b.startIndex}, ${b.stopIndex}`)
+                    for (let i = b.startIndex; i <= b.stopIndex; i += 1) {
+                        it.removeItem(i)
+                    }
+                }
+            }
+            setItems(it)
         })
     }
 
@@ -68,8 +91,8 @@ export default function LogList({ count }) {
                 rowGetter={rowGetter}
                 isRowLoaded={isRowLoaded}
                 loadMoreRows={loadMore}
-                minimumBatchSize={100}
-                threshold={50}
+                minimumBatchSize={batchSize}
+                threshold={batchSize / 2}
                 columns={[
                     {
                         width: 50,
