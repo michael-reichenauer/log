@@ -1,11 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 //import { useLogs } from '../utils/log';
 import Paper from '@material-ui/core/Paper';
 import { VirtualizedTable } from "./VirtualizedTable";
+import { HashTable } from "../utils/hashTable"
 
-
-export const rowHeight = 0
-//const fontSize = 13
 
 const sample = [
     ['Frozen yoghurt', 159, 6.0, 24, 4.0],
@@ -21,26 +19,64 @@ function createData(id, dessert, calories, fat, carbs, protein) {
 
 const rows = [];
 
-for (let i = 0; i < 20000; i += 1) {
-    const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-    rows.push(createData(i, ...randomSelection));
-}
+// for (let i = 0; i < 20000; i += 1) {
+//     const randomSelection = sample[Math.floor(Math.random() * sample.length)];
+//     rows.push(createData(i, ...randomSelection));
+// }
 
 
 export default function LogList({ count }) {
+    const [items, setItems] = useState(new HashTable())
+    const [rowsCount, setRowsCount] = useState(20000)
+
     // const classes = useTableStyles();
     // const { response, error } = useLogs(count);
     // if (error) {
     //     return <div>Error: {"" + error}</div>
     // }
 
-    return (
+    const rowGetter = ({ index }) => {
+        //console.log(`Get index: ${index}`)
+        if (!items.hasItem(index)) {
+            return {}
+        }
+        return items.getItem(index)
+    }
 
-        <Paper style={{ height: '88vh', width: '100%' }}>
+    const loadMore = ({ startIndex, stopIndex }) => {
+        console.log(`load ${startIndex},${stopIndex} ...`)
+        return delay(50).then(() => {
+            const it = items
+            for (let i = startIndex; i <= stopIndex; i += 1) {
+                const randomSelection = sample[Math.floor(Math.random() * sample.length)];
+                it.setItem(i, createData(i, ...randomSelection))
+            }
+            setItems(it)
+            console.log(`loaded ${startIndex},${stopIndex}`)
+        })
+    }
+
+    const isRowLoaded = ({ index }) => {
+        //console.log(`Is row loaded: ${index}`)
+        return items.hasItem(index)
+    }
+
+
+    return (
+        <Paper style={{ height: 200, width: '100%' }}>
             <VirtualizedTable
-                rowCount={rows.length}
-                rowGetter={({ index }) => rows[index]}
+                rowCount={rowsCount}
+                rowGetter={rowGetter}
+                isRowLoaded={isRowLoaded}
+                loadMoreRows={loadMore}
+                minimumBatchSize={100}
+                threshold={50}
                 columns={[
+                    {
+                        width: 50,
+                        label: 'Index',
+                        dataKey: 'id',
+                    },
                     {
                         width: 200,
                         label: 'Dessert',
@@ -65,6 +101,7 @@ export default function LogList({ count }) {
                         numeric: true,
                     },
                     {
+                        width: 200,
                         label: 'Protein\u00A0(g)',
                         dataKey: 'protein',
                     },
@@ -75,7 +112,9 @@ export default function LogList({ count }) {
     );
 }
 
-
+const delay = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 // function dateToLocalISO(dateText) {
 //     const date = new Date(dateText)
