@@ -30,7 +30,7 @@ const STATUS_ERROR = 2;
 // }
 
 
-export default function LogList({ count }) {
+export default function LogList({ count, isActive }) {
     const classes = useTableStyles();
     const [items, setItems] = useState(new HashTable())
     const [rowsCount, setCount] = useState(1000)
@@ -43,16 +43,24 @@ export default function LogList({ count }) {
     const rowGetter = ({ index }) => {
         const it = items.getItem(index)
         if (it === undefined || it === STATUS_LOADING) {
-            return { line: (<Typography className={classes.lineUnloaded}>{index}</Typography>) }
+            return { line: (<Typography className={classes.lineInactive}>{index}</Typography>) }
         }
         if (it === STATUS_ERROR) {
             return {
-                line: (<Typography className={classes.lineUnloaded}>{index}</Typography>),
+                line: (<Typography className={classes.lineInactive}>{index}</Typography>),
                 msg: (<Typography noWrap className={classes.time}>Load Error!!!</Typography>)
             }
         }
 
         const time = dateToLocalISO(new Date(it.time).toISOString())
+        if (!isActive) {
+            return {
+                line: (<Typography noWrap className={classes.lineInactive}>{index}</Typography>),
+                time: (<Typography noWrap className={classes.timeInactive}>{time}</Typography>),
+                msg: (<Typography noWrap className={classes.timeInactive}>{it.msg}</Typography>),
+            }
+        }
+
         return {
             line: (<Typography noWrap className={classes.line}>{index}</Typography>),
             time: (<Typography noWrap className={classes.time}>{time}</Typography>),
@@ -153,7 +161,7 @@ const useTableStyles = makeStyles((theme) => ({
         fontSize: fontSize,
         fontFamily: "Monospace"
     },
-    lineUnloaded: {
+    lineInactive: {
         fontFamily: "Monospace",
         fontSize: fontSize,
         color: "gray"
@@ -164,6 +172,15 @@ const useTableStyles = makeStyles((theme) => ({
     },
     msg: {
         fontSize: fontSize,
+    },
+    timeInactive: {
+        fontSize: fontSize,
+        fontFamily: "Monospace",
+        color: "gray"
+    },
+    msgInactive: {
+        fontSize: fontSize,
+        color: "gray"
     },
 }));
 

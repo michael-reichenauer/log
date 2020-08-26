@@ -57,7 +57,7 @@ export default function App() {
         <button onClick={clear}>Clear</button>
         <button onClick={refresh}>Refresh</button>
         <button onClick={logSome}>Log Some</button>
-        <LogList count={count} />
+        <LogList count={count} isActive={isActive} />
       </Paper>
     </ThemeProvider>
   );

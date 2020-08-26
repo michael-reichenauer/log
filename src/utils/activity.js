@@ -66,6 +66,7 @@ export function useActivity() {
         document.addEventListener("mousedown", onActive)
         document.addEventListener("touchstart", onActive)
         document.addEventListener("keydown", onActive)
+        document.addEventListener("wheel", onActive)
 
         setTimeout(onActive, 1)
 
@@ -75,6 +76,7 @@ export function useActivity() {
             document.removeEventListener("mousedown", onActive)
             document.removeEventListener("touchstart", onActive)
             document.removeEventListener("keydown", onActive)
+            document.removeEventListener("wheel", onActive)
         }
     }, [])
 
