@@ -1,6 +1,6 @@
 //var log = require('../Shared/Store.js');
 
-const totalRows = 2000000
+let totalRows = 100
 const sampleTime = new Date(0)
 
 const sample = [
@@ -31,8 +31,8 @@ module.exports = async function (context, req) {
         return
     }
 
-    const start = parseInt(req.query.start)
-    const count = parseInt(req.query.count)
+    let start = parseInt(req.query.start)
+    let count = parseInt(req.query.count)
     if (start === undefined || count == undefined || start < 0 || count < 0 || count > 5000) {
         context.log('## Request: Invalid args');
         context.res = {
@@ -40,6 +40,9 @@ module.exports = async function (context, req) {
             body: "invalid args"
         };
         return
+    }
+    if (start + count > totalRows - 100) {
+        totalRows = start + count + 300
     }
 
     if (start >= totalRows) {

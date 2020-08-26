@@ -6,7 +6,7 @@ import { VirtualizedTable } from "./VirtualizedTable";
 import { HashTable } from "../utils/hashTable"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-const batchSize = 1000
+const batchSize = 500
 const maxBatches = 10
 let batches = []
 const fontSize = 12
@@ -128,13 +128,13 @@ export default function LogList({ count }) {
                         dataKey: 'line',
                     },
                     {
-                        width: 100,
+                        width: 110,
                         label: 'Time',
                         dataKey: 'time',
                     },
                     {
                         width: 300,
-                        label: 'Message',
+                        label: `Message (${rowsCount})`,
                         dataKey: 'msg',
                     }
                 ]}
