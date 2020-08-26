@@ -6,32 +6,34 @@ import { VirtualizedTable } from "./VirtualizedTable";
 import { HashTable } from "../utils/hashTable"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-const batchSize = 100
+const batchSize = 1000
 const maxBatches = 10
 let batches = []
 const fontSize = 12
 const rowHeight = 15
 const STATUS_LOADING = 1;
-const totalRows = 2000000
+const STATUS_ERROR = 2;
 
+// const totalRows = 2000000
+// const sampleTime = new Date(0)
 
-const sample = [
-    ['07:59:59.099', 'Frozen yoghurt'],
-    ['01:59:59.099', 'Ice cream sandwich'],
-    ['12:00:12.111', 'Eclair'],
-    ['14:59:15.332', 'Cupcake'],
-    ['03:59:09.543', 'Gingerbread'],
-];
+// const sample = [
+//     ['Frozen yoghurt'],
+//     ['Ice cream sandwich'],
+//     ['Eclair'],
+//     ['Cupcake'],
+//     ['Gingerbread'],
+// ];
 
-function createData(line, time, msg) {
-    return { line, time, msg };
-}
+// function createData(line, time, msg) {
+//     return { line, time, msg };
+// }
 
 
 export default function LogList({ count }) {
     const classes = useTableStyles();
     const [items, setItems] = useState(new HashTable())
-    const [rowsCount] = useState(totalRows)
+    const [rowsCount, setCount] = useState(1000)
 
     const isRowLoaded = ({ index }) => {
         //console.log(`Is row loaded: ${index}`)
@@ -43,31 +45,57 @@ export default function LogList({ count }) {
         if (it === undefined || it === STATUS_LOADING) {
             return { line: (<Typography className={classes.lineUnloaded}>{index}</Typography>) }
         }
+        if (it === STATUS_ERROR) {
+            return {
+                line: (<Typography className={classes.lineUnloaded}>{index}</Typography>),
+                msg: (<Typography noWrap className={classes.time}>Load Error!!!</Typography>)
+            }
+        }
+
+        const time = dateToLocalISO(new Date(it.time).toISOString())
         return {
             line: (<Typography noWrap className={classes.line}>{index}</Typography>),
-            time: (<Typography noWrap className={classes.time}>{it.time}</Typography>),
+            time: (<Typography noWrap className={classes.time}>{time}</Typography>),
             msg: (<Typography noWrap className={classes.time}>{it.msg}</Typography>),
         }
     }
 
-    const loadMore = ({ startIndex, stopIndex }) => {
+    const loadMore = async ({ startIndex, stopIndex }) => {
         console.log(`load ${startIndex},${stopIndex} ...`)
         const it = items
         for (let i = startIndex; i <= stopIndex; i += 1) {
             it.setItem(i, STATUS_LOADING)
         }
         setItems(it)
-
-        return delay(50).then(() => {
-            const it = items
+        const url = `/api/GetLog?start=${startIndex}&count=${stopIndex - startIndex + 1}`
+        console.log(`fetch "${url}"`)
+        const startSend = Date.now()
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Error: Status Code: ' + response.status);
+            }
+            const json = await response.json();
 
             for (let i = startIndex; i <= stopIndex; i += 1) {
-                const randomSelection = sample[i % sample.length];
-                it.setItem(i, createData(i, ...randomSelection))
+                if (i < json.start || i >= json.start + json.count) {
+                    continue
+                }
+                const item = json.lines[i - json.start]
+                it.setItem(i, item)
             }
-            batches.push({ startIndex: startIndex, stopIndex: stopIndex })
-            console.log(`loaded ${startIndex},${stopIndex}`)
+            setCount(json.total)
 
+            console.log(`loaded ${startIndex},${stopIndex}`)
+        }
+        catch (err) {
+            for (let i = startIndex; i <= stopIndex; i += 1) {
+                it.setItem(i, STATUS_ERROR)
+            }
+        }
+        finally {
+            console.log(`fetch: time: ${Date.now() - startSend} ms for ${url}`)
+            batches.push({ startIndex: startIndex, stopIndex: stopIndex })
             // Clean old loaded batches if needed
             if (batches.length > maxBatches) {
                 for (let i = 0; i < maxBatches / 2; i += 1) {
@@ -79,7 +107,7 @@ export default function LogList({ count }) {
                 }
             }
             setItems(it)
-        })
+        }
     }
 
 
@@ -95,17 +123,17 @@ export default function LogList({ count }) {
                 threshold={2 * batchSize}
                 columns={[
                     {
-                        width: 65,
+                        width: 70,
                         label: 'Line',
                         dataKey: 'line',
                     },
                     {
-                        width: 98,
+                        width: 100,
                         label: 'Time',
                         dataKey: 'time',
                     },
                     {
-                        width: 120,
+                        width: 300,
                         label: 'Message',
                         dataKey: 'msg',
                     }
@@ -116,9 +144,9 @@ export default function LogList({ count }) {
     );
 }
 
-const delay = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
+// const delay = (milliseconds) => {
+//     return new Promise(resolve => setTimeout(resolve, milliseconds))
+// }
 
 const useTableStyles = makeStyles((theme) => ({
     line: {
@@ -139,8 +167,8 @@ const useTableStyles = makeStyles((theme) => ({
     },
 }));
 
-// function dateToLocalISO(dateText) {
-//     const date = new Date(dateText)
-//     const off = date.getTimezoneOffset()
-//     return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(0, 19))
-// }
+function dateToLocalISO(dateText) {
+    const date = new Date(dateText)
+    const off = date.getTimezoneOffset()
+    return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(11, 12))
+}
