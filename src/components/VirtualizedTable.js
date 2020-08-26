@@ -29,7 +29,6 @@ const styles = (theme) => ({
     },
     tableCell: {
         flex: 1,
-        fontSize: 12,
     },
     noClick: {
         cursor: 'initial',

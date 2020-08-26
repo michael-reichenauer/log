@@ -9,7 +9,6 @@ import { updateUIIfRemoteVersionNewer, localSha, localBuildTime } from './utils/
 import { logRandom } from "./demo/randomLogs"
 import { ApplicationBar } from "./components/ApplicationBar"
 
-
 export default function App() {
 
 

@@ -1,52 +1,68 @@
 import React, { useState } from 'react'
 //import { useLogs } from '../utils/log';
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { HashTable } from "../utils/hashTable"
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const batchSize = 100
-const maxBatches = 20
+const maxBatches = 10
 let batches = []
-let start = 0
-let stop = 0
+const fontSize = 12
+const rowHeight = 15
+const STATUS_LOADING = 1;
+const totalRows = 2000000
+
 
 const sample = [
-    ['Frozen yoghurt', 159, 6.0, 24, 4.0],
-    ['Ice cream sandwich', 237, 9.0, 37, 4.3],
-    ['Eclair', 262, 16.0, 24, 6.0],
-    ['Cupcake', 305, 3.7, 67, 4.3],
-    ['Gingerbread', 356, 16.0, 49, 3.9],
+    ['07:59:59.099', 'Frozen yoghurt'],
+    ['01:59:59.099', 'Ice cream sandwich'],
+    ['12:00:12.111', 'Eclair'],
+    ['14:59:15.332', 'Cupcake'],
+    ['03:59:09.543', 'Gingerbread'],
 ];
 
-function createData(id, dessert, calories, fat, carbs, protein) {
-    return { id, dessert, calories, fat, carbs, protein };
+function createData(line, time, msg) {
+    return { line, time, msg };
 }
 
 
 export default function LogList({ count }) {
+    const classes = useTableStyles();
     const [items, setItems] = useState(new HashTable())
-    const [rowsCount] = useState(20000)
+    const [rowsCount] = useState(totalRows)
+
+    const isRowLoaded = ({ index }) => {
+        //console.log(`Is row loaded: ${index}`)
+        return items.hasItem(index)
+    }
 
     const rowGetter = ({ index }) => {
-        //console.log(`Get index: ${index}`)
-        if (!items.hasItem(index)) {
-            return {}
+        const it = items.getItem(index)
+        if (it === undefined || it === STATUS_LOADING) {
+            return { line: (<Typography className={classes.lineUnloaded}>{index}</Typography>) }
         }
-        return items.getItem(index)
+        return {
+            line: (<Typography noWrap className={classes.line}>{index}</Typography>),
+            time: (<Typography noWrap className={classes.time}>{it.time}</Typography>),
+            msg: (<Typography noWrap className={classes.time}>{it.msg}</Typography>),
+        }
     }
 
     const loadMore = ({ startIndex, stopIndex }) => {
         console.log(`load ${startIndex},${stopIndex} ...`)
-        start = startIndex
-        stop = stopIndex
+        const it = items
+        for (let i = startIndex; i <= stopIndex; i += 1) {
+            it.setItem(i, STATUS_LOADING)
+        }
+        setItems(it)
+
         return delay(50).then(() => {
-            if (start !== startIndex && stop !== stopIndex) {
-                console.log(`Canceled load ${startIndex},${stopIndex}`)
-                return
-            }
             const it = items
+
             for (let i = startIndex; i <= stopIndex; i += 1) {
-                const randomSelection = sample[Math.floor(Math.random() * sample.length)];
+                const randomSelection = sample[i % sample.length];
                 it.setItem(i, createData(i, ...randomSelection))
             }
             batches.push({ startIndex: startIndex, stopIndex: stopIndex })
@@ -66,55 +82,33 @@ export default function LogList({ count }) {
         })
     }
 
-    const isRowLoaded = ({ index }) => {
-        //console.log(`Is row loaded: ${index}`)
-        return items.hasItem(index)
-    }
-
 
     return (
         <Paper style={{ height: '85%', width: '100%' }}>
             <VirtualizedTable
                 rowCount={rowsCount}
                 rowGetter={rowGetter}
+                rowHeight={rowHeight}
                 isRowLoaded={isRowLoaded}
                 loadMoreRows={loadMore}
                 minimumBatchSize={batchSize}
-                threshold={batchSize / 2}
+                threshold={2 * batchSize}
                 columns={[
                     {
-                        width: 50,
-                        label: 'Index',
-                        dataKey: 'id',
+                        width: 65,
+                        label: 'Line',
+                        dataKey: 'line',
                     },
                     {
-                        width: 200,
-                        label: 'Dessert',
-                        dataKey: 'dessert',
-                    },
-                    {
-                        width: 120,
-                        label: 'Calories\u00A0(g)',
-                        dataKey: 'calories',
-                        numeric: true,
+                        width: 98,
+                        label: 'Time',
+                        dataKey: 'time',
                     },
                     {
                         width: 120,
-                        label: 'Fat\u00A0(g)',
-                        dataKey: 'fat',
-                        numeric: true,
-                    },
-                    {
-                        width: 120,
-                        label: 'Carbs\u00A0(g)',
-                        dataKey: 'carbs',
-                        numeric: true,
-                    },
-                    {
-                        width: 200,
-                        label: 'Protein\u00A0(g)',
-                        dataKey: 'protein',
-                    },
+                        label: 'Message',
+                        dataKey: 'msg',
+                    }
                 ]}
             />
         </Paper>
@@ -125,6 +119,25 @@ export default function LogList({ count }) {
 const delay = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
+
+const useTableStyles = makeStyles((theme) => ({
+    line: {
+        fontSize: fontSize,
+        fontFamily: "Monospace"
+    },
+    lineUnloaded: {
+        fontFamily: "Monospace",
+        fontSize: fontSize,
+        color: "gray"
+    },
+    time: {
+        fontSize: fontSize,
+        fontFamily: "Monospace"
+    },
+    msg: {
+        fontSize: fontSize,
+    },
+}));
 
 // function dateToLocalISO(dateText) {
 //     const date = new Date(dateText)
