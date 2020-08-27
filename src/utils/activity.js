@@ -37,7 +37,6 @@ export function useActivity() {
             console.log("Active")
             setIsActive(true)
             const timeout = activityTimeout + activityMargin
-            console.log(`Check in ${timeout} ms`)
             checkTimer = setTimeout(checkIfInactive, timeout)
         }
 
@@ -53,7 +52,6 @@ export function useActivity() {
             const now = Date.now()
             if (now - activityTime < activityTimeout) {
                 const timeout = activityTimeout + activityMargin - (now - activityTime)
-                console.log(`Recheck in ${timeout} ms`)
                 checkTimer = setTimeout(checkIfInactive, timeout)
                 return
             }
