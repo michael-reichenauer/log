@@ -7,6 +7,7 @@ const activityMargin = 1000
 let activityTime = 0
 let checkTimer = null
 let isDocumentActive = false
+const activeEvents = ["mousemove", "mousedown", "touchstart", "touchmove", "keydown", "wheel"]
 
 export function useActivity() {
     const [isActive, setIsActive] = useState(!document.hidden)
@@ -62,21 +63,14 @@ export function useActivity() {
         }
 
         document.onvisibilitychange = onVisibilityShow
-        document.addEventListener("mousemove", onActive)
-        document.addEventListener("mousedown", onActive)
-        document.addEventListener("touchstart", onActive)
-        document.addEventListener("keydown", onActive)
-        document.addEventListener("wheel", onActive)
+        activeEvents.forEach(name => document.addEventListener(name, onActive))
+
 
         setTimeout(onActive, 1)
 
         return () => {
             document.onvisibilitychange = null
-            document.removeEventListener("mousemove", onActive)
-            document.removeEventListener("mousedown", onActive)
-            document.removeEventListener("touchstart", onActive)
-            document.removeEventListener("keydown", onActive)
-            document.removeEventListener("wheel", onActive)
+            activeEvents.forEach(name => document.removeEventListener(name, onActive))
         }
     }, [])
 

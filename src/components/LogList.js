@@ -14,24 +14,8 @@ const rowHeight = 15
 const STATUS_LOADING = 1;
 const STATUS_ERROR = 2;
 
-// const totalRows = 2000000
-// const sampleTime = new Date(0)
-
-// const sample = [
-//     ['Frozen yoghurt'],
-//     ['Ice cream sandwich'],
-//     ['Eclair'],
-//     ['Cupcake'],
-//     ['Gingerbread'],
-// ];
-
-// function createData(line, time, msg) {
-//     return { line, time, msg };
-// }
-
-
 export default function LogList({ count, isActive }) {
-    const classes = useTableStyles();
+    const classes = useTableStyles(isActive);
     const [items, setItems] = useState(new HashTable())
     const [rowsCount, setCount] = useState(1000)
 
@@ -42,25 +26,11 @@ export default function LogList({ count, isActive }) {
 
     const rowGetter = ({ index }) => {
         const it = items.getItem(index)
-        if (it === undefined || it === STATUS_LOADING) {
-            return { line: (<Typography className={classes.lineInactive}>{index}</Typography>) }
-        }
-        if (it === STATUS_ERROR) {
-            return {
-                line: (<Typography className={classes.lineInactive}>{index}</Typography>),
-                msg: (<Typography noWrap className={classes.time}>Load Error!!!</Typography>)
-            }
+        if (it === undefined || it === STATUS_LOADING || it === STATUS_ERROR) {
+            return { line: (<Typography className={classes.lineInvalid}>{index}</Typography>) }
         }
 
         const time = dateToLocalISO(new Date(it.time).toISOString())
-        if (!isActive) {
-            return {
-                line: (<Typography noWrap className={classes.lineInactive}>{index}</Typography>),
-                time: (<Typography noWrap className={classes.timeInactive}>{time}</Typography>),
-                msg: (<Typography noWrap className={classes.timeInactive}>{it.msg}</Typography>),
-            }
-        }
-
         return {
             line: (<Typography noWrap className={classes.line}>{index}</Typography>),
             time: (<Typography noWrap className={classes.time}>{time}</Typography>),
@@ -148,7 +118,6 @@ export default function LogList({ count, isActive }) {
                 ]}
             />
         </Paper>
-
     );
 }
 
@@ -159,28 +128,23 @@ export default function LogList({ count, isActive }) {
 const useTableStyles = makeStyles((theme) => ({
     line: {
         fontSize: fontSize,
-        fontFamily: "Monospace"
-    },
-    lineInactive: {
         fontFamily: "Monospace",
+        color: isActive => isActive ? null : "gray"
+    },
+    lineInvalid: {
         fontSize: fontSize,
+        fontFamily: "Monospace",
         color: "gray"
     },
     time: {
         fontSize: fontSize,
-        fontFamily: "Monospace"
+        fontFamily: "Monospace",
+        color: isActive => isActive ? null : "gray"
     },
     msg: {
         fontSize: fontSize,
-    },
-    timeInactive: {
-        fontSize: fontSize,
         fontFamily: "Monospace",
-        color: "gray"
-    },
-    msgInactive: {
-        fontSize: fontSize,
-        color: "gray"
+        color: isActive => isActive ? null : "gray"
     },
 }));
 
