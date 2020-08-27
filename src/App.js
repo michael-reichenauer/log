@@ -9,6 +9,7 @@ import { updateUIIfRemoteVersionNewer, localSha, localBuildTime } from './utils/
 import { logRandom } from "./demo/randomLogs"
 import { ApplicationBar } from "./components/ApplicationBar"
 
+
 export default function App() {
 
 
@@ -49,7 +50,7 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
 
-      <Paper style={{ height: "100vh", backgroundColor: "black" }}>
+      <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
         <ApplicationBar isActive={isActive} />
         <button onClick={reload}>Reload</button>
         <p>ui: active={isActive} "{localSha}", "{localBuildTime}"</p>
