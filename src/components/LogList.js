@@ -7,8 +7,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 const batchSize = 500
 const maxBatches = 10
 let batches = []
-const fontSize = 12
-const rowHeight = 15
+const fontSize = 10
+const rowHeight = 12
 const STATUS_LOADING = 1;
 const STATUS_ERROR = 2;
 

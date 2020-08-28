@@ -21,7 +21,6 @@ export default function App() {
   };
 
 
-
   if (isChanged && isActive) {
     console.log(`Active = ${isActive}`)
     logInfo("Active")
@@ -36,21 +35,21 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-
-      <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
-        <SnackbarProvider
-          maxSnack={3}
-          preventDuplicate={true}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'center'
-          }}>
+    <SnackbarProvider
+      maxSnack={3}
+      preventDuplicate={true}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'center'
+      }}>
+      <ThemeProvider theme={theme}>
+        <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
           <ApplicationBar isActive={isActive} />
           <LogList count={count} isActive={isActive} />
-        </SnackbarProvider>
-      </Paper>
-    </ThemeProvider>
+        </Paper>
+
+      </ThemeProvider>
+    </SnackbarProvider>
   );
 }
 

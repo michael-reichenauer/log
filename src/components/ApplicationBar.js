@@ -9,19 +9,25 @@ import AppBar from "@material-ui/core/AppBar";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { fade } from "@material-ui/core";
 import { ApplicationMenu } from "./ApplicationMenu"
-import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { clearLogs, flushLogs } from '../utils/log'
 import { localSha, localBuildTime } from '../utils/remoteVersion'
+import ErrorIcon from '@material-ui/icons/Error';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import { useSnackbar } from "notistack";
 
 export const ApplicationBar = ({ isActive }) => {
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const classes = useAppBarStyles();
-    const deleteAll = async () => {
+    const clearList = async () => {
         await clearLogs()
         autoRenew()
     }
     const autoRenew = () => {
         flushLogs().then()
+    }
+    const handleError = () => {
+        enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })
     }
 
     return (
@@ -30,7 +36,8 @@ export const ApplicationBar = ({ isActive }) => {
                 <Tooltip title={`log - ${localSha.substring(0, 6)} ${localBuildTime}`} placement="bottom-start" >
                     <Typography className={classes.title} variant="h6" noWrap>log</Typography>
                 </Tooltip>
-                <Tooltip title="Delete all"><IconButton onClick={deleteAll}><DeleteIcon /></IconButton></Tooltip>
+                <Tooltip title="Error"><IconButton onClick={handleError}><ErrorIcon /></IconButton></Tooltip>
+                <Tooltip title="Clear list"><IconButton onClick={clearList}><CheckBoxOutlineBlankIcon /></IconButton></Tooltip>
                 <Tooltip title="Auto renew"><IconButton onClick={autoRenew}><GetAppIcon /></IconButton></Tooltip>
                 <ApplicationMenu />
                 <div className={classes.search}>
