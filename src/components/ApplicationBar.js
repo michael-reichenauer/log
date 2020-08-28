@@ -6,6 +6,7 @@ import InputBase from "@material-ui/core/InputBase";
 import AppBar from "@material-ui/core/AppBar";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { fade } from "@material-ui/core";
+import { ApplicationMenu } from "./ApplicationMenu"
 
 //import {ApplicationMenu} from "./ApplicationMenu";
 
@@ -33,7 +34,7 @@ export const ApplicationBar = ({ isActive }) => {
                         inputProps={{ 'aria-label': 'search' }}
                     />
                 </div>
-                {/* <ApplicationMenu/> */}
+                <ApplicationMenu />
             </Toolbar>
         </AppBar>
     )
