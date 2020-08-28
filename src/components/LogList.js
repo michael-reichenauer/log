@@ -12,10 +12,30 @@ const rowHeight = 12
 const STATUS_LOADING = 1;
 const STATUS_ERROR = 2;
 
+
+
 export default function LogList({ count, isActive }) {
     const classes = useTableStyles(isActive);
     const [items, setItems] = useState(new HashTable())
     const [rowsCount, setCount] = useState(1000)
+
+    const columns = [
+        {
+            width: 70,
+            label: (<Typography className={classes.columns}>Line</Typography>),
+            dataKey: 'line',
+        },
+        {
+            width: 110,
+            label: (<Typography className={classes.columns}>Time</Typography>),
+            dataKey: 'time',
+        },
+        {
+            width: 300,
+            label: (<Typography className={classes.columns}>Message {rowsCount}</Typography>),
+            dataKey: 'msg',
+        }
+    ]
 
     const isRowLoaded = ({ index }) => {
         //console.log(`Is row loaded: ${index}`)
@@ -97,23 +117,7 @@ export default function LogList({ count, isActive }) {
                 loadMoreRows={loadMore}
                 minimumBatchSize={batchSize}
                 threshold={2 * batchSize}
-                columns={[
-                    {
-                        width: 70,
-                        label: 'Line',
-                        dataKey: 'line',
-                    },
-                    {
-                        width: 110,
-                        label: 'Time',
-                        dataKey: 'time',
-                    },
-                    {
-                        width: 300,
-                        label: `Message (${rowsCount})`,
-                        dataKey: 'msg',
-                    }
-                ]}
+                columns={columns}
             />
         </div>
     );
@@ -124,6 +128,11 @@ export default function LogList({ count, isActive }) {
 // }
 
 const useTableStyles = makeStyles((theme) => ({
+    columns: {
+        fontSize: fontSize + 2,
+        fontWeight: "bold",
+        color: isActive => isActive ? null : "gray"
+    },
     line: {
         fontSize: fontSize,
         fontFamily: "Monospace",
