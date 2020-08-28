@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-//import { useLogs } from '../utils/log';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { HashTable } from "../utils/hashTable"
@@ -90,7 +88,7 @@ export default function LogList({ count, isActive }) {
 
 
     return (
-        <Paper style={{ height: "50vh" }} square>
+        <div style={{ width: "99%", height: "85vh" }} square >
             <VirtualizedTable
                 rowCount={rowsCount}
                 rowGetter={rowGetter}
@@ -117,7 +115,7 @@ export default function LogList({ count, isActive }) {
                     }
                 ]}
             />
-        </Paper>
+        </div>
     );
 }
 

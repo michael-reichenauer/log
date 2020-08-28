@@ -2,25 +2,37 @@ import React from "react";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import SearchIcon from "@material-ui/icons/Search";
+import IconButton from '@material-ui/core/IconButton';
 import InputBase from "@material-ui/core/InputBase";
+import Tooltip from '@material-ui/core/Tooltip';
 import AppBar from "@material-ui/core/AppBar";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { fade } from "@material-ui/core";
 import { ApplicationMenu } from "./ApplicationMenu"
-
-//import {ApplicationMenu} from "./ApplicationMenu";
-
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import { clearLogs, flushLogs } from '../utils/log'
+import { localSha, localBuildTime } from '../utils/remoteVersion'
 
 export const ApplicationBar = ({ isActive }) => {
     const classes = useAppBarStyles();
+    const deleteAll = async () => {
+        await clearLogs()
+        autoRenew()
+    }
+    const autoRenew = () => {
+        flushLogs().then()
+    }
 
     return (
         <AppBar position="static">
             <Toolbar>
-                <Typography className={classes.title} variant="h6" noWrap>
-                    log - {isActive ? "active" : "inactive"}
-                </Typography>
-
+                <Tooltip title={`log - ${localSha.substring(0, 6)} ${localBuildTime}`} placement="bottom-start" >
+                    <Typography className={classes.title} variant="h6" noWrap>log</Typography>
+                </Tooltip>
+                <Tooltip title="Delete all"><IconButton onClick={deleteAll}><DeleteIcon /></IconButton></Tooltip>
+                <Tooltip title="Auto renew"><IconButton onClick={autoRenew}><GetAppIcon /></IconButton></Tooltip>
+                <ApplicationMenu />
                 <div className={classes.search}>
                     <div className={classes.searchIcon}>
                         <SearchIcon />
@@ -34,9 +46,9 @@ export const ApplicationBar = ({ isActive }) => {
                         inputProps={{ 'aria-label': 'search' }}
                     />
                 </div>
-                <ApplicationMenu />
+
             </Toolbar>
-        </AppBar>
+        </AppBar >
     )
 }
 
