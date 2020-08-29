@@ -29,6 +29,8 @@ const styles = (theme) => ({
     },
     tableCell: {
         flex: 1,
+        paddingLeft: 0,
+        paddingRight: 0,
     },
     noClick: {
         cursor: 'initial',
@@ -54,6 +56,7 @@ class MuiVirtualizedTable extends React.PureComponent {
         return (
             <TableCell
                 component="div"
+                padding={0}
                 className={clsx(classes.tableCell, classes.flexContainer, {
                     [classes.noClick]: onRowClick == null,
                 })}

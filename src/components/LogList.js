@@ -8,7 +8,7 @@ const batchSize = 500
 const maxBatches = 10
 let batches = []
 const fontSize = 10
-const rowHeight = 12
+const rowHeight = 11
 const STATUS_LOADING = 1;
 const STATUS_ERROR = 2;
 
@@ -21,17 +21,17 @@ export default function LogList({ count, isActive }) {
 
     const columns = [
         {
-            width: 70,
+            width: 50,
             label: (<Typography className={classes.columns}>Line</Typography>),
             dataKey: 'line',
         },
         {
-            width: 110,
+            width: 80,
             label: (<Typography className={classes.columns}>Time</Typography>),
             dataKey: 'time',
         },
         {
-            width: 300,
+            width: -1,
             label: (<Typography className={classes.columns}>Message {rowsCount}</Typography>),
             dataKey: 'msg',
         }

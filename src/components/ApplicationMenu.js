@@ -44,6 +44,11 @@ export function ApplicationMenu() {
                 keepMounted
                 open={Boolean(menu)}
                 onClose={() => setMenu(null)}
+                PaperProps={{
+                    style: {
+                        backgroundColor: "#333333"
+                    },
+                }}
             >
                 <MenuItem disabled={false} onClick={handleLogout}>Logout</MenuItem>
                 <MenuItem disabled={false} onClick={handleReload}>Reload</MenuItem>
