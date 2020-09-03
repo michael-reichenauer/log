@@ -14,11 +14,11 @@ import { clearLogs, flushLogs, logInfo } from '../utils/log'
 import { localSha, localBuildTime } from '../utils/remoteVersion'
 //import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import { useSnackbar } from "notistack";
+//import { useSnackbar } from "notistack";
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 
 export const ApplicationBar = ({ isActive }) => {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const classes = useAppBarStyles();
     const clearList = async () => {
         await clearLogs()
