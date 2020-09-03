@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { HashTable } from "../utils/hashTable"
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import axios from 'axios';
 
 const batchSize = 500
 const maxBatches = 10
 let batches = []
+
 const fontSize = 10
 const rowHeight = 11
 const STATUS_LOADING = 1;
@@ -15,9 +17,11 @@ const STATUS_ERROR = 2;
 
 
 export default function LogList({ count, isActive }) {
+    const [state, setState] = useLogData(isActive)
     const classes = useTableStyles(isActive);
-    const [items, setItems] = useState(new HashTable())
-    const [rowsCount, setCount] = useState(1000)
+    // const [items, setItems] = useState(new HashTable())
+    // const [rowsCount, setCount] = useState(1000)
+    const { total, cached } = state
 
     const columns = [
         {
@@ -26,43 +30,42 @@ export default function LogList({ count, isActive }) {
             dataKey: 'line',
         },
         {
-            width: 80,
+            width: 75,
             label: (<Typography className={classes.columns}>Time</Typography>),
             dataKey: 'time',
         },
         {
             width: -1,
-            label: (<Typography className={classes.columns}>Message {rowsCount}</Typography>),
+            label: (<Typography className={classes.columns}>Message ({total})</Typography>),
             dataKey: 'msg',
         }
     ]
 
     const isRowLoaded = ({ index }) => {
         //console.log(`Is row loaded: ${index}`)
-        return items.hasItem(index)
+        return cached.hasItem(index)
     }
 
     const rowGetter = ({ index }) => {
-        const it = items.getItem(index)
-        if (it === undefined || it === STATUS_LOADING || it === STATUS_ERROR) {
+        const item = cached.getItem(index)
+        if (item === undefined || item === STATUS_LOADING || item === STATUS_ERROR) {
             return { line: (<Typography className={classes.lineInvalid}>{index}</Typography>) }
         }
 
-        const time = dateToLocalISO(new Date(it.time).toISOString())
+        const time = dateToLocalISO(new Date(item.time).toISOString())
         return {
             line: (<Typography noWrap className={classes.line}>{index}</Typography>),
             time: (<Typography noWrap className={classes.time}>{time}</Typography>),
-            msg: (<Typography noWrap className={classes.time}>{it.msg}</Typography>),
+            msg: (<Typography noWrap className={classes.time}>{item.msg}</Typography>),
         }
     }
 
     const loadMore = async ({ startIndex, stopIndex }) => {
         console.log(`load ${startIndex},${stopIndex} ...`)
-        const it = items
         for (let i = startIndex; i <= stopIndex; i += 1) {
-            it.setItem(i, STATUS_LOADING)
+            cached.setItem(i, STATUS_LOADING)
         }
-        setItems(it)
+        setState(s => { return { total: s.total, cached: cached } })
         const url = `/api/GetLog?start=${startIndex}&count=${stopIndex - startIndex + 1}`
         console.log(`fetch "${url}"`)
         const startSend = Date.now()
@@ -78,16 +81,19 @@ export default function LogList({ count, isActive }) {
                     continue
                 }
                 const item = json.lines[i - json.start]
-                it.setItem(i, item)
+                cached.setItem(i, item)
             }
-            setCount(json.total)
+
+            setState(s => { return { total: json.total, cached: cached } })
 
             console.log(`loaded ${startIndex},${stopIndex}`)
         }
         catch (err) {
             for (let i = startIndex; i <= stopIndex; i += 1) {
-                it.setItem(i, STATUS_ERROR)
+                cached.setItem(i, STATUS_ERROR)
             }
+            setState(s => { return { total: s.total, cached: cached } })
+
         }
         finally {
             console.log(`fetch: time: ${Date.now() - startSend} ms for ${url}`)
@@ -98,19 +104,19 @@ export default function LogList({ count, isActive }) {
                     const b = batches.shift()
                     console.log(`Unloading ${b.startIndex}, ${b.stopIndex}`)
                     for (let i = b.startIndex; i <= b.stopIndex; i += 1) {
-                        it.removeItem(i)
+                        cached.removeItem(i)
                     }
                 }
+                setState(s => { return { total: s.total, cached: cached } })
             }
-            setItems(it)
         }
     }
 
 
     return (
-        <div style={{ width: "99%", height: "85vh" }} square >
+        <div style={{ width: "99%", height: "85vh" }} >
             <VirtualizedTable
-                rowCount={rowsCount}
+                rowCount={total}
                 rowGetter={rowGetter}
                 rowHeight={rowHeight}
                 isRowLoaded={isRowLoaded}
@@ -159,4 +165,40 @@ function dateToLocalISO(dateText) {
     const date = new Date(dateText)
     const off = date.getTimezoneOffset()
     return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(11, 12))
+}
+
+function useLogData(isActive) {
+    const [state, setState] = useState({ total: 0, cached: new HashTable() })
+
+    useEffect(() => {
+        let id = null
+
+        async function update() {
+            if (!isActive) {
+                console.log("Stop updating")
+                clearTimeout(id)
+                return
+            }
+
+            const start = 0
+            const count = 0
+            const url = `/api/GetLog?start=${start}&count=${count}`
+            console.log("Updating ...", url)
+            try {
+                const data = await axios.get(url)
+                console.log("Update: ", data.data)
+                setState(s => { return { total: data.data.total, cached: s.cached } })
+            }
+            catch (err) {
+                console.error("Failed to update:", url, err)
+            }
+        }
+        update();
+
+        return () => {
+            clearTimeout(id)
+        }
+    }, [isActive])
+
+    return [state, setState]
 }

@@ -55,7 +55,7 @@ module.exports = async function (context, req) {
     let lines = []
     const stop = start + count
 
-    for (let i = start; i <= stop; i += 1) {
+    for (let i = start; i < stop; i += 1) {
         const randomSelection = sample[i % sample.length];
         const time = new Date(sampleTime.getTime() + i * 31);
         lines.push({ line: i, time: time, msg: randomSelection })
