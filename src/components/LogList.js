@@ -167,36 +167,55 @@ function dateToLocalISO(dateText) {
     return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(11, 12))
 }
 
+let timerId = null
+let isUpdateActive = false
+
 function useLogData(isActive) {
     const [state, setState] = useState({ total: 0, cached: new HashTable() })
 
     useEffect(() => {
-        let id = null
 
-        async function update() {
-            if (!isActive) {
-                console.log("Stop updating")
-                clearTimeout(id)
-                return
-            }
-
+        const updateLogData = async () => {
             const start = 0
             const count = 0
             const url = `/api/GetLog?start=${start}&count=${count}`
             console.log("Updating ...", url)
             try {
                 const data = await axios.get(url)
+                if (!isUpdateActive) {
+                    console.log("Update no longer active")
+                    return
+                }
                 console.log("Update: ", data.data)
                 setState(s => { return { total: data.data.total, cached: s.cached } })
+
+                console.log("Reschedule update ...")
+                timerId = setTimeout(updateLogData, 5 * 1000)
             }
             catch (err) {
                 console.error("Failed to update:", url, err)
+                if (!isUpdateActive) {
+                    console.log("Update no longer active")
+                    return
+                }
+                timerId = setTimeout(updateLogData, 30 * 1000)
             }
         }
-        update();
+
+
+        if (isActive) {
+            console.log("Start updating")
+            isUpdateActive = true
+            updateLogData()
+        } else {
+            console.log("Stop updating")
+            isUpdateActive = false
+            clearTimeout(timerId)
+        }
 
         return () => {
-            clearTimeout(id)
+            isUpdateActive = false
+            clearTimeout(timerId)
         }
     }, [isActive])
 

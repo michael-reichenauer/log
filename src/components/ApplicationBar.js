@@ -10,11 +10,12 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { fade } from "@material-ui/core";
 import { ApplicationMenu } from "./ApplicationMenu"
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { clearLogs, flushLogs } from '../utils/log'
+import { clearLogs, flushLogs, logInfo } from '../utils/log'
 import { localSha, localBuildTime } from '../utils/remoteVersion'
-import ErrorIcon from '@material-ui/icons/Error';
+//import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import { useSnackbar } from "notistack";
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 
 export const ApplicationBar = ({ isActive }) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -26,8 +27,16 @@ export const ApplicationBar = ({ isActive }) => {
     const autoRenew = () => {
         flushLogs().then()
     }
-    const handleError = () => {
-        enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })
+    // const handleError = () => {
+    //     enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })
+    // }
+    const handleAddRandomLogs = () => {
+
+        for (let i = 0; i < 1000; i += 1) {
+            logInfo(sample[i % sample.length])
+        }
+        // const randomSelection = sample[i % sample.length];
+        // const time = new Date(sampleTime.getTime() + i * 31);
     }
 
     return (
@@ -36,7 +45,7 @@ export const ApplicationBar = ({ isActive }) => {
                 <Tooltip title={`log - ${localSha.substring(0, 6)} ${localBuildTime}`} placement="bottom-start" >
                     <Typography className={classes.title} variant="h6" noWrap>log</Typography>
                 </Tooltip>
-                <Tooltip title="Error"><IconButton onClick={handleError}><ErrorIcon /></IconButton></Tooltip>
+                <Tooltip title="Add random logs"><IconButton onClick={handleAddRandomLogs}><PlaylistAddIcon /></IconButton></Tooltip>
                 <Tooltip title="Clear list"><IconButton onClick={clearList}><CheckBoxOutlineBlankIcon /></IconButton></Tooltip>
                 <Tooltip title="Auto renew"><IconButton onClick={autoRenew}><GetAppIcon /></IconButton></Tooltip>
                 <ApplicationMenu />
@@ -58,6 +67,15 @@ export const ApplicationBar = ({ isActive }) => {
         </AppBar >
     )
 }
+
+
+const sample = [
+    ['Frozen yoghurt'],
+    ['Eclair'],
+    ['Ice cream sandwich'],
+    ['Cupcake'],
+    ['Gingerbread'],
+];
 
 
 const useAppBarStyles = makeStyles((theme) => ({

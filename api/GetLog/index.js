@@ -1,15 +1,6 @@
-//var log = require('../Shared/Store.js');
+var log = require('../Shared/Store.js');
 
-let totalRows = 100
-const sampleTime = new Date(0)
 
-const sample = [
-    ['Frozen yoghurt'],
-    ['Eclair'],
-    ['Ice cream sandwich'],
-    ['Cupcake'],
-    ['Gingerbread'],
-];
 
 
 module.exports = async function (context, req) {
@@ -41,36 +32,14 @@ module.exports = async function (context, req) {
         };
         return
     }
-    if (start + count > totalRows - 100) {
-        totalRows = start + count + 300
-    }
+    context.log(`## Request: getting ${start}, ${count}`);
 
-    if (start >= totalRows) {
-        start = totalRows
-    }
-    if (start + count > totalRows) {
-        count = totalRows - start
-    }
-    context.log(`## Request: get ${start}, ${count}`);
-    let lines = []
-    const stop = start + count
+    const logs = log.getLogs(start, count)
 
-    for (let i = start; i < stop; i += 1) {
-        const randomSelection = sample[i % sample.length];
-        const time = new Date(sampleTime.getTime() + i * 31);
-        lines.push({ line: i, time: time, msg: randomSelection })
-    }
-
-    context.log(`## Request: get ${start}, ${count}, ${lines.length} (${totalRows})`);
+    context.log(`## Request: get ${logs.start}, ${logs.count}, ${logs.lines.length} (${logs.totalRows})`);
 
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: JSON.stringify(
-            {
-                start: start,
-                count: count,
-                total: totalRows,
-                lines: lines
-            })
+        body: JSON.stringify(logs)
     };
 };
