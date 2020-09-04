@@ -1,36 +1,15 @@
-//import useFetch from './useFetch';
-import { delay } from './utils'
+import { delay } from '../utils'
 
-
-
-// Log class for to use to log messages
-class Log {
-    constructor(logSender) {
-        this.logSender = logSender
-    }
-
-    info = msg => { this.logSender.addMsg('info', msg) }
-}
-
-// Logger class to access less common log functionality
-class Logger {
-    constructor(logSender) {
-        this.logSender = logSender
-    }
-
-    clear = async () => this.logSender.clear()
-    flush = async () => this.logSender.flush()
-}
 
 // LogSender private class to send log messages to server
-class LogSender {
+export class LogSender {
     logs = []
     logsSending = []
     isSending = false
     sendPromise = new Promise((resolve, reject) => { resolve() })
 
-    addMsg = (type, msg) => {
-        const logMsg = { type: type, time: new Date(), msg: msg }
+    addMsg = (level, msg) => {
+        const logMsg = { level: level, time: new Date(), msg: msg }
         this.logs.push(logMsg)
         console.log(`log: ${JSON.stringify(logMsg)}`)
         this.postLogs()
@@ -55,6 +34,7 @@ class LogSender {
     flush = async () => {
         await this.sendPromise
         this.sendPromise = this.sendLogs(false)
+
         await this.sendPromise
     }
 
@@ -69,14 +49,14 @@ class LogSender {
     }
 
     sendLogs = async (isDelayed = true) => {
+        if (this.isSending) {
+            return
+        }
         try {
-            if (this.isSending) {
-                return
-            }
             this.isSending = true
 
             // Allow a few more log rows to be collected before sending
-            if (this.isDelayed) {
+            if (isDelayed) {
                 await delay(100)
             }
 
@@ -86,8 +66,8 @@ class LogSender {
             if (this.logsSending.length === 0) {
                 return
             }
-            console.log("Sending logs ...");
             const body = JSON.stringify({ logs: this.logsSending })
+            console.log(`Sending logs ${body}...`);
             const startSend = Date.now()
             const response = await fetch(`/api/AddLogs`, { method: 'post', body: body })
 
@@ -115,8 +95,3 @@ class LogSender {
         }
     }
 }
-
-
-const logSender = new LogSender()
-export default new Log(logSender)
-export const logger = new Logger(logSender)

@@ -10,7 +10,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { fade } from "@material-ui/core";
 import { ApplicationMenu } from "./ApplicationMenu"
 import GetAppIcon from '@material-ui/icons/GetApp';
-import log, { logger } from '../utils/log'
+import log, { logger } from '../utils/log/log'
 import { localSha, localBuildTime } from '../utils/remoteVersion'
 //import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';

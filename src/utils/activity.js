@@ -26,13 +26,11 @@ export function useActivity() {
 
         const onActive = () => {
             const now = Date.now()
-            const previousActivityTime = activityTime
             activityTime = now
-            if (now - previousActivityTime < activityTimeout) {
+            if (checkTimer != null) {
+                // Already active
                 return
             }
-            activityTime = now
-            cancelCheckIfInactive()
 
             console.log("Active")
             setIsActive(true)
@@ -45,16 +43,19 @@ export function useActivity() {
                 console.log("Inactive")
                 setIsActive(false)
                 clearTimeout(checkTimer);
+                checkTimer = null
             }
         }
 
         const checkIfInactive = () => {
             const now = Date.now()
             if (now - activityTime < activityTimeout) {
+                // Reschedule check
                 const timeout = activityTimeout + activityMargin - (now - activityTime)
                 checkTimer = setTimeout(checkIfInactive, timeout)
                 return
             }
+
             console.log("Inactive")
             setIsActive(false)
             checkTimer = null

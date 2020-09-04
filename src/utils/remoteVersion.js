@@ -1,4 +1,4 @@
-import log from '../utils/log'
+import log from './log/log'
 
 const isDevelop = process.env.REACT_APP_SHA === "%REACT_APP_SHA%"
 const startTime = dateToLocalISO(new Date().toISOString())

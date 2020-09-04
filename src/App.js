@@ -3,7 +3,7 @@ import Paper from "@material-ui/core/Paper";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import LogList from './components/LogList';
 import { darkTheme } from "./theme";
-import log, { logger } from './utils/log'
+import log, { logger } from './utils/log/log'
 import { useActivity } from './utils/activity'
 import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
 import { ApplicationBar } from "./components/ApplicationBar"
