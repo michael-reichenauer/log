@@ -183,19 +183,15 @@ function useLogData(isActive) {
             try {
                 const data = await axios.get(url)
                 if (!isUpdateActive) {
-                    console.log("Update no longer active")
                     return
                 }
                 console.log("Update: ", data.data)
                 setState(s => { return { total: data.data.total, cached: s.cached } })
-
-                console.log("Reschedule update ...")
                 timerId = setTimeout(updateLogData, 5 * 1000)
             }
             catch (err) {
                 console.error("Failed to update:", url, err)
                 if (!isUpdateActive) {
-                    console.log("Update no longer active")
                     return
                 }
                 timerId = setTimeout(updateLogData, 30 * 1000)

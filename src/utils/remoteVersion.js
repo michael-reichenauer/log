@@ -1,4 +1,4 @@
-import { logInfo, flushLogs } from './log'
+import log from '../utils/log'
 
 const isDevelop = process.env.REACT_APP_SHA === "%REACT_APP_SHA%"
 const startTime = dateToLocalISO(new Date().toISOString())
@@ -28,7 +28,7 @@ export const updateUIIfRemoteVersionNewer = () => {
     checkTime = Date.now()
 
     localBuildTime = dateToLocalISO(process.env.REACT_APP_BUILD_TIME)
-    logInfo(`local:  "${localSha}" "${localBuildTime}" `)
+    log.info(`local:  "${localSha}" "${localBuildTime}" `)
 
     fetch(`/manifest.json`)
         .then(response => {
@@ -41,10 +41,10 @@ export const updateUIIfRemoteVersionNewer = () => {
                     remoteSha = data.sha;
                     remoteBuildTime = dateToLocalISO(data.buildTime)
                     console.log(`Manifest: "${JSON.stringify(data)}"`)
-                    logInfo(`remote: "${remoteSha}" "${remoteBuildTime}"`)
+                    log.info(`remote: "${remoteSha}" "${remoteBuildTime}"`)
                     if (localSha && remoteSha && localSha !== remoteSha) {
-                        logInfo("Remote version differs, reloading ...")
-                        flushLogs().then(() => setTimeout(() => { window.location.reload(true) }, 100))
+                        log.info("Remote version differs, reloading ...")
+                        log.flushLogs().then(() => setTimeout(() => { window.location.reload(true) }, 100))
                     }
                 });
         })

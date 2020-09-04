@@ -3,10 +3,9 @@ import Paper from "@material-ui/core/Paper";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import LogList from './components/LogList';
 import { darkTheme } from "./theme";
-import { flushLogs, logInfo } from './utils/log'
+import log, { logger } from './utils/log'
 import { useActivity } from './utils/activity'
 import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
-//import { logRandom } from "./demo/randomLogs"
 import { ApplicationBar } from "./components/ApplicationBar"
 import { SnackbarProvider } from 'notistack';
 
@@ -17,19 +16,19 @@ export default function App() {
   const [theme,] = useState(darkTheme)
 
   const refresh = () => {
-    flushLogs().then(() => setCount(c => c + 1))
+    logger.flush().then(() => setCount(c => c + 1))
   };
 
 
   if (isChanged && isActive) {
     console.log(`Active = ${isActive}`)
-    logInfo("Active")
+    log.info("Active")
     updateUIIfRemoteVersionNewer()
     refresh()
   }
 
   if (isChanged && !isActive) {
-    logInfo("Inactive")
+    log.info("Inactive")
     refresh()
     console.log(`Active = ${isActive}`)
   }

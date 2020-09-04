@@ -10,7 +10,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { fade } from "@material-ui/core";
 import { ApplicationMenu } from "./ApplicationMenu"
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { clearLogs, flushLogs, logInfo } from '../utils/log'
+import log, { logger } from '../utils/log'
 import { localSha, localBuildTime } from '../utils/remoteVersion'
 //import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -21,11 +21,11 @@ export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const classes = useAppBarStyles();
     const clearList = async () => {
-        await clearLogs()
+        await logger.clear()
         autoRenew()
     }
     const autoRenew = () => {
-        flushLogs().then()
+        logger.flush().then()
     }
     // const handleError = () => {
     //     enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })
@@ -33,7 +33,7 @@ export const ApplicationBar = ({ isActive }) => {
     const handleAddRandomLogs = () => {
 
         for (let i = 0; i < 1000; i += 1) {
-            logInfo(sample[i % sample.length])
+            log.info(sample[i % sample.length])
         }
         // const randomSelection = sample[i % sample.length];
         // const time = new Date(sampleTime.getTime() + i * 31);
