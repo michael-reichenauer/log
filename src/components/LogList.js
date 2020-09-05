@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { logger } from "../utils/log/log"
@@ -12,12 +12,10 @@ const rowHeight = 11
 
 
 export default function LogList({ count, isActive }) {
-    const [state, setState] = useLogData(isActive)
+    const [total, setTotal] = useLogData(isActive)
     const classes = useTableStyles(isActive);
-    const [isAutoScroll] = useGlobal('isAutoScroll')
-    // const [items, setItems] = useState(new HashTable())
-    // const [rowsCount, setCount] = useState(1000)
-    const { total } = state
+    const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
+
 
     const columns = [
         {
@@ -60,12 +58,12 @@ export default function LogList({ count, isActive }) {
         console.log(`load ${startIndex},${stopIndex} ...`)
 
         // Trigger rendering 'loading items'
-        setState(s => { return { total: s.total } })
+        setTotal(total)
 
         try {
             const logs = await logger.getRemote(startIndex, stopIndex - startIndex + 1);
             console.log(`loaded ${startIndex},${stopIndex}`)
-            setState(s => { return { total: logs.total } })
+            setTotal(logs.total)
         }
         catch (err) {
             // Error 
@@ -73,6 +71,30 @@ export default function LogList({ count, isActive }) {
         }
     }
 
+    const onScroll = (s) => {
+        if (s.clientHeight < 0) {
+            return
+        }
+
+        if ((s.scrollHeight - (s.scrollTop + s.clientHeight)) < 1) {
+            console.log('Bottom')
+            if (!isAutoScroll) {
+                setIsAutoScroll(true)
+            }
+
+            return
+        }
+        if (isAutoScroll) {
+            setIsAutoScroll(false)
+        }
+
+        // if (s.scrollTop === 0) {
+        //     console.log('Top')
+        // }
+        //console.log('onScroll', s, s.scrollHeight - (s.scrollTop + s.clientHeight))
+
+    }
+    console.log(`isAutoScroll=${isAutoScroll}`)
 
     return (
         <div style={{ width: "99%", height: "85vh" }} >
@@ -86,6 +108,7 @@ export default function LogList({ count, isActive }) {
                 threshold={2 * batchSize}
                 columns={columns}
                 isAutoScroll={isAutoScroll}
+                onScroll={onScroll}
             />
         </div>
     );
@@ -133,7 +156,7 @@ let timerId = null
 let isUpdateActive = false
 
 function useLogData(isActive) {
-    const [state, setState] = useState({ total: 0 })
+    const [total, setTotal] = useGlobal('total')
 
     useEffect(() => {
         const updateLogData = async () => {
@@ -144,7 +167,7 @@ function useLogData(isActive) {
                     return
                 }
 
-                setState(s => { return { total: logs.total } })
+                setTotal(logs.total)
                 timerId = setTimeout(updateLogData, 5 * 1000)
             }
             catch (err) {
@@ -170,7 +193,7 @@ function useLogData(isActive) {
             isUpdateActive = false
             clearTimeout(timerId)
         }
-    }, [isActive])
+    }, [isActive, setTotal])
 
-    return [state, setState]
+    return [total, setTotal]
 }

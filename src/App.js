@@ -9,7 +9,6 @@ import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
 import { ApplicationBar } from "./components/ApplicationBar"
 import { SnackbarProvider } from 'notistack';
 
-
 export default function App() {
   const [count, setCount] = useState(0)
   const [isActive, isChanged] = useActivity();

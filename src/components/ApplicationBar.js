@@ -23,6 +23,7 @@ import { useGlobal } from 'reactn'
 export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
+    const [total, setTotal] = useGlobal('total')
     const classes = useAppBarStyles();
     const clearList = async () => {
         await logger.clear()
@@ -30,8 +31,10 @@ export const ApplicationBar = ({ isActive }) => {
     }
     const handleAutoScroll = () => {
         console.log('handleAutoScroll')
+        setTotal(total - 1)
         setIsAutoScroll(!isAutoScroll)
         logger.flush()
+
     }
     // const handleError = () => {
     //     enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })

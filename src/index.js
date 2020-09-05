@@ -4,6 +4,14 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import { setGlobal } from 'reactn';
+
+setGlobal({
+  total: 0,
+  isAutoScroll: false
+});
+
+
 // ReactDOM.render(
 //   <React.StrictMode>
 //     <App />

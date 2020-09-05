@@ -86,7 +86,7 @@ class MuiVirtualizedTable extends React.PureComponent {
 
     render() {
         const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
-        const { rowCount, isRowLoaded, loadMoreRows, minimumBatchSize, threshold, isAutoScroll } = this.props
+        const { rowCount, isRowLoaded, loadMoreRows, minimumBatchSize, threshold, isAutoScroll, onScroll } = this.props
 
         return (
             <InfiniteLoader
@@ -113,6 +113,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                                 {...tableProps}
                                 rowClassName={this.getRowClassName}
                                 scrollToIndex={isAutoScroll ? Number.MAX_SAFE_INTEGER : -1}
+                                onScroll={onScroll}
                             >
                                 {columns.map(({ dataKey, ...other }, index) => {
                                     return (
