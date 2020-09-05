@@ -1,46 +1,47 @@
-let logs = []
-
-// let totalRows = 0
-// const sampleTime = new Date(0)
-
-
+let logItems = []
 
 exports.getLogs = (start, count) => {
-    if (start >= logs.length) {
-        start = logs.length
-    }
-    if (start + count > logs.length) {
-        count = logs.length - start
+    const total = logItems.length
+
+    if (start >= total) {
+        start = total
     }
 
-    let lines = []
-    const stop = start + count
+    if (count < 0) {
+        // requesting latest items, moving start to end of items
+        count = -count
+        let newStart = total - count
+        if (newStart < start) {
+            // Ensure new start is not less then requested start
+            newStart = start
+        }
+        start = newStart
+    }
 
-    for (let i = start; i < stop; i += 1) {
-        // const randomSelection = sample[i % sample.length];
-        // const time = new Date(sampleTime.getTime() + i * 31);
-        const l = logs[i]
-        lines.push({ line: i, time: l.time, msg: l.msg })
+    if (start + count > total) {
+        count = total - start
+    }
+
+    // Copy the requested items
+    let items = []
+    for (let i = start; i < start + count; i += 1) {
+        const item = logItems[i]
+        items.push({ index: i, time: item.time, msg: item.msg })
     }
 
     return {
-        start: start,
-        count: count,
-        total: logs.length,
-        lines: lines
+        start: start, // Start might have been moved (if larger than total or count was negative)
+        items: items,
+        total: total
     }
 }
 
-// exports.addLog = (msg) => {
-//     const time = dateToLocalISO(new Date())
-//     logs.push({ id: logs.length, time: time, msg: msg })
-// }
-exports.addLogs = (msgs) => {
-    logs.push(...msgs)
+exports.addLogs = (items) => {
+    logItems.push(...items)
 }
 
 exports.clearLogs = () => {
-    logs = []
+    logItems = []
 }
 
 

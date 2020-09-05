@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
-import { HashTable } from "../utils/hashTable"
+import { logger } from "../utils/log/log"
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import axios from 'axios';
 
 const batchSize = 500
-const maxBatches = 10
-let batches = []
 
 const fontSize = 10
 const rowHeight = 11
-const STATUS_LOADING = 1;
-const STATUS_ERROR = 2;
+// const STATUS_LOADING = 1;
+// const STATUS_ERROR = 2;
 
 
 
@@ -21,7 +18,7 @@ export default function LogList({ count, isActive }) {
     const classes = useTableStyles(isActive);
     // const [items, setItems] = useState(new HashTable())
     // const [rowsCount, setCount] = useState(1000)
-    const { total, cached } = state
+    const { total } = state
 
     const columns = [
         {
@@ -43,12 +40,12 @@ export default function LogList({ count, isActive }) {
 
     const isRowLoaded = ({ index }) => {
         //console.log(`Is row loaded: ${index}`)
-        return cached.hasItem(index)
+        return logger.isCached(index)
     }
 
     const rowGetter = ({ index }) => {
-        const item = cached.getItem(index)
-        if (item === undefined || item === STATUS_LOADING || item === STATUS_ERROR) {
+        const item = logger.getCached(index)
+        if (item === undefined || item === null) {
             return { line: (<Typography className={classes.lineInvalid}>{index}</Typography>) }
         }
 
@@ -62,53 +59,18 @@ export default function LogList({ count, isActive }) {
 
     const loadMore = async ({ startIndex, stopIndex }) => {
         console.log(`load ${startIndex},${stopIndex} ...`)
-        for (let i = startIndex; i <= stopIndex; i += 1) {
-            cached.setItem(i, STATUS_LOADING)
-        }
-        setState(s => { return { total: s.total, cached: cached } })
-        const url = `/api/GetLog?start=${startIndex}&count=${stopIndex - startIndex + 1}`
-        console.log(`fetch "${url}"`)
-        const startSend = Date.now()
+
+        // Trigger rendering 'loading items'
+        setState(s => { return { total: s.total } })
+
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Error: Status Code: ' + response.status);
-            }
-            const json = await response.json();
-
-            for (let i = startIndex; i <= stopIndex; i += 1) {
-                if (i < json.start || i >= json.start + json.count) {
-                    continue
-                }
-                const item = json.lines[i - json.start]
-                cached.setItem(i, item)
-            }
-
-            setState(s => { return { total: json.total, cached: cached } })
-
+            const logs = await logger.getRemote(startIndex, stopIndex - startIndex + 1);
             console.log(`loaded ${startIndex},${stopIndex}`)
+            setState(s => { return { total: logs.total } })
         }
         catch (err) {
-            for (let i = startIndex; i <= stopIndex; i += 1) {
-                cached.setItem(i, STATUS_ERROR)
-            }
-            setState(s => { return { total: s.total, cached: cached } })
-
-        }
-        finally {
-            console.log(`fetch: time: ${Date.now() - startSend} ms for ${url}`)
-            batches.push({ startIndex: startIndex, stopIndex: stopIndex })
-            // Clean old loaded batches if needed
-            if (batches.length > maxBatches) {
-                for (let i = 0; i < maxBatches / 2; i += 1) {
-                    const b = batches.shift()
-                    console.log(`Unloading ${b.startIndex}, ${b.stopIndex}`)
-                    for (let i = b.startIndex; i <= b.stopIndex; i += 1) {
-                        cached.removeItem(i)
-                    }
-                }
-                setState(s => { return { total: s.total, cached: cached } })
-            }
+            // Error 
+            console.warn(`failed to load ${startIndex},${stopIndex}`)
         }
     }
 
@@ -171,33 +133,28 @@ let timerId = null
 let isUpdateActive = false
 
 function useLogData(isActive) {
-    const [state, setState] = useState({ total: 0, cached: new HashTable() })
+    const [state, setState] = useState({ total: 0 })
 
     useEffect(() => {
-
         const updateLogData = async () => {
-            const start = 0
-            const count = 0
-            const url = `/api/GetLog?start=${start}&count=${count}`
-            console.log("Updating ...", url)
+            console.log("Updating ...")
             try {
-                const data = await axios.get(url)
+                const logs = await logger.getRemote(logger.total(), -batchSize)
                 if (!isUpdateActive) {
                     return
                 }
-                console.log("Update: ", data.data)
-                setState(s => { return { total: data.data.total, cached: s.cached } })
+
+                setState(s => { return { total: logs.total } })
                 timerId = setTimeout(updateLogData, 5 * 1000)
             }
             catch (err) {
-                console.error("Failed to update:", url, err)
+                console.error("Failed to update:", err)
                 if (!isUpdateActive) {
                     return
                 }
                 timerId = setTimeout(updateLogData, 30 * 1000)
             }
         }
-
 
         if (isActive) {
             console.log("Start updating")
