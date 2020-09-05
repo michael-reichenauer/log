@@ -14,6 +14,7 @@ export default function App() {
   const [count, setCount] = useState(0)
   const [isActive, isChanged] = useActivity();
   const [theme,] = useState(darkTheme)
+  //const [isAutoScroll] = useGlobal('isAutoScroll')
 
   const refresh = () => {
     logger.flush().then(() => setCount(c => c + 1))

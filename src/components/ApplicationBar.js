@@ -16,16 +16,22 @@ import { localSha, localBuildTime } from '../utils/remoteVersion'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 //import { useSnackbar } from "notistack";
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import { useGlobal } from 'reactn'
 
 export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const classes = useAppBarStyles();
     const clearList = async () => {
         await logger.clear()
-        autoRenew()
+        logger.flush()
     }
-    const autoRenew = () => {
-        logger.flush().then()
+    const handleAutoScroll = () => {
+        console.log('handleAutoScroll')
+        setIsAutoScroll(!isAutoScroll)
+        logger.flush()
     }
     // const handleError = () => {
     //     enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })
@@ -39,15 +45,26 @@ export const ApplicationBar = ({ isActive }) => {
         // const time = new Date(sampleTime.getTime() + i * 31);
     }
 
+
     return (
         <AppBar position="static">
             <Toolbar>
                 <Tooltip title={`log - ${localSha.substring(0, 6)} ${localBuildTime}`} placement="bottom-start" >
                     <Typography className={classes.title} variant="h6" noWrap>log</Typography>
                 </Tooltip>
+
+                <Tooltip title="Auto scroll">
+                    <ToggleButtonGroup
+                        size="small"
+                        value={isAutoScroll ? 'isAutoScroll' : ''}
+                        exclusive
+                        onChange={handleAutoScroll}
+                    >
+                        <ToggleButton value="isAutoScroll" ><GetAppIcon /></ToggleButton>
+                    </ToggleButtonGroup>
+                </Tooltip>
                 <Tooltip title="Add random logs"><IconButton onClick={handleAddRandomLogs}><PlaylistAddIcon /></IconButton></Tooltip>
                 <Tooltip title="Clear list"><IconButton onClick={clearList}><CheckBoxOutlineBlankIcon /></IconButton></Tooltip>
-                <Tooltip title="Auto renew"><IconButton onClick={autoRenew}><GetAppIcon /></IconButton></Tooltip>
                 <ApplicationMenu />
                 <div className={classes.search}>
                     <div className={classes.searchIcon}>

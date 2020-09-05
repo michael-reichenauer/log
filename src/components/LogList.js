@@ -3,19 +3,18 @@ import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { logger } from "../utils/log/log"
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import { useGlobal } from 'reactn'
 
 const batchSize = 500
 
 const fontSize = 10
 const rowHeight = 11
-// const STATUS_LOADING = 1;
-// const STATUS_ERROR = 2;
-
 
 
 export default function LogList({ count, isActive }) {
     const [state, setState] = useLogData(isActive)
     const classes = useTableStyles(isActive);
+    const [isAutoScroll] = useGlobal('isAutoScroll')
     // const [items, setItems] = useState(new HashTable())
     // const [rowsCount, setCount] = useState(1000)
     const { total } = state
@@ -33,7 +32,7 @@ export default function LogList({ count, isActive }) {
         },
         {
             width: -1,
-            label: (<Typography className={classes.columns}>Message ({total})</Typography>),
+            label: (<Typography className={classes.columns}>Message {total === 0 ? '' : `(${total - 1})`}</Typography>),
             dataKey: 'msg',
         }
     ]
@@ -86,6 +85,7 @@ export default function LogList({ count, isActive }) {
                 minimumBatchSize={batchSize}
                 threshold={2 * batchSize}
                 columns={columns}
+                isAutoScroll={isAutoScroll}
             />
         </div>
     );
@@ -139,7 +139,7 @@ function useLogData(isActive) {
         const updateLogData = async () => {
             console.log("Updating ...")
             try {
-                const logs = await logger.getRemote(logger.total(), -batchSize)
+                const logs = await logger.getRemote(0, 0)
                 if (!isUpdateActive) {
                     return
                 }

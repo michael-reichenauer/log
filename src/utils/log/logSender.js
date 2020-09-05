@@ -67,7 +67,7 @@ export class LogSender {
                 return
             }
             const body = JSON.stringify({ logs: this.logsSending })
-            console.log(`Sending logs ${body}...`);
+            console.log(`Sending logs ${this.logsSending.length}...`);
             const startSend = Date.now()
             const response = await fetch(`/api/AddLogs`, { method: 'post', body: body })
 
