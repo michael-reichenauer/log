@@ -8,7 +8,7 @@ import { setGlobal } from 'reactn';
 
 setGlobal({
   total: 0,
-  isAutoScroll: false
+  isAutoScroll: true
 });
 
 
