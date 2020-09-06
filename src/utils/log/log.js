@@ -18,7 +18,7 @@ class Logger {
         this.logGetter = logGetter
     }
 
-    clear = async () => this.logSender.clear()
+    clear = async () => { this.logGetter.clear(); this.logSender.clear() }
     flush = async () => this.logSender.flush()
     getCached = index => this.logGetter.getCached(index)
     isCached = index => this.logGetter.isCached(index)
@@ -26,7 +26,6 @@ class Logger {
     setCached = (index, item) => this.logGetter.setCached(index, item)
     getRemote = (start, count) => this.logGetter.getRemote(start, count)
 }
-
 
 
 const logSender = new LogSender()

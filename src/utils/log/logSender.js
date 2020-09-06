@@ -3,24 +3,23 @@ import { delay } from '../utils'
 
 // LogSender private class to send log messages to server
 export class LogSender {
-    logs = []
-    logsSending = []
-    isSending = false
-    sendPromise = new Promise((resolve, reject) => { resolve() })
+    _logs = []
+    _logsSending = []
+    _isSending = false
+    _sendPromise = new Promise((resolve) => { resolve() })
 
     addMsg = (level, msg) => {
         const logMsg = { level: level, time: new Date(), msg: msg }
-        this.logs.push(logMsg)
+        this._logs.push(logMsg)
         console.log(`log: ${JSON.stringify(logMsg)}`)
         this.postLogs()
     }
 
-
     clear = async () => {
         try {
             console.log('clearLogs: clearing ...')
-            this.logs = []
-            this.logsSending = []
+            this._logs = []
+            this._logsSending = []
             const response = await fetch(`/api/ClearLogs`)
             if (!response.ok) {
                 throw new Error('Error: Status Code: ' + response.status);
@@ -32,28 +31,28 @@ export class LogSender {
     }
 
     flush = async () => {
-        await this.sendPromise
-        this.sendPromise = this.sendLogs(false)
+        await this._sendPromise
+        this._sendPromise = this.sendLogs(false)
 
-        await this.sendPromise
+        await this._sendPromise
     }
 
     postLogs = () => {
-        if (this.isSending) {
+        if (this._isSending) {
             return
         }
-        if (this.logs.length === 0 && this.logsSending.length === 0) {
+        if (this._logs.length === 0 && this._logsSending.length === 0) {
             return
         }
-        this.sendPromise = this.sendLogs(true)
+        this._sendPromise = this.sendLogs(true)
     }
 
     sendLogs = async (isDelayed = true) => {
-        if (this.isSending) {
+        if (this._isSending) {
             return
         }
         try {
-            this.isSending = true
+            this._isSending = true
 
             // Allow a few more log rows to be collected before sending
             if (isDelayed) {
@@ -61,13 +60,13 @@ export class LogSender {
             }
 
             // Copy logs to send for this batch
-            this.logsSending.push(...this.logs)
-            this.logs = []
-            if (this.logsSending.length === 0) {
+            this._logsSending.push(...this._logs)
+            this._logs = []
+            if (this._logsSending.length === 0) {
                 return
             }
-            const body = JSON.stringify({ logs: this.logsSending })
-            console.log(`Sending logs ${this.logsSending.length}...`);
+            const body = JSON.stringify({ logs: this._logsSending })
+            console.log(`Sending logs ${this._logsSending.length}...`);
             const startSend = Date.now()
             const response = await fetch(`/api/AddLogs`, { method: 'post', body: body })
 
@@ -75,23 +74,23 @@ export class LogSender {
                 throw new Error('Error: Status Code: ' + response.status);
             }
 
-            console.log(`Sent ${this.logsSending.length} logs in ${Date.now() - startSend} ms`);
+            console.log(`Sent ${this._logsSending.length} logs in ${Date.now() - startSend} ms`);
 
             // Sent logs, retry again soon if more logs are to be sent
-            this.logsSending = []
-            if (this.logs.length !== 0) {
+            this._logsSending = []
+            if (this._logs.length !== 0) {
                 setTimeout(this.postLogs, 10000)
             }
         }
         catch (err) {
             console.error("Failed to send logs: " + err)
-            if (this.logs.length !== 0 && this.logsSending.length !== 0) {
+            if (this._logs.length !== 0 && this._logsSending.length !== 0) {
                 // Retry in a while again
                 setTimeout(this.postLogs, 0)
             }
         }
         finally {
-            this.isSending = false
+            this._isSending = false
         }
     }
 }

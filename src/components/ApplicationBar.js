@@ -31,7 +31,7 @@ export const ApplicationBar = ({ isActive }) => {
     }
     const handleAutoScroll = () => {
         console.log('handleAutoScroll')
-        setTotal(total - 1)
+        setTotal(total)
         setIsAutoScroll(!isAutoScroll)
         logger.flush()
 

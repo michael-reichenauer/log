@@ -5,9 +5,10 @@ import { logger } from "../utils/log/log"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useGlobal } from 'reactn'
 
-const batchSize = 500
-
+const batchSize = 300
 const fontSize = 10
+const fontWidth = 5.7
+const columnMargin = 6
 const rowHeight = 11
 
 
@@ -15,23 +16,24 @@ export default function LogList({ count, isActive }) {
     const [total, setTotal] = useLogData(isActive)
     const classes = useTableStyles(isActive);
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
-
+    const lineColumnWidth = total.toString().length * fontWidth + columnMargin
+    const timeColumnWidth = 12 * fontWidth + columnMargin
 
     const columns = [
         {
-            width: 50,
-            label: (<Typography className={classes.columns}>Line</Typography>),
             dataKey: 'line',
+            width: lineColumnWidth,
+            label: (<Typography className={classes.columns}>Line</Typography>),
         },
         {
-            width: 75,
-            label: (<Typography className={classes.columns}>Time</Typography>),
             dataKey: 'time',
+            width: timeColumnWidth,
+            label: (<Typography className={classes.columns}>Time</Typography>),
         },
         {
-            width: -1,
-            label: (<Typography className={classes.columns}>Message {total === 0 ? '' : `(${total - 1})`}</Typography>),
             dataKey: 'msg',
+            width: -1,
+            label: (<Typography className={classes.columns}>Message ({total})</Typography>),
         }
     ]
 
@@ -43,12 +45,12 @@ export default function LogList({ count, isActive }) {
     const rowGetter = ({ index }) => {
         const item = logger.getCached(index)
         if (item === undefined || item === null) {
-            return { line: (<Typography className={classes.lineInvalid}>{index}</Typography>) }
+            return { line: (<Typography className={classes.lineInvalid}>{index + 1}</Typography>) }
         }
 
         const time = dateToLocalISO(new Date(item.time).toISOString())
         return {
-            line: (<Typography noWrap className={classes.line}>{index}</Typography>),
+            line: (<Typography noWrap className={classes.line}>{index + 1}</Typography>),
             time: (<Typography noWrap className={classes.time}>{time}</Typography>),
             msg: (<Typography noWrap className={classes.time}>{item.msg}</Typography>),
         }
