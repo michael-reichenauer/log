@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import Paper from "@material-ui/core/Paper";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import LogList from './components/LogList';
-import { darkTheme, lightTheme } from "./theme";
+import { darkTheme } from "./theme";
 import log, { logger } from './utils/log/log'
 import { useActivity, useActivityChanged, useActivityMonitor } from './utils/activity'
 import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
 import { ApplicationBar } from "./components/ApplicationBar"
 import { SnackbarProvider } from 'notistack';
-import Grid from '@material-ui/core/Grid';
 
 
 export default function App() {
