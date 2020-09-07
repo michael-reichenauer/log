@@ -4,14 +4,16 @@ import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import LogList from './components/LogList';
 import { darkTheme } from "./theme";
 import log, { logger } from './utils/log/log'
-import { useActivity } from './utils/activity'
+import { useActivity, useActivityChanged, useActivityMonitor } from './utils/activity'
 import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
 import { ApplicationBar } from "./components/ApplicationBar"
 import { SnackbarProvider } from 'notistack';
 
 export default function App() {
+  useActivityMonitor()
   const [count, setCount] = useState(0)
-  const [isActive, isChanged] = useActivity();
+  const [isActive] = useActivity();
+  const [isActivityChanged] = useActivityChanged();
   const [theme,] = useState(darkTheme)
   //const [isAutoScroll] = useGlobal('isAutoScroll')
 
@@ -20,17 +22,17 @@ export default function App() {
   };
 
 
-  if (isChanged && isActive) {
+  if (isActivityChanged && isActive) {
     console.log(`Active = ${isActive}`)
     log.info("Active")
     updateUIIfRemoteVersionNewer()
     refresh()
   }
 
-  if (isChanged && !isActive) {
+  if (isActivityChanged && !isActive) {
+    console.log(`Active = ${isActive}`)
     log.info("Inactive")
     refresh()
-    console.log(`Active = ${isActive}`)
   }
 
   return (

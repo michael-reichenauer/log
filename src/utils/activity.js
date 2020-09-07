@@ -1,80 +1,143 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 const activityTimeout = 30000
 const activityMargin = 1000
 
 let activityTime = 0
-let checkTimer = null
+let activityStartTime = 0
+let activityCheckTimer = null
+
 let isDocumentActive = false
-const activeEvents = ["mousemove", "mousedown", "touchstart", "touchmove", "keydown", "wheel"]
+const monitorEvents = ["mousemove", "mousedown", "touchstart", "touchmove", "keydown", "wheel"]
+const activityEventName = 'customActivityChange'
 
-export function useActivity() {
-    const [isActive, setIsActive] = useState(!document.hidden)
-
-    React.useEffect(() => {
-
-        const onVisibilityShow = (e) => {
-            setIsActive(!document.hidden)
-            console.log(`visibility=${!document.hidden}`)
-            if (!document.hidden) {
-                onActive()
-            } else {
-                cancelCheckIfInactive()
-            }
-        }
-
+export function useActivityMonitor() {
+    useEffect(() => {
+        console.log('Init Activity Monitor')
+        // Called by monitored event handlers on activity = true events
         const onActive = () => {
-            const now = Date.now()
-            activityTime = now
-            if (checkTimer != null) {
+            activityTime = Date.now()
+            if (activityCheckTimer !== null) {
                 // Already active
                 return
             }
 
+            // Toggle active = true
             console.log("Active")
-            setIsActive(true)
+            isDocumentActive = true
+            activityStartTime = activityTime
+
+            // Schedule check if still active
             const timeout = activityTimeout + activityMargin
-            checkTimer = setTimeout(checkIfInactive, timeout)
+            activityCheckTimer = setTimeout(checkIfActive, timeout)
+
+            // Post activity=true event
+            const activityEvent = new CustomEvent(activityEventName, { detail: true });
+            document.dispatchEvent(activityEvent);
         }
 
-        const cancelCheckIfInactive = () => {
-            if (checkTimer != null) {
-                console.log("Inactive")
-                setIsActive(false)
-                clearTimeout(checkTimer);
-                checkTimer = null
-            }
-        }
-
-        const checkIfInactive = () => {
-            const now = Date.now()
-            if (now - activityTime < activityTimeout) {
-                // Reschedule check
-                const timeout = activityTimeout + activityMargin - (now - activityTime)
-                checkTimer = setTimeout(checkIfInactive, timeout)
+        // Called by check activity timeout or visibility hidden event handler
+        const onInactive = () => {
+            if (activityCheckTimer === null) {
+                // Already inactive
                 return
             }
 
-            console.log("Inactive")
-            setIsActive(false)
-            checkTimer = null
+            // Toggle active = false
+            console.log(`Inactive (total: ${Date.now() - activityStartTime})`)
+            isDocumentActive = false
+            activityStartTime = 0
+
+            // Clear timeout
+            clearTimeout(activityCheckTimer);
+            activityCheckTimer = null
+
+            // Post activity=false event
+            const activityEvent = new CustomEvent(activityEventName, { detail: false });
+            document.dispatchEvent(activityEvent);
         }
 
-        document.onvisibilitychange = onVisibilityShow
-        activeEvents.forEach(name => document.addEventListener(name, onActive))
+        const checkIfActive = () => {
+            if (activityCheckTimer === null) {
+                // Already set to inactive
+                return
+            }
 
+            const now = Date.now()
+            if (now - activityTime < activityTimeout) {
+                // Still active, reschedule check
+                console.log(`Active (${now - activityTime}), recheck..  (total: ${Date.now() - activityStartTime})`)
+                const timeout = activityTimeout - (now - activityTime) + activityMargin
+                activityCheckTimer = setTimeout(checkIfActive, timeout)
+                return
+            }
+
+            console.log(`No longer active (${now - activityTime}), recheck..  (total: ${Date.now() - activityStartTime})`)
+            onInactive()
+        }
+
+        const onVisibilityChange = (e) => {
+            console.log(`onVisibilityChange visible=${!document.hidden}`)
+            if (!document.hidden) {
+                onActive()
+                return
+            }
+
+            onInactive()
+        }
+
+        // Register monitored events handler
+        document.onvisibilitychange = onVisibilityChange
+        monitorEvents.forEach(name => document.addEventListener(name, onActive))
 
         setTimeout(onActive, 1)
 
         return () => {
+            console.log('Close Activity Monitor')
+            // Unregister monitored events handler
             document.onvisibilitychange = null
-            activeEvents.forEach(name => document.removeEventListener(name, onActive))
+            monitorEvents.forEach(name => document.removeEventListener(name, onActive))
+        }
+    }, [])
+}
+
+export function useActivity() {
+    const [isActive, setIsActive] = useState(isDocumentActive)
+
+    useEffect(() => {
+        const onActivityEvent = e => {
+            setIsActive(e.detail)
+        }
+
+        document.addEventListener(activityEventName, onActivityEvent)
+
+        return () => {
+            document.removeEventListener(activityEventName, onActivityEvent)
         }
     }, [])
 
-    const isChanged = (isActive && !isDocumentActive) || (!isActive && isDocumentActive)
-    isDocumentActive = isActive
+    return [isActive]
+}
 
-    return [isActive, isChanged]
+export function useActivityChanged() {
+    const [isChanged, setIsChanged] = useState(false)
+
+    useEffect(() => {
+        const onActivityEvent = e => {
+            setIsChanged(true)
+        }
+
+        document.addEventListener(activityEventName, onActivityEvent)
+
+        return () => {
+            document.removeEventListener(activityEventName, onActivityEvent)
+        }
+    }, [])
+
+    if (isChanged) {
+        setIsChanged(false)
+    }
+
+    return [isChanged]
 }
