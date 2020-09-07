@@ -14,7 +14,6 @@ const activityEventName = 'customActivityChange'
 
 export function useActivityMonitor() {
     useEffect(() => {
-        console.log('Init Activity Monitor')
         // Called by monitored event handlers on activity = true events
         const onActive = () => {
             activityTime = Date.now()
@@ -67,13 +66,13 @@ export function useActivityMonitor() {
             const now = Date.now()
             if (now - activityTime < activityTimeout) {
                 // Still active, reschedule check
-                console.log(`Active (${now - activityTime}), recheck..  (total: ${Date.now() - activityStartTime})`)
+                //console.log(`Active (${now - activityTime}), recheck..  (total: ${Date.now() - activityStartTime})`)
                 const timeout = activityTimeout - (now - activityTime) + activityMargin
                 activityCheckTimer = setTimeout(checkIfActive, timeout)
                 return
             }
 
-            console.log(`No longer active (${now - activityTime}), recheck..  (total: ${Date.now() - activityStartTime})`)
+            // console.log(`No longer active (${now - activityTime}), recheck..  (total: ${Date.now() - activityStartTime})`)
             onInactive()
         }
 
@@ -94,7 +93,6 @@ export function useActivityMonitor() {
         setTimeout(onActive, 1)
 
         return () => {
-            console.log('Close Activity Monitor')
             // Unregister monitored events handler
             document.onvisibilitychange = null
             monitorEvents.forEach(name => document.removeEventListener(name, onActive))

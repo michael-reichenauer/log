@@ -8,7 +8,7 @@ import { useGlobal } from 'reactn'
 const batchSize = 300
 const fontSize = 10
 const fontWidth = 5.7
-const columnMargin = 6
+const columnMargin = 8
 const rowHeight = 11
 
 
