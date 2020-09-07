@@ -7,7 +7,7 @@ import { useGlobal } from 'reactn'
 
 const batchSize = 300
 const fontSize = 10
-const fontWidth = 5.7
+const fontWidth = 5.8
 const columnMargin = 8
 const rowHeight = 11
 
@@ -99,7 +99,7 @@ export default function LogList({ count, isActive }) {
     console.log(`isAutoScroll=${isAutoScroll}`)
 
     return (
-        <div style={{ width: "99%", height: "85vh" }} >
+        <div style={{ width: "calc(100% - 2px)", height: "calc(100vh - 70px)" }} >
             <VirtualizedTable
                 rowCount={total}
                 rowGetter={rowGetter}

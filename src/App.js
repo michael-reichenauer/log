@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import Paper from "@material-ui/core/Paper";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import LogList from './components/LogList';
-import { darkTheme } from "./theme";
+import { darkTheme, lightTheme } from "./theme";
 import log, { logger } from './utils/log/log'
 import { useActivity, useActivityChanged, useActivityMonitor } from './utils/activity'
 import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
 import { ApplicationBar } from "./components/ApplicationBar"
 import { SnackbarProvider } from 'notistack';
+import Grid from '@material-ui/core/Grid';
+
 
 export default function App() {
   useActivityMonitor()
@@ -34,6 +36,7 @@ export default function App() {
     log.info("Inactive")
     refresh()
   }
+  //<LogList count={count} isActive={isActive} />
 
   return (
     <SnackbarProvider
@@ -48,7 +51,6 @@ export default function App() {
           <ApplicationBar isActive={isActive} />
           <LogList count={count} isActive={isActive} />
         </Paper>
-
       </ThemeProvider>
     </SnackbarProvider>
   );

@@ -53,7 +53,7 @@ export const ApplicationBar = ({ isActive }) => {
         <AppBar position="static">
             <Toolbar>
                 <Tooltip title={`log - ${localSha.substring(0, 6)} ${localBuildTime}`} placement="bottom-start" >
-                    <Typography className={classes.title} variant="h6" noWrap>log</Typography>
+                    <Typography className={classes.title} variant="h" noWrap>log</Typography>
                 </Tooltip>
 
                 <Tooltip title="Auto scroll">
