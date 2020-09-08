@@ -13,11 +13,13 @@ import SearchIcon from '@material-ui/icons/Search';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
+import { useAppVersion } from '../utils/remoteVersion'
 
 export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [total, setTotal] = useGlobal('total')
+    const version = useAppVersion()
     const classes = useAppBarStyles();
     const clearList = async () => {
         await logger.clear()
@@ -44,7 +46,7 @@ export const ApplicationBar = ({ isActive }) => {
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-
+                <Typography className={classes.title} variant="code" noWrap>{version.localSha} {version.localBuildTime}</Typography>
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
                         size="small"

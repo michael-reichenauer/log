@@ -115,7 +115,7 @@ export function useActivity() {
         }
     }, [])
 
-    return [isActive]
+    return isActive
 }
 
 export function useActivityChanged() {
@@ -137,5 +137,5 @@ export function useActivityChanged() {
         setIsChanged(false)
     }
 
-    return [isChanged]
+    return isChanged
 }

@@ -8,7 +8,8 @@ import { setGlobal } from 'reactn';
 
 setGlobal({
   total: 0,
-  isAutoScroll: true
+  isAutoScroll: true,
+  remoteVersion: { sha: '', buildTime: '' }
 });
 
 
