@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import axios from 'axios';
-//import log from './log/log'
+import log from './log/log'
 import { useGlobal } from 'reactn'
 import { useActivity } from './activity'
 
@@ -31,12 +31,19 @@ export const useMonitorAppVersion = () => {
                 console.log(`Got remote manifest`, manifest)
                 const remoteSha = manifest.sha === '%REACT_APP_SHA%' ? '' : manifest.sha
                 const remoteBuildTime = manifest.buildTime === '%REACT_APP_BUILD_TIME%' ? '' : manifest.buildTime
-
+                log.info(`local: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
+                log.info(`remote: "${remoteSha.substring(0, 6)}" "${remoteBuildTime}"`)
                 setRemoteVersion({ sha: remoteSha, buildTime: remoteBuildTime })
+                if (localSha !== remoteSha && localSha !== '' && remoteSha !== '') {
+                    log.info("Remote version differs, reloading ...")
+                    log.flushLogs()
+                    setTimeout(() => { window.location.reload(true) }, 100)
+                }
                 timeout = setTimeout(getRemoteVersion, checkRemoteInterval)
             }
             catch (err) {
                 console.error("Failed get remote manifest:", err)
+                log.info(`local: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
                 timeout = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
             }
         }
