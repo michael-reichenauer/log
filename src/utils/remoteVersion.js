@@ -61,7 +61,7 @@ export const useAppVersion = () => {
 
 // export const updateUIIfRemoteVersionNewer = () => {
 //     if (isDevelop) {
-//         // Running in developer mode, skip check.
+//         // Running in developer mode, skip check
 //         localSha = ""
 //         remoteSha = ""
 //         localBuildTime = startTime
