@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import axios from 'axios';
-import log from './log/log'
+import log, { logger } from './log/log'
 import { useGlobal } from 'reactn'
 import { useActivity } from './activity'
 
@@ -35,9 +35,7 @@ export const useMonitorAppVersion = () => {
                 log.info(`remote: "${remoteSha.substring(0, 6)}" "${remoteBuildTime}"`)
                 setRemoteVersion({ sha: remoteSha, buildTime: remoteBuildTime })
                 if (localSha !== remoteSha && localSha !== '' && remoteSha !== '') {
-                    log.info("Remote version differs, reloading ...")
-                    log.flushLogs()
-                    setTimeout(() => { window.location.reload(true) }, 100)
+                    logger.flush().then(() => window.location.reload(true))
                 }
                 timeout = setTimeout(getRemoteVersion, checkRemoteInterval)
             }
