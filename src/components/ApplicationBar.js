@@ -33,7 +33,7 @@ export const ApplicationBar = ({ isActive }) => {
 
     }
     // const handleError = () => {
-    //     enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })
+    //     enqueueSnackbar(`Some errr`, { variant: "error", onClick: () => closeSnackbar() })
     // }
     const handleAddRandomLogs = () => {
         for (let i = 0; i < 1000; i += 1) {
