@@ -46,7 +46,7 @@ export const ApplicationBar = ({ isActive }) => {
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-                <Typography className={classes.title} variant="code" noWrap>{version.localSha} {version.localBuildTime}</Typography>
+                <Typography className={classes.title} variant="code" noWrap>{version.localSha.substring(0, 6)} {version.localBuildTime}</Typography>
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
                         size="small"
