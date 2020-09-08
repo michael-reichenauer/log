@@ -14,6 +14,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
 import { useAppVersion } from '../utils/remoteVersion'
+import { getLocalInfo } from '../utils/info'
 
 export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -46,7 +47,7 @@ export const ApplicationBar = ({ isActive }) => {
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-                <Typography className={classes.title} variant="subtitle2" noWrap>{version.localSha.substring(0, 6)} {version.localBuildTime}</Typography>
+                <Typography className={classes.title} variant="subtitle2" noWrap>{getLocalInfo().id.substring(0, 6)}{version.localSha.substring(0, 6)} {version.localBuildTime}</Typography>
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
                         size="small"
