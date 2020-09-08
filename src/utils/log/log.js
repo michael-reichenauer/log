@@ -18,8 +18,8 @@ class Logger {
         this.logGetter = logGetter
     }
 
-    clear = async () => { this.logGetter.clear(); this.logSender.clear() }
-    flush = async () => this.logSender.flush()
+    clear = async () => { this.logGetter.clear(); await this.logSender.clear() }
+    flush = () => this.logSender.flush()
     getCached = index => this.logGetter.getCached(index)
     isCached = index => this.logGetter.isCached(index)
     total = () => this.logGetter.getTotal()

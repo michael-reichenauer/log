@@ -35,9 +35,11 @@ export const useMonitorAppVersion = () => {
                 log.info(`remote: "${remoteSha.substring(0, 6)}" "${remoteBuildTime}"`)
                 setRemoteVersion({ sha: remoteSha, buildTime: remoteBuildTime })
                 if (localSha !== remoteSha && localSha !== '' && remoteSha !== '') {
+                    log.info("Remote version differs, reloading ...")
                     logger.flush().then(() => window.location.reload(true))
                 }
                 timeout = setTimeout(getRemoteVersion, checkRemoteInterval)
+                console.log('remote; ', `${localBuildTime}`, dateToLocalISO(`${localBuildTime}`))
             }
             catch (err) {
                 console.error("Failed get remote manifest:", err)
@@ -59,50 +61,6 @@ export const useAppVersion = () => {
     return { localSha: localSha, localBuildTime: localBuildTime, remoteSha: remoteVersion.sha, remoteBuildTime: remoteVersion.buildTime }
 }
 
-// export const updateUIIfRemoteVersionNewer = () => {
-//     if (isDevelop) {
-//         // Running in developer mode, skip check
-//         localSha = ""
-//         remoteSha = ""
-//         localBuildTime = startTime
-//         remoteBuildTime = startTime
-//         console.log("Local debug version, no need to check remote version.")
-//         return
-//     }
-
-//     // Limit remote check
-//     if (checkTime + 1 * 60 * 1000 > Date.now()) {
-//         console.log("No need to check remote version yet")
-//         return
-//     }
-//     console.log("Checking remote version ...")
-//     checkTime = Date.now()
-
-//     localBuildTime = dateToLocalISO(process.env.REACT_APP_BUILD_TIME)
-//     log.info(`local:  "${localSha}" "${localBuildTime}" `)
-
-//     fetch(`/manifest.json`)
-//         .then(response => {
-//             if (response.status !== 200) {
-//                 console.error('Error: Failed to get manifest, Status Code: ' + response.status);
-//                 return;
-//             }
-//             response.json()
-//                 .then(data => {
-//                     remoteSha = data.sha;
-//                     remoteBuildTime = dateToLocalISO(data.buildTime)
-//                     console.log(`Manifest: "${JSON.stringify(data)}"`)
-//                     log.info(`remote: "${remoteSha}" "${remoteBuildTime}"`)
-//                     if (localSha && remoteSha && localSha !== remoteSha) {
-//                         log.info("Remote version differs, reloading ...")
-//                         log.flushLogs().then(() => setTimeout(() => { window.location.reload(true) }, 100))
-//                     }
-//                 });
-//         })
-//         .catch(err => {
-//             console.error('Error: Failed to get manifest:-S', err);
-//         });
-// }
 
 function dateToLocalISO(dateText) {
     const date = new Date(dateText)
