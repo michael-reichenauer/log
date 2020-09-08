@@ -6,6 +6,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { logger } from '../utils/log/log'
+import { localSha, localBuildTime, remoteSha, remoteBuildTime } from '../utils/remoteVersion'
 
 const useMenuStyles = makeStyles((theme) => ({
     menuButton: {
@@ -52,6 +53,10 @@ export function ApplicationMenu() {
             >
                 <MenuItem disabled={false} onClick={handleLogout}>Logout</MenuItem>
                 <MenuItem disabled={false} onClick={handleReload}>Reload</MenuItem>
+                <MenuItem disabled={true} >L: '{localSha.substring(0, 6)}'</MenuItem>
+                <MenuItem disabled={true} >L: {localBuildTime}</MenuItem>
+                <MenuItem disabled={true} >R: '{remoteSha.substring(0, 6)}'</MenuItem>
+                <MenuItem disabled={true} >R: {remoteBuildTime}</MenuItem>
             </Menu>
         </>
     )

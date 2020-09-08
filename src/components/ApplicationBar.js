@@ -1,21 +1,15 @@
 import React from "react";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import SearchIcon from "@material-ui/icons/Search";
-import IconButton from '@material-ui/core/IconButton';
-import InputBase from "@material-ui/core/InputBase";
-import Tooltip from '@material-ui/core/Tooltip';
-import AppBar from "@material-ui/core/AppBar";
+import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { fade } from "@material-ui/core";
 import { ApplicationMenu } from "./ApplicationMenu"
-import GetAppIcon from '@material-ui/icons/GetApp';
 import log, { logger } from '../utils/log/log'
-import { localSha, localBuildTime } from '../utils/remoteVersion'
+
 //import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-//import { useSnackbar } from "notistack";
+import GetAppIcon from '@material-ui/icons/GetApp';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
+import SearchIcon from '@material-ui/icons/Search';
+//import { useSnackbar } from "notistack";
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
@@ -40,21 +34,16 @@ export const ApplicationBar = ({ isActive }) => {
     //     enqueueSnackbar(`Some error`, { variant: "error", onClick: () => closeSnackbar() })
     // }
     const handleAddRandomLogs = () => {
-
         for (let i = 0; i < 1000; i += 1) {
             log.info(sample[i % sample.length])
         }
-        // const randomSelection = sample[i % sample.length];
-        // const time = new Date(sampleTime.getTime() + i * 31);
     }
 
 
     return (
         <AppBar position="static">
             <Toolbar>
-                <Tooltip title={`log - ${localSha.substring(0, 6)} ${localBuildTime}`} placement="bottom-start" >
-                    <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-                </Tooltip>
+                <Typography className={classes.title} variant="h6" noWrap>log</Typography>
 
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
