@@ -9,7 +9,7 @@ const retryFailedRemoteInterval = 5 * 60 * 1000
 
 //const isDevelop = process.env.REACT_APP_SHA === "%REACT_APP_SHA%"
 const startTime = dateToLocalISO(new Date().toISOString())
-const localSha = process.env.REACT_APP_SHA === '%REACT_APP_SHA%' ? '' : process.env.REACT_APP_SHA
+const localSha = process.env.REACT_APP_SHA === '%REACT_APP_SHA%' ? '' : dateToLocalISO(process.env.REACT_APP_SHA)
 const localBuildTime = process.env.REACT_APP_BUILD_TIME === '%REACT_APP_BUILD_TIME%' ? startTime : process.env.REACT_APP_BUILD_TIME
 
 // export let checkTime = Date.now()
@@ -30,7 +30,7 @@ export const useMonitorAppVersion = () => {
                 const manifest = data.data
                 console.log(`Got remote manifest`, manifest)
                 const remoteSha = manifest.sha === '%REACT_APP_SHA%' ? '' : manifest.sha
-                const remoteBuildTime = manifest.buildTime === '%REACT_APP_BUILD_TIME%' ? '' : manifest.buildTime
+                const remoteBuildTime = manifest.buildTime === '%REACT_APP_BUILD_TIME%' ? '' : dateToLocalISO(manifest.buildTime)
                 log.info(`local: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
                 log.info(`remote: "${remoteSha.substring(0, 6)}" "${remoteBuildTime}"`)
                 setRemoteVersion({ sha: remoteSha, buildTime: remoteBuildTime })
