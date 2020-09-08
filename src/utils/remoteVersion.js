@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import axios from 'axios';
 import log, { logger } from './log/log'
-import { useGlobal } from 'reactn'
+import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useActivity } from './activity'
 
 const checkRemoteInterval = 1 * 60 * 1000
 const retryFailedRemoteInterval = 5 * 60 * 1000
+
+setGlobal({ ...getGlobal(), remoteVersion: { sha: '', buildTime: '' } })
 
 //const isDevelop = process.env.REACT_APP_SHA === "%REACT_APP_SHA%"
 const startTime = dateToLocalISO(new Date().toISOString())

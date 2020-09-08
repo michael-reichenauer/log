@@ -8,7 +8,7 @@ class Log {
         this.logSender = logSender
     }
 
-    info = msg => { this.logSender.addMsg('info', msg) }
+    info = (msg, ...properties) => { this.logSender.addMsg('info', msg, properties) }
 }
 
 // Logger class to access less common log functionality

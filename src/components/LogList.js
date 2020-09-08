@@ -3,13 +3,16 @@ import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { logger } from "../utils/log/log"
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { useGlobal } from 'reactn'
+import { useGlobal, setGlobal, getGlobal } from 'reactn'
 
 const batchSize = 300
 const fontSize = 10
 const fontWidth = 5.8
 const columnMargin = 8
 const rowHeight = 11
+
+setGlobal({ ...getGlobal(), total: 0, isAutoScroll: true, })
+
 
 
 export default function LogList({ count, isActive }) {
@@ -52,7 +55,12 @@ export default function LogList({ count, isActive }) {
         return {
             line: (<Typography noWrap className={classes.line}>{index + 1}</Typography>),
             time: (<Typography noWrap className={classes.time}>{time}</Typography>),
-            msg: (<Typography noWrap className={classes.time}>{item.msg}</Typography>),
+            msg: (
+                <>
+                    <Typography noWrap className={classes.msg}>{item.msg}</Typography>
+                    <Typography noWrap className={classes.msg}>{JSON.stringify(item.properties)}</Typography>
+                </>
+            ),
         }
     }
 

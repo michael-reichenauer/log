@@ -26,7 +26,7 @@ exports.getLogs = (start, count) => {
     let items = []
     for (let i = start; i < start + count; i += 1) {
         const item = logItems[i]
-        items.push({ index: i, time: item.time, msg: item.msg })
+        items.push({ index: i, ...item })
     }
 
     return {

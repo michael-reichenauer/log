@@ -1,4 +1,5 @@
 import { delay } from '../utils'
+import { getLocalInfo } from '../info'
 
 
 // LogSender private class to send log messages to server
@@ -7,9 +8,14 @@ export class LogSender {
     _logsSending = []
     _isSending = false
     _sendPromise = new Promise((resolve) => { resolve() })
+    _defaultProperties = getLocalInfo()
 
-    addMsg = (level, msg) => {
-        const logMsg = { level: level, time: new Date(), msg: msg }
+
+    addMsg = (level, msg, properties) => {
+        const prop = [this._defaultProperties]
+        prop.push(...properties)
+
+        const logMsg = { level: level, time: new Date(), msg: msg, properties: prop }
         this._logs.push(logMsg)
         console.log(`log: ${JSON.stringify(logMsg)}`)
         this.postLogs()
