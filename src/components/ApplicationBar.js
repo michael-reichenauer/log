@@ -19,18 +19,19 @@ import { getLocalInfo } from '../utils/info'
 export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
-    const [total, setTotal] = useGlobal('total')
+    const [count, setCount] = useGlobal('count')
+    const [, setLogId] = useGlobal('logId')
+
     const version = useAppVersion()
     const classes = useAppBarStyles();
     const clearList = async () => {
         await logger.clear()
-        logger.flush()
+        setCount(count + 1)
     }
     const handleAutoScroll = () => {
         console.log('handleAutoScroll')
-        setTotal(total)
         setIsAutoScroll(!isAutoScroll)
-        logger.flush()
+        logger.flush().then(() => setLogId(''))
 
     }
     // const handleError = () => {
@@ -40,6 +41,7 @@ export const ApplicationBar = ({ isActive }) => {
         for (let i = 0; i < 1000; i += 1) {
             log.info(sample[i % sample.length])
         }
+        logger.flush().then(() => setCount(count + 1))
     }
 
 

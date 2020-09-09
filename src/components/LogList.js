@@ -11,12 +11,13 @@ const fontWidth = 5.8
 const columnMargin = 8
 const rowHeight = 11
 
-setGlobal({ ...getGlobal(), total: 0, logId: '', isAutoScroll: true, })
+setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, })
 
 
 
-export default function LogList({ count, isActive }) {
-    const [total, setTotal] = useLogData(isActive)
+export default function LogList({ isActive }) {
+    const [count] = useGlobal('count')
+    const [total, setTotal] = useLogData(isActive, count)
     const classes = useTableStyles(isActive);
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [logId, setLogId] = useGlobal('logId')
@@ -174,7 +175,7 @@ function dateToLocalISO(dateText) {
 let timerId = null
 let isUpdateActive = false
 
-function useLogData(isActive) {
+function useLogData(isActive, count) {
     const [total, setTotal] = useGlobal('total')
     const [, setLogId] = useGlobal('logId')
 
@@ -191,7 +192,7 @@ function useLogData(isActive) {
                 setLogId(logs.id)
                 setTotal(logs.total)
                 if (logTime !== logs.lastTime) {
-                    console.log(`Log time: differs !!!!!!!!`)
+                    // Log data has changed get new data a little faster
                     updateTimeout = 500
                 }
                 logTime = logs.lastTime
@@ -220,7 +221,7 @@ function useLogData(isActive) {
             isUpdateActive = false
             clearTimeout(timerId)
         }
-    }, [isActive, setTotal, setLogId])
+    }, [isActive, setTotal, setLogId, count])
 
     return [total, setTotal]
 }
