@@ -86,7 +86,13 @@ class MuiVirtualizedTable extends React.PureComponent {
 
     render() {
         const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
-        const { rowCount, isRowLoaded, loadMoreRows, minimumBatchSize, threshold, isAutoScroll, onScroll } = this.props
+        const { rowCount, isRowLoaded, loadMoreRows, minimumBatchSize, threshold, isAutoScroll, onScroll, refreshId } = this.props
+
+        if (refreshId !== this.refreshId && this.tableRef) {
+            console.log('Refresh requested #########################')
+            this.refreshId = refreshId
+            setTimeout(this.tableRef.forceUpdateGrid, 0);
+        }
 
         return (
             <InfiniteLoader
@@ -100,7 +106,11 @@ class MuiVirtualizedTable extends React.PureComponent {
                     <AutoSizer>
                         {({ height, width }) => (
                             <Table
-                                ref={registerChild}
+                                ref={ref => {
+                                    this.tableRef = ref
+                                    registerChild(ref)
+
+                                }}
                                 onRowsRendered={onRowsRendered}
                                 width={width}
                                 height={height}

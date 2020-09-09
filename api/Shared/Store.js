@@ -1,4 +1,6 @@
 let logItems = []
+let logId = new Date().toISOString()
+let lastTime = new Date().toISOString()
 
 exports.getLogs = (start, count) => {
     const total = logItems.length
@@ -30,6 +32,8 @@ exports.getLogs = (start, count) => {
     }
 
     return {
+        id: logId,
+        lastTime: lastTime,
         start: start, // Start might have been moved (if larger than total or count was negative)
         items: items,
         total: total
@@ -38,10 +42,13 @@ exports.getLogs = (start, count) => {
 
 exports.addLogs = (items) => {
     logItems.push(...items)
+    lastTime = new Date()
 }
 
 exports.clearLogs = () => {
     logItems = []
+    logId = new Date().toISOString()
+    lastTime = new Date()
 }
 
 

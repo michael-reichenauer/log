@@ -5,6 +5,7 @@ var LRUCache = require('mnemonist/lru-cache');
 
 export class LogGetter {
     _cache = new LRUCache(5000)
+    _logId = ''
     _total = 0
 
 
@@ -39,7 +40,11 @@ export class LogGetter {
             const data = await axios.get(url)
             const logs = data.data
             this._total = logs.total
-            console.log(`Got logs;`, [logs.start, logs.items.length, logs.total])
+            console.log(`Got logs;`, [logs.start, logs.items.length, logs.total, logs.id])
+            if (logs.id !== this._logId) {
+                this._cache.clear()
+                this._logId = logs.id
+            }
 
             for (let i = 0; i < logs.items.length; i += 1) {
                 const item = logs.items[i]

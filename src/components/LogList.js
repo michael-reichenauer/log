@@ -11,7 +11,7 @@ const fontWidth = 5.8
 const columnMargin = 8
 const rowHeight = 11
 
-setGlobal({ ...getGlobal(), total: 0, isAutoScroll: true, })
+setGlobal({ ...getGlobal(), total: 0, logId: '', isAutoScroll: true, })
 
 
 
@@ -19,6 +19,7 @@ export default function LogList({ count, isActive }) {
     const [total, setTotal] = useLogData(isActive)
     const classes = useTableStyles(isActive);
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
+    const [logId, setLogId] = useGlobal('logId')
     const lineColumnWidth = total.toString().length * fontWidth + columnMargin
     const timeColumnWidth = 12 * fontWidth + columnMargin
 
@@ -58,7 +59,7 @@ export default function LogList({ count, isActive }) {
             msg: (
                 <>
                     <Typography noWrap className={classes.msg}>{item.msg}</Typography>
-                    <Typography noWrap className={classes.msg}>{JSON.stringify(item.properties)}</Typography>
+                    <Typography noWrap className={classes.properties}>{JSON.stringify(item.properties)}</Typography>
                 </>
             ),
         }
@@ -73,6 +74,7 @@ export default function LogList({ count, isActive }) {
         try {
             const logs = await logger.getRemote(startIndex, stopIndex - startIndex + 1);
             console.log(`loaded ${startIndex},${stopIndex}`)
+            setLogId(logs.id)
             setTotal(logs.total)
         }
         catch (err) {
@@ -119,6 +121,7 @@ export default function LogList({ count, isActive }) {
                 columns={columns}
                 isAutoScroll={isAutoScroll}
                 onScroll={onScroll}
+                refreshId={logId}
             />
         </div>
     );
@@ -154,6 +157,12 @@ const useTableStyles = makeStyles((theme) => ({
         fontFamily: "Monospace",
         color: isActive => isActive ? null : "gray"
     },
+    properties: {
+        fontSize: fontSize,
+        fontFamily: "Monospace",
+        paddingLeft: 5,
+        color: "gray"
+    },
 }));
 
 function dateToLocalISO(dateText) {
@@ -167,8 +176,10 @@ let isUpdateActive = false
 
 function useLogData(isActive) {
     const [total, setTotal] = useGlobal('total')
+    const [, setLogId] = useGlobal('logId')
 
     useEffect(() => {
+        let logTime
         const updateLogData = async () => {
             console.log("Updating ...")
             try {
@@ -176,9 +187,15 @@ function useLogData(isActive) {
                 if (!isUpdateActive) {
                     return
                 }
-
+                let updateTimeout = 5 * 1000
+                setLogId(logs.id)
                 setTotal(logs.total)
-                timerId = setTimeout(updateLogData, 5 * 1000)
+                if (logTime !== logs.lastTime) {
+                    console.log(`Log time: differs !!!!!!!!`)
+                    updateTimeout = 500
+                }
+                logTime = logs.lastTime
+                timerId = setTimeout(updateLogData, updateTimeout)
             }
             catch (err) {
                 console.error("Failed to update:", err)
@@ -203,7 +220,7 @@ function useLogData(isActive) {
             isUpdateActive = false
             clearTimeout(timerId)
         }
-    }, [isActive, setTotal])
+    }, [isActive, setTotal, setLogId])
 
     return [total, setTotal]
 }
