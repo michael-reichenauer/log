@@ -125,7 +125,7 @@ export default function LogList({ isActive }) {
                 minimumBatchSize={batchSize}
                 threshold={2 * batchSize}
                 columns={columns}
-                scrollToIndex={isTop ? 0 : isAutoScroll ? total : undefined}
+                scrollToIndex={isTop ? 0 : isAutoScroll ? Number.MAX_SAFE_INTEGER : undefined}
                 onScroll={onScroll}
                 refreshId={logId}
             />

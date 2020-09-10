@@ -67,6 +67,7 @@ export const ApplicationBar = ({ isActive }) => {
                         onChange={handleAutoScroll}
                     >
                         <ToggleButton value="isAutoScroll" ><GetAppIcon /></ToggleButton>
+
                     </ToggleButtonGroup>
                 </Tooltip>
 
