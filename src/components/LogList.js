@@ -11,12 +11,13 @@ const fontWidth = 5.8
 const columnMargin = 8
 const rowHeight = 11
 
-setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, })
+setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, isTop: false })
 
 
 
 export default function LogList({ isActive }) {
     const [count] = useGlobal('count')
+    const [isTop, setIsTop] = useGlobal('isTop')
     const [total, setTotal] = useLogData(isActive, count)
     const classes = useTableStyles(isActive);
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
@@ -107,6 +108,10 @@ export default function LogList({ isActive }) {
         //console.log('onScroll', s, s.scrollHeight - (s.scrollTop + s.clientHeight))
 
     }
+
+    if (isTop) {
+        setTimeout(() => setIsTop(false), 0)
+    }
     console.log(`isAutoScroll=${isAutoScroll}`)
 
     return (
@@ -120,7 +125,7 @@ export default function LogList({ isActive }) {
                 minimumBatchSize={batchSize}
                 threshold={2 * batchSize}
                 columns={columns}
-                isAutoScroll={isAutoScroll}
+                scrollToIndex={isTop ? 0 : isAutoScroll ? total : undefined}
                 onScroll={onScroll}
                 refreshId={logId}
             />

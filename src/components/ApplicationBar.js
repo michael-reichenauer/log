@@ -6,6 +6,7 @@ import log, { logger } from '../utils/log/log'
 
 //import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import PublishIcon from '@material-ui/icons/Publish';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import SearchIcon from '@material-ui/icons/Search';
@@ -20,7 +21,8 @@ export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
-    const [, setLogId] = useGlobal('logId')
+    const [, setIsTop] = useGlobal('isTop')
+    // const [, setLogId] = useGlobal('logId')
 
     const version = useAppVersion()
     const classes = useAppBarStyles();
@@ -31,9 +33,11 @@ export const ApplicationBar = ({ isActive }) => {
     const handleAutoScroll = () => {
         console.log('handleAutoScroll')
         setIsAutoScroll(!isAutoScroll)
-        logger.flush().then(() => setLogId(''))
-
+        if (!isAutoScroll) {
+            logger.flush().then(() => window.location.reload(true))
+        }
     }
+
     // const handleError = () => {
     //     enqueueSnackbar(`Some errr`, { variant: "error", onClick: () => closeSnackbar() })
     // }
@@ -44,12 +48,17 @@ export const ApplicationBar = ({ isActive }) => {
         logger.flush().then(() => setCount(count + 1))
     }
 
+    const handleGoToTop = () => {
+        setIsAutoScroll(false)
+        setIsTop(true)
+    }
 
     return (
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-                <Typography className={classes.title} variant="subtitle2" noWrap>{getLocalInfo().id.substring(0, 6)}{version.localSha.substring(0, 6)} {version.localBuildTime}</Typography>
+                <Typography className={classes.title} variant="subtitle2" noWrap>{getLocalInfo().id.substring(0, 6)}, {version.localSha.substring(0, 6)}, {version.localBuildTime}</Typography>
+                <Tooltip title="Go to top"><IconButton onClick={handleGoToTop}><PublishIcon /></IconButton></Tooltip>
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
                         size="small"
@@ -60,6 +69,7 @@ export const ApplicationBar = ({ isActive }) => {
                         <ToggleButton value="isAutoScroll" ><GetAppIcon /></ToggleButton>
                     </ToggleButtonGroup>
                 </Tooltip>
+
                 <Tooltip title="Add random logs"><IconButton onClick={handleAddRandomLogs}><PlaylistAddIcon /></IconButton></Tooltip>
                 <Tooltip title="Clear list"><IconButton onClick={clearList}><CheckBoxOutlineBlankIcon /></IconButton></Tooltip>
                 <ApplicationMenu />
