@@ -7,7 +7,7 @@ import log from './utils/log/log'
 import { useActivity, useActivityChanged, useActivityMonitor } from './utils/activity'
 //import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
 import { ApplicationBar } from "./components/ApplicationBar"
-import { SnackbarProvider } from 'notistack';
+
 import { useMonitorAppVersion } from './utils/remoteVersion'
 
 
@@ -40,20 +40,14 @@ export default function App() {
   //<LogList count={count} isActive={isActive} />
 
   return (
-    <SnackbarProvider
-      maxSnack={3}
-      preventDuplicate={true}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'center'
-      }}>
-      <ThemeProvider theme={theme}>
-        <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
-          <ApplicationBar isActive={isActive} />
-          <LogList isActive={isActive} />
-        </Paper>
-      </ThemeProvider>
-    </SnackbarProvider>
+
+    <ThemeProvider theme={theme}>
+      <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
+        <ApplicationBar isActive={isActive} />
+        <LogList isActive={isActive} />
+      </Paper>
+    </ThemeProvider>
+
   );
 }
 

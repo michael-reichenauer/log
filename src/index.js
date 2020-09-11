@@ -5,6 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { setGlobal } from 'reactn';
 import { getLocalInfo } from './utils/info'
+import { SnackbarProvider } from 'notistack';
 
 // Init an empty global state object, properties are initialized where they are uses 
 setGlobal({
@@ -21,7 +22,15 @@ getLocalInfo()
 //   document.getElementById('root')
 // );
 ReactDOM.render(
-  <App />,
+  <SnackbarProvider
+    maxSnack={3}
+    preventDuplicate={true}
+    anchorOrigin={{
+      vertical: 'top',
+      horizontal: 'center'
+    }}>
+    <App />
+  </SnackbarProvider>,
   document.getElementById('root')
 );
 

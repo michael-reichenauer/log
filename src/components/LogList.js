@@ -4,6 +4,7 @@ import { VirtualizedTable } from "./VirtualizedTable";
 import { logger } from "../utils/log/log"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
+import { useSnackbar } from "notistack";
 
 const normalRefreshTimeout = 10 * 1000
 const fastRefreshTimeout = 500
@@ -184,10 +185,20 @@ function dateToLocalISO(dateText) {
 function useLogData(isActive, count) {
     const [total, setTotal] = useGlobal('total')
     const [, setLogId] = useGlobal('logId')
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     useEffect(() => {
         let logTime
-        let timerId = null
+        let timerId
+        let snackbar
+        const handleError = () => {
+            snackbar = enqueueSnackbar("Failed to access server to get log",
+                {
+                    variant: "error",
+                    onClick: () => closeSnackbar(),
+                    autoHideDuration: null
+                })
+        }
         const updateLogData = async () => {
             console.log("Updating ...")
             try {
@@ -205,9 +216,11 @@ function useLogData(isActive, count) {
                 }
                 logTime = logs.lastTime
                 timerId = setTimeout(updateLogData, refreshTimeout)
+                closeSnackbar(snackbar)
             }
             catch (err) {
                 console.error("Failed to update:", err)
+                handleError()
                 timerId = setTimeout(updateLogData, refreshTimeout)
             }
         }
@@ -222,8 +235,9 @@ function useLogData(isActive, count) {
 
         return () => {
             clearTimeout(timerId)
+            closeSnackbar(snackbar)
         }
-    }, [isActive, setTotal, setLogId, count])
+    }, [isActive, setTotal, setLogId, count, enqueueSnackbar, closeSnackbar])
 
     return [total, setTotal]
 }

@@ -3,22 +3,23 @@ import axios from 'axios';
 import log, { logger } from './log/log'
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useActivity } from './activity'
+import { useSnackbar } from "notistack";
 
 const checkRemoteInterval = 1 * 60 * 1000
 const retryFailedRemoteInterval = 5 * 60 * 1000
 
 setGlobal({ ...getGlobal(), remoteVersion: { sha: '', buildTime: '' } })
 
-//const isDevelop = process.env.REACT_APP_SHA === "%REACT_APP_SHA%"
 const startTime = dateToLocalISO(new Date().toISOString())
 const localSha = process.env.REACT_APP_SHA === '%REACT_APP_SHA%' ? '' : process.env.REACT_APP_SHA
 const localBuildTime = process.env.REACT_APP_BUILD_TIME === '%REACT_APP_BUILD_TIME%' ? startTime : process.env.REACT_APP_BUILD_TIME
 
-// export let checkTime = Date.now()
 
 export const useMonitorAppVersion = () => {
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [, setRemoteVersion] = useGlobal('remoteVersion')
     const isActive = useActivity()
+
 
     useEffect(() => {
         let timeout
@@ -26,6 +27,15 @@ export const useMonitorAppVersion = () => {
             if (!isActive) {
                 return
             }
+            const handleError = () => {
+                enqueueSnackbar('Failed to access server to get version',
+                    {
+                        variant: "error",
+                        onClick: () => closeSnackbar(),
+                        autoHideDuration: null
+                    })
+            }
+
             try {
                 console.log(`getting manifest ...`)
                 const data = await axios.get('/manifest.json')
@@ -45,14 +55,14 @@ export const useMonitorAppVersion = () => {
             }
             catch (err) {
                 console.error("Failed get remote manifest:", err)
-                log.info(`local: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
+                handleError()
                 timeout = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
             }
         }
         getRemoteVersion()
 
         return () => { clearTimeout(timeout) }
-    }, [setRemoteVersion, isActive])
+    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar])
 
     return
 }
