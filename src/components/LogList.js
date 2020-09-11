@@ -114,7 +114,6 @@ export default function LogList({ isActive }) {
     if (isTop) {
         setTimeout(() => setIsTop(false), 0)
     }
-    console.log(`isAutoScroll=${isAutoScroll}`)
     const scrollToIndex = isTop ? 0 : isAutoScroll ? total - 1 : undefined
 
     return (
