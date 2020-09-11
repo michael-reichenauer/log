@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 
-const activityTimeout = 30000
+const activityTimeout = 60 * 1000
 const activityMargin = 1000
 
 let activityTime = 0
