@@ -5,6 +5,9 @@ import { logger } from "../utils/log/log"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
 
+const normalRefreshTimeout = 10 * 1000
+const fastRefreshTimeout = 500
+const refreshTimeout = 30 * 1000
 const batchSize = 300
 const fontSize = 10
 const fontWidth = 5.8
@@ -12,7 +15,6 @@ const columnMargin = 8
 const rowHeight = 11
 
 setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, isTop: false })
-
 
 
 export default function LogList({ isActive }) {
@@ -113,6 +115,7 @@ export default function LogList({ isActive }) {
         setTimeout(() => setIsTop(false), 0)
     }
     console.log(`isAutoScroll=${isAutoScroll}`)
+    const scrollToIndex = isTop ? 0 : isAutoScroll ? total - 1 : undefined
 
     return (
         <div style={{ width: "calc(100% - 2px)", height: "calc(100vh - 70px)" }} >
@@ -125,7 +128,7 @@ export default function LogList({ isActive }) {
                 minimumBatchSize={batchSize}
                 threshold={2 * batchSize}
                 columns={columns}
-                scrollToIndex={isTop ? 0 : isAutoScroll ? Number.MAX_SAFE_INTEGER : undefined}
+                scrollToIndex={scrollToIndex}
                 onScroll={onScroll}
                 refreshId={logId}
             />
@@ -177,8 +180,7 @@ function dateToLocalISO(dateText) {
     return (new Date(date.getTime() - off * 60 * 1000).toISOString().substr(11, 12))
 }
 
-let timerId = null
-let isUpdateActive = false
+
 
 function useLogData(isActive, count) {
     const [total, setTotal] = useGlobal('total')
@@ -186,44 +188,40 @@ function useLogData(isActive, count) {
 
     useEffect(() => {
         let logTime
+        let timerId = null
         const updateLogData = async () => {
             console.log("Updating ...")
             try {
-                const logs = await logger.getRemote(0, 0)
-                if (!isUpdateActive) {
+                if (!isActive) {
                     return
                 }
-                let updateTimeout = 5 * 1000
+                const logs = await logger.getRemote(0, 0)
+
                 setLogId(logs.id)
                 setTotal(logs.total)
+                let refreshTimeout = normalRefreshTimeout
                 if (logTime !== logs.lastTime) {
                     // Log data has changed get new data a little faster
-                    updateTimeout = 500
+                    refreshTimeout = fastRefreshTimeout
                 }
                 logTime = logs.lastTime
-                timerId = setTimeout(updateLogData, updateTimeout)
+                timerId = setTimeout(updateLogData, refreshTimeout)
             }
             catch (err) {
                 console.error("Failed to update:", err)
-                if (!isUpdateActive) {
-                    return
-                }
-                timerId = setTimeout(updateLogData, 30 * 1000)
+                timerId = setTimeout(updateLogData, refreshTimeout)
             }
         }
 
         if (isActive) {
             console.log("Start updating")
-            isUpdateActive = true
             updateLogData()
         } else {
             console.log("Stop updating")
-            isUpdateActive = false
             clearTimeout(timerId)
         }
 
         return () => {
-            isUpdateActive = false
             clearTimeout(timerId)
         }
     }, [isActive, setTotal, setLogId, count])

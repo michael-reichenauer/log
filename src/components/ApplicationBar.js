@@ -16,25 +16,28 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
 import { useAppVersion } from '../utils/remoteVersion'
 import { getLocalInfo } from '../utils/info'
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
     const [, setIsTop] = useGlobal('isTop')
-    // const [, setLogId] = useGlobal('logId')
 
     const version = useAppVersion()
     const classes = useAppBarStyles();
     const clearList = async () => {
         await logger.clear()
+        handleRefresh()
+    }
+    const handleRefresh = () => {
         setCount(count + 1)
     }
     const handleAutoScroll = () => {
         console.log('handleAutoScroll')
         setIsAutoScroll(!isAutoScroll)
         if (!isAutoScroll) {
-            logger.flush().then(() => window.location.reload(true))
+            logger.flush()
         }
     }
 
@@ -45,7 +48,7 @@ export const ApplicationBar = ({ isActive }) => {
         for (let i = 0; i < 1000; i += 1) {
             log.info(sample[i % sample.length])
         }
-        logger.flush().then(() => setCount(count + 1))
+        logger.flush().then(() => handleRefresh())
     }
 
     const handleGoToTop = () => {
@@ -58,6 +61,7 @@ export const ApplicationBar = ({ isActive }) => {
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
                 <Typography className={classes.title} variant="subtitle2" noWrap>{getLocalInfo().id.substring(0, 6)}, {version.localSha.substring(0, 6)}, {version.localBuildTime}</Typography>
+                <Tooltip title="Refresh list"><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
                 <Tooltip title="Go to top"><IconButton onClick={handleGoToTop}><PublishIcon /></IconButton></Tooltip>
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
