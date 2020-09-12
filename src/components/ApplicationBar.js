@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
@@ -17,6 +17,9 @@ import { useGlobal } from 'reactn'
 import { useAppVersion } from '../utils/remoteVersion'
 import { getLocalInfo } from '../utils/info'
 import RefreshIcon from '@material-ui/icons/Refresh';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
+import CallMissedIcon from '@material-ui/icons/CallMissed';
+import axios from 'axios'
 
 export const ApplicationBar = ({ isActive }) => {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -56,12 +59,29 @@ export const ApplicationBar = ({ isActive }) => {
         setIsTop(true)
     }
 
+    useEffect(() => {
+        const getUserInfo = async () => {
+            try {
+                const data = await axios.get("/.auth/me")
+                const userData = data.data
+                console.log(`Got user data`, userData)
+            } catch (err) {
+                console.error('Failed to get user data', err)
+            }
+        };
+
+        getUserInfo();
+    }, []);
+
+
     return (
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
                 <Typography className={classes.title} variant="subtitle2" noWrap>{getLocalInfo().id.substring(0, 6)}, {version.localSha.substring(0, 6)}, {version.localBuildTime}</Typography>
-                <Tooltip title="Refresh list"><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
+                <Tooltip title="Login"><IconButton href="/.auth/login/github"><AcUnitIcon /></IconButton></Tooltip>
+                <Tooltip title="Logout"><IconButton href="/.auth/logout"><CallMissedIcon /></IconButton></Tooltip>
+                <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
                 <Tooltip title="Go to top"><IconButton onClick={handleGoToTop}><PublishIcon /></IconButton></Tooltip>
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
