@@ -24,6 +24,7 @@ export class LogGetter {
 
     clear = () => {
         this._cache.clear()
+        this._logId = ''
     }
 
     getRemote = async (start, count) => {
@@ -55,6 +56,7 @@ export class LogGetter {
         }
         catch (err) {
             console.error("Failed to update:", url, err)
+            this.clear()
             throw err
         }
         finally {

@@ -21,7 +21,7 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 import CallMissedIcon from '@material-ui/icons/CallMissed';
 import axios from 'axios'
 
-export const ApplicationBar = ({ isActive }) => {
+export default function ApplicationBar({ isActive }) {
     //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
@@ -65,8 +65,10 @@ export const ApplicationBar = ({ isActive }) => {
                 const data = await axios.get("/.auth/me")
                 const userData = data.data
                 console.log(`Got user data`, userData)
+
             } catch (err) {
                 console.error('Failed to get user data', err)
+                //window.location.assign("https://www.w3schools.com")
             }
         };
 

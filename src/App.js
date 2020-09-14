@@ -1,53 +1,25 @@
 import React, { useState } from 'react';
 import Paper from "@material-ui/core/Paper";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
-import LogList from './components/LogList';
 import { darkTheme } from "./theme";
-import log from './utils/log/log'
-import { useActivity, useActivityChanged, useActivityMonitor } from './utils/activity'
-//import { updateUIIfRemoteVersionNewer } from './utils/remoteVersion'
-import { ApplicationBar } from "./components/ApplicationBar"
-
-import { useMonitorAppVersion } from './utils/remoteVersion'
+import { useActivityMonitor } from './utils/activity'
+import { useAppVersionMonitor } from './utils/remoteVersion'
+import ApplicationBar from "./components/ApplicationBar"
+import LogList from './components/LogList';
 
 
 export default function App() {
-  useActivityMonitor()
-  useMonitorAppVersion()
-  //const [count, setCount] = useState(0)
-  const isActive = useActivity()
-  const isActivityChanged = useActivityChanged();
   const [theme] = useState(darkTheme)
-  //const [isAutoScroll] = useGlobal('isAutoScroll')
-
-  const refresh = () => {
-    //logger.flush().then(() => setCount(c => c + 1))
-  };
-
-
-  if (isActivityChanged && isActive) {
-    console.log(`Active = ${isActive}`)
-    log.info("Active")
-    // updateUIIfRemoteVersionNewer()
-    refresh()
-  }
-
-  if (isActivityChanged && !isActive) {
-    console.log(`Active = ${isActive}`)
-    log.info("Inactive")
-    refresh()
-  }
-  //<LogList count={count} isActive={isActive} />
+  useActivityMonitor()
+  useAppVersionMonitor()
 
   return (
-
     <ThemeProvider theme={theme}>
       <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
-        <ApplicationBar isActive={isActive} />
-        <LogList isActive={isActive} />
+        <ApplicationBar />
+        <LogList />
       </Paper>
     </ThemeProvider>
-
   );
 }
 

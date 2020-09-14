@@ -15,7 +15,7 @@ const localSha = process.env.REACT_APP_SHA === '%REACT_APP_SHA%' ? '' : process.
 const localBuildTime = process.env.REACT_APP_BUILD_TIME === '%REACT_APP_BUILD_TIME%' ? startTime : process.env.REACT_APP_BUILD_TIME
 
 
-export const useMonitorAppVersion = () => {
+export const useAppVersionMonitor = () => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [, setRemoteVersion] = useGlobal('remoteVersion')
     const isActive = useActivity()
