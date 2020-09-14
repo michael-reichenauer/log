@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
 import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
-import { logger } from "../utils/log/log"
+import { logger } from "../common/log/log"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useSnackbar } from "notistack";
+import { useActivity } from '../common/activity';
 
 const normalRefreshTimeout = 10 * 1000
 const fastRefreshTimeout = 500
@@ -18,7 +19,8 @@ const rowHeight = 11
 setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, isTop: false })
 
 
-export default function LogList({ isActive }) {
+export default function LogList() {
+    const isActive = useActivity()
     const [count] = useGlobal('count')
     const [isTop, setIsTop] = useGlobal('isTop')
     const [total, setTotal] = useLogData(isActive, count)

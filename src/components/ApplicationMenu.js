@@ -5,8 +5,8 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { logger } from '../utils/log/log'
-import { useAppVersion } from '../utils/remoteVersion'
+import { logger } from '../common/log/log'
+import { useAppVersion } from '../common/remoteVersion'
 
 const useMenuStyles = makeStyles((theme) => ({
     menuButton: {

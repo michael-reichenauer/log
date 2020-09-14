@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
-import log, { logger } from '../utils/log/log'
+import log, { logger } from '../common/log/log'
 
 //import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -14,8 +14,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
-import { useAppVersion } from '../utils/remoteVersion'
-import { getLocalInfo } from '../utils/info'
+import { useAppVersion } from '../common/remoteVersion'
+import { getLocalInfo } from '../common/info'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import CallMissedIcon from '@material-ui/icons/CallMissed';

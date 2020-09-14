@@ -1,4 +1,4 @@
-import { delay } from '../utils'
+import { delay } from '../../utils/utils'
 import { getLocalInfo } from '../info'
 
 
