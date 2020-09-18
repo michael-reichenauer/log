@@ -14,7 +14,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
-import { useAppVersion } from '../common/remoteVersion'
+import { useAppVersion } from '../common/appVersion'
 import { getLocalInfo } from '../common/info'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
