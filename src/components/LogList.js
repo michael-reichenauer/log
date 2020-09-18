@@ -91,33 +91,37 @@ export default function LogList() {
     }
 
     const onScroll = (s) => {
+        console.log('onScroll', s, s.scrollHeight - (s.scrollTop + s.clientHeight))
         if (s.clientHeight < 0) {
             return
         }
+        if (s.scrollTop === 0) {
+            console.log('Scroll to top')
+            if (!isTop) {
+                setIsTop(true)
+            }
+        }
+        else {
+            console.log('Not scroll top')
+            if (isTop) {
+                setIsTop(false)
+            }
+        }
 
         if ((s.scrollHeight - (s.scrollTop + s.clientHeight)) < 1) {
-            console.log('Bottom')
+            console.log('Scroll to Bottom')
             if (!isAutoScroll) {
                 setIsAutoScroll(true)
             }
-
-            return
+        } else {
+            console.log('Not scroll bottom')
+            if (isAutoScroll) {
+                setIsAutoScroll(false)
+            }
         }
-        if (isAutoScroll) {
-            setIsAutoScroll(false)
-        }
-
-        // if (s.scrollTop === 0) {
-        //     console.log('Top')
-        // }
-        //console.log('onScroll', s, s.scrollHeight - (s.scrollTop + s.clientHeight))
-
     }
 
-    if (isTop) {
-        setTimeout(() => setIsTop(false), 0)
-    }
-    const scrollToIndex = isTop ? 0 : isAutoScroll ? total - 1 : undefined
+    const scrollToIndex = isAutoScroll ? total - 1 : isTop ? 0 : undefined
 
     return (
         <div style={{ width: "calc(100% - 2px)", height: "calc(100vh - 70px)" }} >
@@ -138,9 +142,6 @@ export default function LogList() {
     );
 }
 
-// const delay = (milliseconds) => {
-//     return new Promise(resolve => setTimeout(resolve, milliseconds))
-// }
 
 const useTableStyles = makeStyles((theme) => ({
     columns: {

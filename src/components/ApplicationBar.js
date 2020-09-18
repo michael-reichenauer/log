@@ -3,14 +3,11 @@ import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } fro
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
 import log, { logger } from '../common/log/log'
-
-//import ErrorIcon from '@material-ui/icons/Error';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import PublishIcon from '@material-ui/icons/Publish';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import SearchIcon from '@material-ui/icons/Search';
-//import { useSnackbar } from "notistack";
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
@@ -22,10 +19,9 @@ import CallMissedIcon from '@material-ui/icons/CallMissed';
 import axios from 'axios'
 
 export default function ApplicationBar({ isActive }) {
-    //const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const [isTop, setIsTop] = useGlobal('isTop')
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
-    const [, setIsTop] = useGlobal('isTop')
 
     const version = useAppVersion()
     const classes = useAppBarStyles();
@@ -36,17 +32,7 @@ export default function ApplicationBar({ isActive }) {
     const handleRefresh = () => {
         setCount(count + 1)
     }
-    const handleAutoScroll = () => {
-        console.log('handleAutoScroll')
-        setIsAutoScroll(!isAutoScroll)
-        if (!isAutoScroll) {
-            logger.flush()
-        }
-    }
 
-    // const handleError = () => {
-    //     enqueueSnackbar(`Some errr`, { variant: "error", onClick: () => closeSnackbar() })
-    // }
     const handleAddRandomLogs = () => {
         for (let i = 0; i < 1000; i += 1) {
             log.info(sample[i % sample.length])
@@ -54,9 +40,15 @@ export default function ApplicationBar({ isActive }) {
         logger.flush().then(() => handleRefresh())
     }
 
-    const handleGoToTop = () => {
-        setIsAutoScroll(false)
-        setIsTop(true)
+    const handleScroll = (_, newScroll) => {
+        if (!isTop && newScroll.includes('isTop')) {
+            setIsTop(true)
+            setIsAutoScroll(false)
+            return
+        }
+
+        setIsTop(newScroll.includes('isTop'))
+        setIsAutoScroll(newScroll.includes('isAutoScroll'))
     }
 
     useEffect(() => {
@@ -84,14 +76,14 @@ export default function ApplicationBar({ isActive }) {
                 <Tooltip title="Login"><IconButton href="/.auth/login/github"><AcUnitIcon /></IconButton></Tooltip>
                 <Tooltip title="Logout"><IconButton href="/.auth/logout"><CallMissedIcon /></IconButton></Tooltip>
                 <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
-                <Tooltip title="Go to top"><IconButton onClick={handleGoToTop}><PublishIcon /></IconButton></Tooltip>
+
                 <Tooltip title="Auto scroll">
                     <ToggleButtonGroup
                         size="small"
-                        value={isAutoScroll ? 'isAutoScroll' : ''}
-                        exclusive
-                        onChange={handleAutoScroll}
+                        value={isAutoScroll && isTop ? ['isAutoScroll', 'isTop'] : isAutoScroll ? ['isAutoScroll'] : isTop ? ['isTop'] : []}
+                        onChange={handleScroll}
                     >
+                        <ToggleButton value="isTop" ><PublishIcon /></ToggleButton>
                         <ToggleButton value="isAutoScroll" ><GetAppIcon /></ToggleButton>
 
                     </ToggleButtonGroup>

@@ -22,8 +22,7 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
         <ApplicationBar />
-        {`isActive; ${isActive}, IsOnline: ${isOnline}`}
-        {isActive && <LogList />}
+        {(isActive && isOnline) && <LogList />}
         {!isActive && <Typography noWrap>User was inactive for while</Typography>}
         {!isOnline && <Typography noWrap>Not online</Typography>}
       </Paper>
