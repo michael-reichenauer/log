@@ -52,7 +52,7 @@ export function useIsOnline() {
 export function useOnlineMonitor() {
     const [isActive] = useActivity()
     const [isOnline, setIsOnline] = useIsOnline()
-    const [, setUser] = useGlobal('user')
+    const [user, setUser] = useGlobal('user')
 
     useEffect(() => {
         if (!isActive) {
@@ -79,10 +79,15 @@ export function useOnlineMonitor() {
                     const data = await axios.get("/.auth/me")
                     const userData = data.data
                     console.log(`Got user data`, userData)
+                    if (!userData.clientPrincipal) {
+                        if (user !== '<none>') {
+                            setUser('<none>')
+                        }
+                        throw new Error('User not logged in')
+                    }
                     setUser('remote')
-                    console.log('user:remote')
+                    console.log(`user:${userData.clientPrincipal.useDetails}`)
                 }
-
 
                 if (!isOnline) {
                     setIsOnline(true)
@@ -111,5 +116,5 @@ export function useOnlineMonitor() {
         }
 
 
-    }, [isActive, isOnline, setIsOnline, setUser])
+    }, [isActive, isOnline, setIsOnline, setUser, user])
 }
