@@ -38,10 +38,10 @@ export const useAppVersionMonitor = () => {
             }
 
             try {
-                console.log(`getting manifest ...`)
+                // console.log(`getting manifest ...`)
                 const data = await axios.get('/manifest.json')
                 const manifest = data.data
-                console.log(`Got remote manifest`, manifest)
+                // console.log(`Got remote manifest`, manifest)
                 const remoteSha = manifest.sha === '%REACT_APP_SHA%' ? '' : manifest.sha
                 const remoteBuildTime = manifest.buildTime === '%REACT_APP_BUILD_TIME%' ? '' : manifest.buildTime
                 log.info(`Checked: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
@@ -52,7 +52,7 @@ export const useAppVersionMonitor = () => {
                     logger.flush().then(() => window.location.reload(true))
                 }
                 timeout = setTimeout(getRemoteVersion, checkRemoteInterval)
-                console.log('remote; ', `${localBuildTime}`, dateToLocalISO(`${localBuildTime}`))
+                console.log('remote; ', `'${remoteBuildTime}'`)
             }
             catch (err) {
                 console.error("Failed get remote manifest:", err)

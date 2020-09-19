@@ -77,7 +77,7 @@ export function useActivityMonitor() {
         }
 
         const onVisibilityChange = (e) => {
-            console.log(`onVisibilityChange visible=${!document.hidden}`)
+            // console.log(`onVisibilityChange visible=${!document.hidden}`)
             if (!document.hidden) {
                 onActive()
                 return

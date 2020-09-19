@@ -73,14 +73,14 @@ export default function LogList() {
     }
 
     const loadMore = async ({ startIndex, stopIndex }) => {
-        console.log(`load ${startIndex},${stopIndex} ...`)
+        // console.log(`load ${startIndex},${stopIndex} ...`)
 
         // Trigger rendering 'loading items'
         setTotal(total)
 
         try {
             const logs = await logger.getRemote(startIndex, stopIndex - startIndex + 1);
-            console.log(`loaded ${startIndex},${stopIndex}`)
+            // console.log(`loaded ${startIndex},${stopIndex}`)
             setLogId(logs.id)
             setTotal(logs.total)
         }
@@ -97,25 +97,21 @@ export default function LogList() {
             return
         }
         if (s.scrollTop === 0) {
-            console.log('Scroll to top')
             if (!isTop) {
                 setIsTop(true)
             }
         }
         else {
-            console.log('Not scroll top')
             if (isTop) {
                 setIsTop(false)
             }
         }
 
         if ((s.scrollHeight - (s.scrollTop + s.clientHeight)) < 1) {
-            console.log('Scroll to Bottom')
             if (!isAutoScroll) {
                 setIsAutoScroll(true)
             }
         } else {
-            console.log('Not scroll bottom')
             if (isAutoScroll) {
                 setIsAutoScroll(false)
             }
@@ -205,7 +201,6 @@ function useLogData(isActive, count) {
         }
 
         const updateLogData = async () => {
-            console.log("Updating ...")
             try {
                 if (!isActive) {
                     return
@@ -237,10 +232,8 @@ function useLogData(isActive, count) {
         }
 
         if (isActive) {
-            console.log("Start updating")
             updateLogData()
         } else {
-            console.log("Stop updating")
             clearTimeout(timerId)
         }
 

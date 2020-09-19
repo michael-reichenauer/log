@@ -72,15 +72,15 @@ export class LogSender {
                 return
             }
             const body = JSON.stringify({ logs: this._logsSending })
-            console.log(`Sending logs ${this._logsSending.length}...`);
-            const startSend = Date.now()
+            // console.log(`Sending logs ${this._logsSending.length}...`);
+            //const startSend = Date.now()
             const response = await fetch(`/api/AddLogs`, { method: 'post', body: body })
 
             if (!response.ok) {
                 throw new Error('Error: Status Code: ' + response.status);
             }
 
-            console.log(`Sent ${this._logsSending.length} logs in ${Date.now() - startSend} ms`);
+            // console.log(`Sent ${this._logsSending.length} logs in ${Date.now() - startSend} ms`);
 
             // Sent logs, retry again soon if more logs are to be sent
             this._logsSending = []

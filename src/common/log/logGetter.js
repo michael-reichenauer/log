@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { timeStamp } from '../../utils/utils'
+// import { timeStamp } from '../../utils/utils'
 
 var LRUCache = require('mnemonist/lru-cache');
 
@@ -29,19 +29,19 @@ export class LogGetter {
 
     getRemote = async (start, count) => {
         const url = `/api/GetLog?start=${start}&count=${count}`
-        console.log(`Getting ${url}...`)
+        // console.log(`Getting ${url}...`)
         if (count > 0) {
             for (let i = start; i < start + count; i += 1) {
                 this._setCached(i, null)
             }
         }
 
-        var st = timeStamp();
+        // var st = timeStamp();
         try {
             const data = await axios.get(url)
             const logs = data.data
             this._total = logs.total
-            console.log(`Got logs;`, [logs.start, logs.items.length, logs.total, logs.id])
+            // console.log(`Got logs;`, [logs.start, logs.items.length, logs.total, logs.id])
             if (logs.id !== this._logId) {
                 this._cache.clear()
                 this._logId = logs.id
@@ -60,7 +60,7 @@ export class LogGetter {
             throw err
         }
         finally {
-            st.log('getRemote done')
+            //st.log('getRemote done')
         }
     }
 
