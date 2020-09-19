@@ -115,7 +115,7 @@ export function useActivity() {
         }
     }, [])
 
-    return isActive
+    return [isActive]
 }
 
 export function useActivityChanged() {

@@ -11,8 +11,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
-import { useAppVersion } from '../common/appVersion'
-import { getLocalInfo } from '../common/info'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import CallMissedIcon from '@material-ui/icons/CallMissed';
@@ -23,7 +21,6 @@ export default function ApplicationBar({ isActive }) {
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
 
-    const version = useAppVersion()
     const classes = useAppBarStyles();
     const clearList = async () => {
         await logger.clear()
@@ -72,7 +69,6 @@ export default function ApplicationBar({ isActive }) {
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-                <Typography className={classes.title} variant="subtitle2" noWrap>{getLocalInfo().id.substring(0, 6)}, {version.localSha.substring(0, 6)}, {version.localBuildTime}</Typography>
                 <Tooltip title="Login"><IconButton href="/.auth/login/github"><AcUnitIcon /></IconButton></Tooltip>
                 <Tooltip title="Logout"><IconButton href="/.auth/logout"><CallMissedIcon /></IconButton></Tooltip>
                 <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>

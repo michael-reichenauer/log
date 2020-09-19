@@ -6,7 +6,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useSnackbar } from "notistack";
 import { useActivity } from '../common/activity';
-
+import { useIsOnline, networkError } from '../common/online';
 const normalRefreshTimeout = 10 * 1000
 const fastRefreshTimeout = 500
 const refreshTimeout = 30 * 1000
@@ -20,7 +20,7 @@ setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, i
 
 
 export default function LogList() {
-    const isActive = useActivity()
+    const [isActive] = useActivity()
     const [count] = useGlobal('count')
     const [isTop, setIsTop] = useGlobal('isTop')
     const [total, setTotal] = useLogData(isActive, count)
@@ -87,11 +87,12 @@ export default function LogList() {
         catch (err) {
             // Error 
             console.warn(`failed to load ${startIndex},${stopIndex}`)
+            networkError(err)
         }
     }
 
     const onScroll = (s) => {
-        console.log('onScroll', s, s.scrollHeight - (s.scrollTop + s.clientHeight))
+        // console.log('onScroll', s, s.scrollHeight - (s.scrollTop + s.clientHeight))
         if (s.clientHeight < 0) {
             return
         }
@@ -184,9 +185,9 @@ function dateToLocalISO(dateText) {
 }
 
 
-
 function useLogData(isActive, count) {
     const [total, setTotal] = useGlobal('total')
+    const [isOnline] = useIsOnline()
     const [, setLogId] = useGlobal('logId')
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -202,6 +203,7 @@ function useLogData(isActive, count) {
                     autoHideDuration: null
                 })
         }
+
         const updateLogData = async () => {
             console.log("Updating ...")
             try {
@@ -224,8 +226,14 @@ function useLogData(isActive, count) {
             catch (err) {
                 console.error("Failed to update:", err)
                 handleError()
+                networkError(err)
                 timerId = setTimeout(updateLogData, refreshTimeout)
             }
+        }
+
+        if (!isOnline) {
+            clearTimeout(timerId)
+            return
         }
 
         if (isActive) {
@@ -240,7 +248,7 @@ function useLogData(isActive, count) {
             clearTimeout(timerId)
             closeSnackbar(snackbar)
         }
-    }, [isActive, setTotal, setLogId, count, enqueueSnackbar, closeSnackbar])
+    }, [isActive, isOnline, setTotal, setLogId, count, enqueueSnackbar, closeSnackbar])
 
     return [total, setTotal]
 }

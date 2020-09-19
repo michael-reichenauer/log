@@ -4,6 +4,7 @@ import log, { logger } from './log/log'
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useActivity } from './activity'
 import { useSnackbar } from "notistack";
+import { useIsOnline, networkError } from './online';
 
 const checkRemoteInterval = 1 * 60 * 1000
 const retryFailedRemoteInterval = 5 * 60 * 1000
@@ -18,13 +19,13 @@ const localBuildTime = process.env.REACT_APP_BUILD_TIME === '%REACT_APP_BUILD_TI
 export const useAppVersionMonitor = () => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [, setRemoteVersion] = useGlobal('remoteVersion')
-    const isActive = useActivity()
-
+    const [isActive] = useActivity()
+    const [isOnline] = useIsOnline()
 
     useEffect(() => {
         let timeout
         const getRemoteVersion = async () => {
-            if (!isActive) {
+            if (!isActive || !isOnline) {
                 return
             }
             const handleError = () => {
@@ -43,10 +44,10 @@ export const useAppVersionMonitor = () => {
                 console.log(`Got remote manifest`, manifest)
                 const remoteSha = manifest.sha === '%REACT_APP_SHA%' ? '' : manifest.sha
                 const remoteBuildTime = manifest.buildTime === '%REACT_APP_BUILD_TIME%' ? '' : manifest.buildTime
-                log.info(`local: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
-                log.info(`remote: "${remoteSha.substring(0, 6)}" "${remoteBuildTime}"`)
+                log.info(`Checked: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
                 setRemoteVersion({ sha: remoteSha, buildTime: remoteBuildTime })
                 if (localSha !== remoteSha && localSha !== '' && remoteSha !== '') {
+                    log.info(`Remote: "${remoteSha.substring(0, 6)}" "${remoteBuildTime}""`)
                     log.info("Remote version differs, reloading ...")
                     logger.flush().then(() => window.location.reload(true))
                 }
@@ -56,13 +57,14 @@ export const useAppVersionMonitor = () => {
             catch (err) {
                 console.error("Failed get remote manifest:", err)
                 handleError()
+                networkError(err)
                 timeout = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
             }
         }
         getRemoteVersion()
 
         return () => { clearTimeout(timeout) }
-    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar])
+    }, [setRemoteVersion, isActive, isOnline, enqueueSnackbar, closeSnackbar])
 
     return
 }

@@ -8,38 +8,48 @@ const onlineCheckInterval = 20 * 1000
 
 // Init global for isOnline
 setGlobal({ ...getGlobal(), isOnline: false })
+const onlineEventName = 'isOnlineEvent'
+
+
+export const networkError = (error) => {
+    console.log('network error', error)
+    if (error.response) {
+        console.warn('Some network error, (online)', error)
+        // There was a response, not offline
+        document.dispatchEvent(new CustomEvent(onlineEventName, { detail: true }));
+    } else if (error.request) {
+        // There was no response, offline
+        console.warn('No response, so offline', error)
+        document.dispatchEvent(new CustomEvent(onlineEventName, { detail: false }));
+    } else {
+        // Something happened in setting up the request that triggered an Error
+        // Online status is unknown
+        console.error('making request error, Unknown if online', error)
+    }
+}
 
 
 export function useIsOnline() {
     const [isOnline, setIsOnline] = useGlobal('isOnline')
 
-    const setIsOnlineFromError = error => {
-        console.log('network error', error)
-        if (typeof error === "boolean") {
-            // true or false
-            console.log('Setting online=', error)
-            setIsOnline(error)
-        } else if (error.response) {
-            console.warn('Some network error, (online)', error)
-            // There was a response, not offline
-            setIsOnline(true)
-        } else if (error.request) {
-            // There was no response, offline
-            console.warn('No response, so offline', error)
-            setIsOnline(false)
-        } else {
-            // Something happened in setting up the request that triggered an Error
-            // Online status is unknown
-            console.error('making request error, Unknown if online', error)
+    useEffect(() => {
+        const onEvent = e => {
+            setIsOnline(e.detail)
         }
-    }
 
-    return [isOnline, setIsOnlineFromError]
+        document.addEventListener(onlineEventName, onEvent)
+
+        return () => {
+            document.removeEventListener(onlineEventName, onEvent)
+        }
+    }, [isOnline, setIsOnline])
+
+    return [isOnline, setIsOnline]
 }
 
 
 export function useOnlineMonitor() {
-    const isActive = useActivity()
+    const [isActive] = useActivity()
     const [isOnline, setIsOnline] = useIsOnline()
 
     useEffect(() => {
