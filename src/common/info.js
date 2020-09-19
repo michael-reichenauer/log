@@ -1,6 +1,7 @@
 const infoLocalStorageName = 'info'
 
 let localInfo
+export const isLocalDev = process.env.REACT_APP_SHA === '%REACT_APP_SHA%'
 
 export const getLocalInfo = () => {
     if (localInfo) {

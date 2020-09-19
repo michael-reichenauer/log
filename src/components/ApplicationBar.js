@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
@@ -14,12 +14,12 @@ import { useGlobal } from 'reactn'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import CallMissedIcon from '@material-ui/icons/CallMissed';
-import axios from 'axios'
 
 export default function ApplicationBar({ isActive }) {
     const [isTop, setIsTop] = useGlobal('isTop')
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
+    const [user] = useGlobal('user')
 
     const classes = useAppBarStyles();
     const clearList = async () => {
@@ -48,27 +48,27 @@ export default function ApplicationBar({ isActive }) {
         setIsAutoScroll(newScroll.includes('isAutoScroll'))
     }
 
-    useEffect(() => {
-        const getUserInfo = async () => {
-            try {
-                const data = await axios.get("/.auth/me")
-                const userData = data.data
-                console.log(`Got user data`, userData)
+    // useEffect(() => {
+    //     const getUserInfo = async () => {
+    //         try {
+    //             const data = await axios.get("/.auth/me")
+    //             const userData = data.data
+    //             console.log(`Got user data`, userData)
 
-            } catch (err) {
-                console.error('Failed to get user data', err)
-                //window.location.assign("https://www.w3schools.com")
-            }
-        };
+    //         } catch (err) {
+    //             console.error('Failed to get user data', err)
+    //             //window.location.assign("https://www.w3schools.com")
+    //         }
+    //     };
 
-        getUserInfo();
-    }, []);
+    //     getUserInfo();
+    // }, []);
 
 
     return (
         <AppBar position="static">
             <Toolbar>
-                <Typography className={classes.title} variant="h6" noWrap>log</Typography>
+                <Typography className={classes.title} variant="h6" noWrap>log/{user}</Typography>
                 <Tooltip title="Login"><IconButton href="/.auth/login/github"><AcUnitIcon /></IconButton></Tooltip>
                 <Tooltip title="Logout"><IconButton href="/.auth/logout"><CallMissedIcon /></IconButton></Tooltip>
                 <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>

@@ -21,6 +21,7 @@ setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, i
 
 export default function LogList() {
     const [isActive] = useActivity()
+    const [isOnline] = useIsOnline()
     const [count] = useGlobal('count')
     const [isTop, setIsTop] = useGlobal('isTop')
     const [total, setTotal] = useLogData(isActive, count)
@@ -54,6 +55,9 @@ export default function LogList() {
     }
 
     const rowGetter = ({ index }) => {
+        if (!isOnline) {
+            return { line: (<Typography className={classes.lineInvalid}>{index + 1}</Typography>) }
+        }
         const item = logger.getCached(index)
         if (item === undefined || item === null) {
             return { line: (<Typography className={classes.lineInvalid}>{index + 1}</Typography>) }
@@ -73,10 +77,13 @@ export default function LogList() {
     }
 
     const loadMore = async ({ startIndex, stopIndex }) => {
+        if (!isOnline) {
+            return
+        }
         // console.log(`load ${startIndex},${stopIndex} ...`)
 
         // Trigger rendering 'loading items'
-        setTotal(total)
+        // setTotal(total)
 
         try {
             const logs = await logger.getRemote(startIndex, stopIndex - startIndex + 1);
@@ -202,7 +209,7 @@ function useLogData(isActive, count) {
 
         const updateLogData = async () => {
             try {
-                if (!isActive) {
+                if (!isActive || !isOnline) {
                     return
                 }
                 const logs = await logger.getRemote(0, 0)

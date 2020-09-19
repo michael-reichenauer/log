@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useActivity } from './activity'
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
+import { isLocalDev } from './info'
 import axios from 'axios';
 
 const onlineRecheckInterval = 15 * 1000
@@ -51,6 +52,7 @@ export function useIsOnline() {
 export function useOnlineMonitor() {
     const [isActive] = useActivity()
     const [isOnline, setIsOnline] = useIsOnline()
+    const [, setUser] = useGlobal('user')
 
     useEffect(() => {
         if (!isActive) {
@@ -65,12 +67,23 @@ export function useOnlineMonitor() {
         const checkOnline = async () => {
             try {
                 // console.log(`Check online ...`)
-                const data = await axios.get(`/api/IsReady`)
-                const response = data.data
-                if (!response.ready) {
-                    throw new Error(`'Unexpected ready response, retry in while: ${data}`)
-
+                if (isLocalDev) {
+                    const data = await axios.get(`/api/IsReady`)
+                    const response = data.data
+                    if (!response.ready) {
+                        throw new Error(`'Unexpected ready response, retry in while: ${data}`)
+                    }
+                    setUser('local')
+                    console.log('user:local')
+                } else {
+                    const data = await axios.get("/.auth/me")
+                    const userData = data.data
+                    console.log(`Got user data`, userData)
+                    setUser('remote')
+                    console.log('user:remote')
                 }
+
+
                 if (!isOnline) {
                     setIsOnline(true)
                 }
@@ -79,7 +92,7 @@ export function useOnlineMonitor() {
                 }
             }
             catch (err) {
-                // console.warn('Error checking online, retry in while:', err)
+                console.warn('Error checking online, retry in while:', err)
                 if (isOnline) {
                     setIsOnline(false)
                 }
@@ -98,5 +111,5 @@ export function useOnlineMonitor() {
         }
 
 
-    }, [isActive, isOnline, setIsOnline])
+    }, [isActive, isOnline, setIsOnline, setUser])
 }
