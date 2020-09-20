@@ -85,8 +85,8 @@ export function useOnlineMonitor() {
                         }
                         throw new Error('User not logged in')
                     }
-                    setUser('remote')
-                    console.log(`user:${userData.clientPrincipal.useDetails}`)
+                    setUser(userData.clientPrincipal.userDetails)
+                    console.log(`user:${userData.clientPrincipal.userDetails}`)
                 }
 
                 if (!isOnline) {
