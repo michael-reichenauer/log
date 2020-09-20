@@ -3,6 +3,7 @@ import { useActivity } from './activity'
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { isLocalDev } from './info'
 import axios from 'axios';
+import { useUser } from './auth';
 
 const onlineRecheckInterval = 15 * 1000
 const onlineCheckInterval = 20 * 1000
@@ -52,7 +53,7 @@ export function useIsOnline() {
 export function useOnlineMonitor() {
     const [isActive] = useActivity()
     const [isOnline, setIsOnline] = useIsOnline()
-    const [user, setUser] = useGlobal('user')
+    const [user, setUser] = useUser()
 
     useEffect(() => {
         if (!isActive) {
@@ -80,13 +81,14 @@ export function useOnlineMonitor() {
                     const userData = data.data
                     // console.log(`Got user data`, userData) 
                     if (!userData.clientPrincipal) {
-                        if (user !== '<none>') {
-                            setUser('<none>')
+                        if (user) {
+                            setUser(undefined)
                         }
-                        throw new Error('User not logged in')
+                        console.log(`user not logged in`)
+                    } else {
+                        setUser(userData.clientPrincipal.userDetails)
+                        console.log(`user:${userData.clientPrincipal.userDetails}`)
                     }
-                    setUser(userData.clientPrincipal.userDetails)
-                    console.log(`user:${userData.clientPrincipal.userDetails}`)
                 }
 
                 if (!isOnline) {

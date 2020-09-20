@@ -3,16 +3,17 @@ import Paper from "@material-ui/core/Paper";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import { darkTheme } from "./theme";
 import { useActivityMonitor } from './common/activity'
-import { useIsOnline, useOnlineMonitor } from './common/online';
+import { useOnlineMonitor } from './common/online';
 import { useAppVersionMonitor } from './common/appVersion'
 import ApplicationBar from "./components/ApplicationBar"
 import LogList from './components/LogList';
 import Login from './components/Login';
+import { useUser } from './common/auth';
 
 
 export default function App() {
   const [theme] = useState(darkTheme)
-  const [isOnline] = useIsOnline()
+  const [user] = useUser()
   useActivityMonitor()
   useAppVersionMonitor()
   useOnlineMonitor()
@@ -22,8 +23,8 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
         <ApplicationBar />
-        {isOnline && <LogList />}
-        {!isOnline && <Login />}
+        {user && <LogList />}
+        {!user && <Login />}
       </Paper>
     </ThemeProvider>
   );

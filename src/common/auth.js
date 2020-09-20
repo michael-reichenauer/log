@@ -1,19 +1,8 @@
 import { useGlobal } from "reactn"
-import { useLocalStorage } from '../utils/useLocalStorage'
-
-export function useIsOnline() {
-    const [user, setIsUser] = useLocalStorage('user')
-
-    useEffect(() => {
-        if (user) {
-            return
-        }
 
 
-        return () => {
+export function useUser() {
+    const [user, setUser] = useGlobal('user')
 
-        }
-    }, [user, setIsUser])
-
-    return [user, setIsUser]
+    return [user, setUser]
 }
