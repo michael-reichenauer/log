@@ -78,7 +78,7 @@ export function useOnlineMonitor() {
                 } else {
                     const data = await axios.get("/.auth/me")
                     const userData = data.data
-                    console.log(`Got user data`, userData)
+                    // console.log(`Got user data`, userData) 
                     if (!userData.clientPrincipal) {
                         if (user !== '<none>') {
                             setUser('<none>')
@@ -97,7 +97,7 @@ export function useOnlineMonitor() {
                 }
             }
             catch (err) {
-                console.warn('Error checking online, retry in while:', err)
+                console.warn('Error checking online, retry in while:', err.message)
                 if (isOnline) {
                     setIsOnline(false)
                 }
