@@ -71,7 +71,7 @@ export function useOnlineMonitor() {
                     const data = await axios.get(`/api/IsReady`)
                     const response = data.data
                     if (!response.ready) {
-                        throw new Error(`'Unexpected ready response, retry in while: ${data}`)
+                        throw new Error(`'Unexpected ready response: ${data}`)
                     }
                     setUser('local')
                     console.log('user:local')

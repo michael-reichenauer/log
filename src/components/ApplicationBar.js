@@ -12,8 +12,6 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
 import RefreshIcon from '@material-ui/icons/Refresh';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import CallMissedIcon from '@material-ui/icons/CallMissed';
 
 export default function ApplicationBar({ isActive }) {
     const [isTop, setIsTop] = useGlobal('isTop')
@@ -69,11 +67,8 @@ export default function ApplicationBar({ isActive }) {
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log/{user}</Typography>
-                <Tooltip title="Login"><IconButton href="/.auth/login/github"><AcUnitIcon /></IconButton></Tooltip>
-                <Tooltip title="Logout"><IconButton href="/.auth/logout"><CallMissedIcon /></IconButton></Tooltip>
                 <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
-
-                <Tooltip title="Auto scroll">
+                <Tooltip title="Scroll list">
                     <ToggleButtonGroup
                         size="small"
                         value={isAutoScroll && isTop ? ['isAutoScroll', 'isTop'] : isAutoScroll ? ['isAutoScroll'] : isTop ? ['isTop'] : []}

@@ -4,7 +4,7 @@ import log, { logger } from './log/log'
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useActivity } from './activity'
 import { useSnackbar } from "notistack";
-import { useIsOnline, networkError } from './online';
+import { networkError } from './online'
 
 const checkRemoteInterval = 1 * 60 * 1000
 const retryFailedRemoteInterval = 5 * 60 * 1000
@@ -20,12 +20,11 @@ export const useAppVersionMonitor = () => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [, setRemoteVersion] = useGlobal('remoteVersion')
     const [isActive] = useActivity()
-    const [isOnline] = useIsOnline()
 
     useEffect(() => {
         let timeout
         const getRemoteVersion = async () => {
-            if (!isActive || !isOnline) {
+            if (!isActive) {
                 return
             }
             const handleError = () => {
@@ -64,7 +63,7 @@ export const useAppVersionMonitor = () => {
         getRemoteVersion()
 
         return () => { clearTimeout(timeout) }
-    }, [setRemoteVersion, isActive, isOnline, enqueueSnackbar, closeSnackbar])
+    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar])
 
     return
 }

@@ -23,6 +23,7 @@ export function ApplicationMenu() {
 
     const handleLogout = () => {
         setMenu(null);
+        window.location.assign("/.auth/logout")
     };
 
     const handleReload = () => {
