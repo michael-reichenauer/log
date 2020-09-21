@@ -12,6 +12,16 @@ export default function Login() {
                         - GitHub
                     </Link>
                 </Typography>
+                <Typography >
+                    <Link href="/.auth/login/google" color="inherit">
+                        - Google
+                    </Link>
+                </Typography>
+                <Typography >
+                    <Link href="/.auth/login/aad" color="inherit">
+                        - Azure Active Directory
+                    </Link>
+                </Typography>
             </List>
         </>
     )
