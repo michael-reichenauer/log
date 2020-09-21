@@ -74,8 +74,8 @@ export function useOnlineMonitor() {
                     if (!response.ready) {
                         throw new Error(`'Unexpected ready response: ${data}`)
                     }
-                    setUser('local')
-                    console.log('user:local')
+                    // setUser('local')
+                    // console.log('user:local')
                 } else {
                     const data = await axios.get("/.auth/me")
                     const userData = data.data

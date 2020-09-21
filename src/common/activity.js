@@ -44,7 +44,7 @@ export function useActivityMonitor() {
             }
 
             // Toggle active = false
-            console.log(`Inactive (total: ${Date.now() - activityStartTime})`)
+            console.log(`Inactive (total: ${Date.now() - activityStartTime} ms)`)
             isDocumentActive = false
             activityStartTime = 0
 
@@ -66,7 +66,7 @@ export function useActivityMonitor() {
             const now = Date.now()
             if (now - activityTime < activityTimeout) {
                 // Still active, reschedule check
-                //console.log(`Active (${now - activityTime}), recheck..  (total: ${Date.now() - activityStartTime})`)
+                console.log(`Still active (total: ${Date.now() - activityStartTime} ms)`)
                 const timeout = activityTimeout - (now - activityTime) + activityMargin
                 activityCheckTimer = setTimeout(checkIfActive, timeout)
                 return

@@ -7,6 +7,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { logger } from '../common/log/log'
 import { useAppVersion } from '../common/appVersion'
+import { isLocalDev } from '../common/info'
+import { useUser } from "../common/auth";
 
 const useMenuStyles = makeStyles((theme) => ({
     menuButton: {
@@ -18,11 +20,16 @@ const useMenuStyles = makeStyles((theme) => ({
 export function ApplicationMenu() {
     const classes = useMenuStyles();
     const version = useAppVersion();
+    const [, setUser] = useUser()
 
     const [menu, setMenu] = useState(null);
 
     const handleLogout = () => {
         setMenu(null);
+        if (isLocalDev) {
+            setUser(undefined)
+            return
+        }
         window.location.assign("/.auth/logout")
     };
 
