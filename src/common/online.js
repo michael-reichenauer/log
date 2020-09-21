@@ -54,6 +54,7 @@ export function useOnlineMonitor() {
     const [isActive] = useActivity()
     const [isOnline, setIsOnline] = useIsOnline()
     const [user, setUser] = useUser()
+    const userId = user?.userId
 
     useEffect(() => {
         if (!isActive) {
@@ -79,7 +80,7 @@ export function useOnlineMonitor() {
                     const userData = data.data
                     // console.log(`Got user data`, userData) 
                     if (!userData.clientPrincipal) {
-                        if (user) {
+                        if (userId) {
                             setUser(undefined)
                         }
                         console.log(`user not logged in`)
@@ -116,5 +117,5 @@ export function useOnlineMonitor() {
         }
 
 
-    }, [isActive, isOnline, setIsOnline, setUser, user])
+    }, [isActive, isOnline, setIsOnline, setUser, userId])
 }
