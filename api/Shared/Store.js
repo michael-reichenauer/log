@@ -40,7 +40,14 @@ exports.getLogs = (start, count) => {
     }
 }
 
-exports.addLogs = (items) => {
+exports.addLogs = (items, generalProperties) => {
+    items.forEach(item => {
+        if (item.properties) {
+            item.properties = item.properties.concat(generalProperties)
+        } else {
+            item.properties = generalProperties
+        }
+    });
     logItems.push(...items)
     lastTime = new Date()
 }

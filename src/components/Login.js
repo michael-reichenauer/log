@@ -12,6 +12,15 @@ function ListItemLink(props) {
 export default function Login() {
     const [, setUser] = useUser()
 
+    const loginLocal = name => {
+        setUser({
+            "identityProvider": "local",
+            "userId": name,
+            "userDetails": name,
+            "userRoles": ["anonymous", "authenticated"]
+        })
+    }
+
     return (
         <>
             <Typography variant="h6" >Login using:</Typography>
@@ -33,12 +42,12 @@ export default function Login() {
                     </ListItemLink>
                 }
                 {isLocalDev &&
-                    <ListItemLink onClick={() => setUser('local1')}>
+                    <ListItemLink onClick={() => loginLocal('local1')}>
                         <ListItemText primary="Local1" />
                     </ListItemLink>
                 }
                 {isLocalDev &&
-                    <ListItemLink onClick={() => setUser('local2')}>
+                    <ListItemLink onClick={() => loginLocal('local2')}>
                         <ListItemText primary="Local2" />
                     </ListItemLink>
                 }

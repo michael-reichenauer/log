@@ -13,7 +13,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
 import RefreshIcon from '@material-ui/icons/Refresh';
 
-export default function ApplicationBar({ isActive }) {
+export default function ApplicationBar() {
     const [isTop, setIsTop] = useGlobal('isTop')
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
@@ -46,27 +46,11 @@ export default function ApplicationBar({ isActive }) {
         setIsAutoScroll(newScroll.includes('isAutoScroll'))
     }
 
-    // useEffect(() => {
-    //     const getUserInfo = async () => {
-    //         try {
-    //             const data = await axios.get("/.auth/me")
-    //             const userData = data.data
-    //             console.log(`Got user data`, userData)
-
-    //         } catch (err) {
-    //             console.error('Failed to get user data', err)
-    //             //window.location.assign("https://www.w3schools.com")
-    //         }
-    //     };
-
-    //     getUserInfo();
-    // }, []);
-
 
     return (
         <AppBar position="static">
             <Toolbar>
-                <Typography className={classes.title} variant="h6" noWrap>log/{user}</Typography>
+                <Typography className={classes.title} variant="h6" noWrap>log/{user?.userDetails}</Typography>
                 <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
                 <Tooltip title="Scroll list">
                     <ToggleButtonGroup

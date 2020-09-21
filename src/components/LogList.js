@@ -55,9 +55,6 @@ export default function LogList() {
     }
 
     const rowGetter = ({ index }) => {
-        if (!isOnline) {
-            return { line: (<Typography className={classes.lineInvalid}>{index + 1}</Typography>) }
-        }
         const item = logger.getCached(index)
         if (item === undefined || item === null) {
             return { line: (<Typography className={classes.lineInvalid}>{index + 1}</Typography>) }
