@@ -1,8 +1,18 @@
-let logItems = []
-let logId = new Date().toISOString()
-let lastTime = new Date().toISOString()
+let allLogItems = {}
+let defaultLogId = new Date().toISOString()
+let defaultLastTime = new Date().toISOString()
 
-exports.getLogs = (start, count) => {
+exports.getLogs = (clientPrincipal, start, count) => {
+    let logId = defaultLogId
+    let lastTime = defaultLastTime
+    let logItems = []
+    let userLogItems = allLogItems[clientPrincipal.userId]
+    if (userLogItems) {
+        logId = userLogItems.logId
+        lastTime = userLogItems.lastTime
+        logItems = userLogItems.logItems
+    }
+
     const total = logItems.length
 
     if (start >= total) {
@@ -40,7 +50,11 @@ exports.getLogs = (start, count) => {
     }
 }
 
-exports.addLogs = (items, generalProperties) => {
+exports.addLogs = (clientPrincipal, items, generalProperties) => {
+    if (!items || items.length === 0) {
+        // Nothing to add
+        return
+    }
     items.forEach(item => {
         if (item.properties) {
             item.properties = item.properties.concat(generalProperties)
@@ -48,14 +62,25 @@ exports.addLogs = (items, generalProperties) => {
             item.properties = generalProperties
         }
     });
-    logItems.push(...items)
-    lastTime = new Date()
+
+    let userLogItems = allLogItems[clientPrincipal.userId]
+    if (!userLogItems) {
+        // First add, init user log items
+        userLogItems = { logId: new Date().toISOString(), logItems: [] }
+    }
+
+    userLogItems.logItems.push(...items)
+    userLogItems.lastTime = new Date().toISOString()
+
+    allLogItems[clientPrincipal.userId] = userLogItems
 }
 
-exports.clearLogs = () => {
-    logItems = []
-    logId = new Date().toISOString()
-    lastTime = new Date()
+exports.clearLogs = (clientPrincipal) => {
+    let userLogItems = allLogItems[clientPrincipal.userId]
+    userLogItems.logItems = []
+    userLogItems.logId = new Date().toISOString()
+    userLogItems.lastTime = new Date().toISOString()
+    allLogItems[clientPrincipal.userId] = userLogItems
 }
 
 

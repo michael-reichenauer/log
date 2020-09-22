@@ -1,25 +1,10 @@
 var log = require('../Shared/Store.js');
+var auth = require('../Shared/auth.js');
 
 module.exports = async function (context, req) {
     context.log(`## Request: AddLogs`);
 
-    const header = req.headers["x-ms-client-principal"];
-    let clientPrincipal
-
-    if (header) {
-        const encoded = Buffer.from(header, "base64");
-        const decoded = encoded.toString("ascii");
-        clientPrincipal = JSON.parse(decoded)
-    }
-
-    if (!clientPrincipal) {
-        clientPrincipal = {
-            "identityProvider": "local",
-            "userId": 'local',
-            "userDetails": 'local',
-            "userRoles": ["anonymous", "authenticated"]
-        }
-    }
+    const clientPrincipal = auth.getClientPrincipal(req)
 
     if (req.query.logs || (req.body && req.body.logs)) {
         let logs = []
@@ -29,7 +14,7 @@ module.exports = async function (context, req) {
             logs = req.body.logs
         }
 
-        log.addLogs(logs, [clientPrincipal])
+        log.addLogs(clientPrincipal, logs, [clientPrincipal])
         context.log(`## AddLogs: added ${logs.length} logs`);
 
         context.res = {
