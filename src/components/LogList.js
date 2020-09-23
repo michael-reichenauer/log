@@ -7,6 +7,7 @@ import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useSnackbar } from "notistack";
 import { useActivity } from '../common/activity';
 import { useIsOnline, networkError } from '../common/online';
+import LogItem from './LogItem';
 const normalRefreshTimeout = 10 * 1000
 const fastRefreshTimeout = 500
 const refreshTimeout = 30 * 1000
@@ -67,7 +68,7 @@ export default function LogList() {
             msg: (
                 <>
                     <Typography noWrap className={classes.msg}>{item.msg}</Typography>
-                    <Typography noWrap className={classes.properties}>{JSON.stringify(item.properties)}</Typography>
+                    <LogItem index={index} item={item} />
                 </>
             ),
         }
