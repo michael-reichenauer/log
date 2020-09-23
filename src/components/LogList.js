@@ -67,7 +67,6 @@ export default function LogList() {
             time: (<Typography noWrap className={classes.time}>{time}</Typography>),
             msg: (
                 <>
-                    <Typography noWrap className={classes.msg}>{item.msg}</Typography>
                     <LogItem index={index + 1} item={item} />
                 </>
             ),

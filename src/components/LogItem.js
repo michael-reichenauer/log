@@ -5,15 +5,11 @@ import Highlight from 'react-highlight.js';
 const fontSize = 10
 
 const useStyles = makeStyles((theme) => ({
-    properties: {
-        fontSize: fontSize,
-        fontFamily: "Monospace",
-        paddingLeft: 5,
-        color: "gray"
-    },
     msg: {
+        cursor: 'pointer',
         fontSize: fontSize,
         fontFamily: "Monospace",
+        color: 'inherit'
     },
 }));
 
@@ -38,7 +34,7 @@ export default function LogItem({ index, item }) {
 
     return (
         <>
-            <Link className={classes.properties} onClick={handleClick}>...</Link>
+            <Link underline='none' className={classes.msg} onClick={handleClick}>{item.msg}</Link>
             <Popover
                 id={id}
                 open={open}
