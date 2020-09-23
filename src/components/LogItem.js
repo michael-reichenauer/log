@@ -1,4 +1,4 @@
-import { Link, makeStyles, Popover } from '@material-ui/core'
+import { Link, makeStyles, Paper, Popover, Typography } from '@material-ui/core'
 import React from 'react'
 import Highlight from 'react-highlight.js';
 
@@ -10,6 +10,10 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: "Monospace",
         paddingLeft: 5,
         color: "gray"
+    },
+    msg: {
+        fontSize: fontSize,
+        fontFamily: "Monospace",
     },
 }));
 
@@ -56,13 +60,18 @@ export default function LogItem({ index, item }) {
 }
 
 function Popup({ index, item }) {
+    const classes = useStyles();
     const time = dateToLocalISO(new Date(item.time).toISOString())
-    const text = `${index} ${time} ${item.level}:\n${item.msg}\n\n${JSON.stringify(item.properties, null, 2)}`
+    const text = `${JSON.stringify(item.properties, null, 2)}`
 
     return (
-        <Highlight language={'json'} style={{ fontSize: 10 }}>
-            {text}
-        </Highlight>
+        <Paper style={{ padding: 5, backgroundColor: '#1e1e1e' }}>
+            <Typography noWrap className={classes.msg}>{index} {time} {item.level}:</Typography>
+            <Typography noWrap className={classes.msg}>{item.msg}</Typography>
+            <Highlight language={'json'} style={{ fontSize: 10 }}>
+                {text}
+            </Highlight>
+        </Paper>
     )
 }
 

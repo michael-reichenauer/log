@@ -68,7 +68,7 @@ export default function LogList() {
             msg: (
                 <>
                     <Typography noWrap className={classes.msg}>{item.msg}</Typography>
-                    <LogItem index={index} item={item} />
+                    <LogItem index={index + 1} item={item} />
                 </>
             ),
         }
