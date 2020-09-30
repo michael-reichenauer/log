@@ -214,7 +214,9 @@ function useLogData(isActive, count) {
                 setLogId(logs.id)
                 setTotal(logs.total)
                 let refreshTimeout = normalRefreshTimeout
+                console.log(`logtime ${logTime} , ${logs.lastTime} (id: ${logs.id})`)
                 if (logTime !== logs.lastTime) {
+                    console.log(`logtime differs ${logTime} , ${logs.lastTime} (id: ${logs.id})`)
                     // Log data has changed get new data a little faster
                     refreshTimeout = fastRefreshTimeout
                 }

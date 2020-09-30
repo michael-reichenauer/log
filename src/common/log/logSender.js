@@ -1,4 +1,4 @@
-import { delay } from '../../utils/utils'
+import { delay, timeStamp } from '../../utils/utils'
 import { getLocalInfo } from '../info'
 
 
@@ -73,9 +73,9 @@ export class LogSender {
             }
             const body = JSON.stringify({ logs: this._logsSending })
             // console.log(`Sending logs ${this._logsSending.length}...`);
-            //const startSend = Date.now()
+            const st = timeStamp()
             const response = await fetch(`/api/AddLogs`, { method: 'post', body: body })
-
+            st.log('sendLogs done')
             if (!response.ok) {
                 throw new Error('Error: Status Code: ' + response.status);
             }

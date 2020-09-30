@@ -88,11 +88,11 @@ export default function ApplicationBar() {
 
 
 const sample = [
-    ['Frozen yoghurt'],
-    ['Eclair'],
-    ['Ice cream sandwich'],
-    ['Cupcake'],
-    ['Gingerbread'],
+    'Frozen yoghurt',
+    'Eclair',
+    'Ice cream sandwich',
+    'Cupcake',
+    'Gingerbread',
 ];
 
 

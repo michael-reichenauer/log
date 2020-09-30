@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { timeStamp } from '../../utils/utils';
 // import { timeStamp } from '../../utils/utils'
 
 var LRUCache = require('mnemonist/lru-cache');
@@ -36,7 +37,7 @@ export class LogGetter {
             }
         }
 
-        // var st = timeStamp();
+        var st = timeStamp();
         try {
             const data = await axios.get(url)
             const logs = data.data
@@ -60,7 +61,7 @@ export class LogGetter {
             throw err
         }
         finally {
-            //st.log('getRemote done')
+            st.log('getRemote done: ' + url)
         }
     }
 

@@ -1,19 +1,37 @@
+const azure = require('azure-storage');
+// Reference to the uuid package which helps us to create 
+// unique identifiers for our PartitionKey
+const { v4: uuidv4 } = require('uuid');
+
+// The TableService is used to send requests to the database
+const tableService = azure.createTableService();
+const baseTableName = 'logs'
+const entGen = azure.TableUtilities.entityGenerator;
+const partitionKeyName = 'log'
+const indexKeyName = 'index'
+
+
 let allLogItems = {}
-let defaultLogId = new Date().toISOString()
-let defaultLastTime = new Date().toISOString()
+// let defaultLogId = new Date().toISOString()
+// let defaultLastTime = new Date().toISOString()
 
-exports.getLogs = (clientPrincipal, start, count) => {
-    let logId = defaultLogId
-    let lastTime = defaultLastTime
-    let logItems = []
-    let userLogItems = allLogItems[clientPrincipal.userId]
-    if (userLogItems) {
-        logId = userLogItems.logId
-        lastTime = userLogItems.lastTime
-        logItems = userLogItems.logItems
+exports.getLogs = async (context, clientPrincipal, start, count) => {
+    const tableName = baseTableName + clientPrincipal.userId
+
+    let total = 0
+    let indexTime = new Date()
+    let indexTimestamp = indexTime
+    try {
+        const entity = await retrieveEntity(tableName, partitionKeyName, indexKeyName)
+        total = entity.index
+        indexTime = entity.time
+        indexTimestamp = entity.Timestamp
+        context.log(`got total: ${total}`)
+        context.log(`total entity: ${JSON.stringify(entity)}`)
+    } catch (err) {
+        // Nothing to do yet
+        context.log(`got no total yet, error: ${err}`)
     }
-
-    const total = logItems.length
 
     if (start >= total) {
         start = total
@@ -33,46 +51,87 @@ exports.getLogs = (clientPrincipal, start, count) => {
     if (start + count > total) {
         count = total - start
     }
+    context.log(`Getting: start: ${start}, count: ${count} of total: ${total}`)
 
-    // Copy the requested items
-    let items = []
-    for (let i = start; i < start + count; i += 1) {
-        const item = logItems[i]
-        items.push({ index: i, ...item })
+    if (count === 0 || total === 0) {
+        context.log(`No items to return: count: ${count}, total: ${total}`)
+        return {
+            id: indexTime,
+            lastTime: indexTimestamp,
+            start: start,
+            items: [],
+            total: total
+        }
     }
 
+
+    // Copy the requested items
+    const continuationToken = null
+    const startIndex = indexRowKey(start)
+    const endIndex = indexRowKey(start + count)
+    context.log(`query: ${startIndex} to < ${endIndex} of total: ${total}`)
+    var tableQuery = new azure.TableQuery()
+        .where('RowKey >= ?string? && RowKey < ?string?', startIndex, endIndex);
+
+    //context.log(`query: '${combinedFilter.toQueryObject()}'`)
+    const items = await queryEntities(tableName, tableQuery, continuationToken)
+    context.log(`queried: ${items.length} of total: ${total}`)
+    // context.log(`items: ${JSON.stringify(items)}`)
+
     return {
-        id: logId,
-        lastTime: lastTime,
+        id: indexTime,
+        lastTime: indexTimestamp,
         start: start, // Start might have been moved (if larger than total or count was negative)
         items: items,
         total: total
     }
 }
 
-exports.addLogs = (clientPrincipal, items, generalProperties) => {
+exports.addLogs = async (context, clientPrincipal, items, generalProperties) => {
     if (!items || items.length === 0) {
         // Nothing to add
         return
     }
-    items.forEach(item => {
-        if (item.properties) {
-            item.properties = item.properties.concat(generalProperties)
-        } else {
-            item.properties = generalProperties
-        }
-    });
+    const tableName = baseTableName + clientPrincipal.userId
 
-    let userLogItems = allLogItems[clientPrincipal.userId]
-    if (!userLogItems) {
-        // First add, init user log items
-        userLogItems = { logId: new Date().toISOString(), logItems: [] }
+    let index = 0
+    let indexTime = new Date()
+    try {
+        const entity = await retrieveEntity(tableName, partitionKeyName, indexKeyName)
+        index = entity.index
+        indexTime = entity.time
+        context.log(`got index: ${index}`)
+    } catch (err) {
+        context.log(`got no index yet, error: ${err}`)
+        await createTableIfNotExists(tableName)
     }
 
-    userLogItems.logItems.push(...items)
-    userLogItems.lastTime = new Date().toISOString()
+    const batch = new azure.TableBatch()
 
-    allLogItems[clientPrincipal.userId] = userLogItems
+    const indexItem = {
+        PartitionKey: entGen.String(partitionKeyName),
+        RowKey: entGen.String(indexKeyName),
+        index: entGen.Int32(index + items.length),
+        time: entGen.String(indexTime)
+    }
+    batch.insertOrReplaceEntity(indexItem)
+    ///context.log(`inserting index item: ${JSON.stringify(indexItem)}`)
+
+    items.forEach(item => {
+        if (item.properties) {
+            item.properties = JSON.stringify(item.properties.concat(generalProperties))
+        } else {
+            item.properties = JSON.stringify(generalProperties)
+        }
+        item.PartitionKey = entGen.String(partitionKeyName)
+        item.RowKey = entGen.String(indexRowKey(index))
+        item.index = index
+        index = index + 1
+        ///context.log(`inserting: ${JSON.stringify(item)}`)
+        batch.insertEntity(item)
+    })
+
+    await executeBatch(tableName, batch)
 }
 
 exports.clearLogs = (clientPrincipal) => {
@@ -84,3 +143,77 @@ exports.clearLogs = (clientPrincipal) => {
 }
 
 
+function createTableIfNotExists(tableName) {
+    return new Promise(function (resolve, reject) {
+        tableService.createTableIfNotExists(tableName, function (error, result) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(result);
+            }
+        })
+    });
+}
+
+function insertEntity(tableName, item) {
+    return new Promise(function (resolve, reject) {
+        tableService.insertEntity(tableName, item, function (error, result) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(result);
+            }
+        })
+    })
+}
+
+function executeBatch(tableName, batch) {
+    return new Promise(function (resolve, reject) {
+        tableService.executeBatch(tableName, batch, function (error, result) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(result);
+            }
+        })
+    })
+}
+
+
+function retrieveEntity(tableName, partitionKey, rowKey) {
+    return new Promise(function (resolve, reject) {
+        tableService.retrieveEntity(tableName, partitionKey, rowKey, function (error, result, response) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(response.body);
+            }
+        })
+    })
+}
+
+function queryEntities(tableName, tableQuery, continuationToken) {
+    return new Promise(function (resolve, reject) {
+        tableService.queryEntities(tableName, tableQuery, continuationToken, function (error, result, response) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(response.body.value);
+            }
+        })
+    })
+}
+
+function indexRowKey(index) {
+    return pad(index, 10)
+}
+
+function pad(num, size) {
+    var s = "000000000" + num;
+    return s.substr(s.length - size);
+}
