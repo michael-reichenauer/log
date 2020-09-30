@@ -25,7 +25,7 @@ export default function LogList() {
     const [isOnline] = useIsOnline()
     const [count] = useGlobal('count')
     const [isTop, setIsTop] = useGlobal('isTop')
-    const [total, setTotal] = useLogData(isActive, count)
+    const [total, setTotal] = useLogData(count)
     const classes = useTableStyles(isActive);
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [logId, setLogId] = useGlobal('logId')
@@ -67,7 +67,7 @@ export default function LogList() {
             time: (<Typography noWrap className={classes.time}>{time}</Typography>),
             msg: (
                 <>
-                    <LogItem index={index + 1} item={item} />
+                    <LogItem index={index + 1} item={item} isActive={isActive} />
                 </>
             ),
         }
@@ -185,8 +185,9 @@ function dateToLocalISO(dateText) {
 }
 
 
-function useLogData(isActive, count) {
+function useLogData(count) {
     const [total, setTotal] = useGlobal('total')
+    const [isActive] = useActivity()
     const [isOnline] = useIsOnline()
     const [, setLogId] = useGlobal('logId')
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -214,7 +215,7 @@ function useLogData(isActive, count) {
                 setLogId(logs.id)
                 setTotal(logs.total)
                 let refreshTimeout = normalRefreshTimeout
-                console.log(`logtime ${logTime} , ${logs.lastTime} (id: ${logs.id})`)
+                // console.log(`logtime ${logTime} , ${logs.lastTime} (id: ${logs.id})`)
                 if (logTime !== logs.lastTime) {
                     console.log(`logtime differs ${logTime} , ${logs.lastTime} (id: ${logs.id})`)
                     // Log data has changed get new data a little faster

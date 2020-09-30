@@ -9,13 +9,13 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         fontSize: fontSize,
         fontFamily: "Monospace",
-        color: 'inherit'
+        color: isActive => isActive ? 'inherit' : "gray"
     },
 }));
 
 
-export default function LogItem({ index, item }) {
-    const classes = useStyles();
+export default function LogItem({ isActive, index, item }) {
+    const classes = useStyles(isActive);
     // <Typography noWrap className={classes.properties}>{JSON.stringify(item.properties)}</Typography>
 
     const [anchorEl, setAnchorEl] = React.useState(null);

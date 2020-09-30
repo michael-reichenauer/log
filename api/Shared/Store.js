@@ -10,6 +10,7 @@ const entGen = azure.TableUtilities.entityGenerator;
 const partitionKeyName = 'log'
 const indexKeyName = 'index'
 
+const maxBatchSize = 100
 
 let allLogItems = {}
 // let defaultLogId = new Date().toISOString()
@@ -19,15 +20,15 @@ exports.getLogs = async (context, clientPrincipal, start, count) => {
     const tableName = baseTableName + clientPrincipal.userId
 
     let total = 0
-    let indexTime = new Date()
-    let indexTimestamp = indexTime
+    let indexTime = ''
+    let indexTimestamp = ''
     try {
         const entity = await retrieveEntity(tableName, partitionKeyName, indexKeyName)
         total = entity.index
         indexTime = entity.time
         indexTimestamp = entity.Timestamp
         context.log(`got total: ${total}`)
-        context.log(`total entity: ${JSON.stringify(entity)}`)
+        //context.log(`total entity: ${JSON.stringify(entity)}`)
     } catch (err) {
         // Nothing to do yet
         context.log(`got no total yet, error: ${err}`)
@@ -94,42 +95,59 @@ exports.addLogs = async (context, clientPrincipal, items, generalProperties) => 
     }
     const tableName = baseTableName + clientPrincipal.userId
 
-    let index = 0
+    let nextIndex = 0
     let indexTime = new Date()
     try {
         const entity = await retrieveEntity(tableName, partitionKeyName, indexKeyName)
-        index = entity.index
+        nextIndex = entity.index
         indexTime = entity.time
-        context.log(`got index: ${index}`)
+        context.log(`got index: ${nextIndex}`)
     } catch (err) {
         context.log(`got no index yet, error: ${err}`)
         await createTableIfNotExists(tableName)
     }
 
+    let startIndex = 0
+    do {
+        const batchSize = Math.min(items.length - startIndex, maxBatchSize - 1)
+        //context.log(`batch: index before:  start: ${startIndex}, size:${batchSize}, next: ${nextIndex},`)
+        await insertBatch(context, tableName, items, startIndex, nextIndex, indexTime, batchSize, generalProperties)
+
+        nextIndex = nextIndex + batchSize
+        startIndex = startIndex + batchSize
+        // context.log(`batch: index after: start: ${startIndex}, next: ${nextIndex},`)
+    } while (startIndex < items.length)
+
+}
+
+async function insertBatch(context, tableName, items, startIndex, nextIndex, indexTime, batchSize, generalProperties) {
     const batch = new azure.TableBatch()
 
     const indexItem = {
         PartitionKey: entGen.String(partitionKeyName),
         RowKey: entGen.String(indexKeyName),
-        index: entGen.Int32(index + items.length),
+        index: entGen.Int32(nextIndex + batchSize),
         time: entGen.String(indexTime)
     }
     batch.insertOrReplaceEntity(indexItem)
-    ///context.log(`inserting index item: ${JSON.stringify(indexItem)}`)
+    //context.log(`inserting index item: ${JSON.stringify(indexItem)}`)
+    //context.log(`insertBatch before:  start: ${startIndex}, size:${batchSize}, next: ${nextIndex},`)
 
-    items.forEach(item => {
+    for (let i = 0; i < batchSize; i++) {
+        const item = items[i + startIndex]
+        // context.log(`item: ${i + startIndex} at index: ${nextIndex + i}`)
         if (item.properties) {
             item.properties = JSON.stringify(item.properties.concat(generalProperties))
         } else {
             item.properties = JSON.stringify(generalProperties)
         }
         item.PartitionKey = entGen.String(partitionKeyName)
-        item.RowKey = entGen.String(indexRowKey(index))
-        item.index = index
-        index = index + 1
+        item.RowKey = entGen.String(indexRowKey(nextIndex + i))
+        item.index = nextIndex + i
+
         ///context.log(`inserting: ${JSON.stringify(item)}`)
         batch.insertEntity(item)
-    })
+    }
 
     await executeBatch(tableName, batch)
 }
