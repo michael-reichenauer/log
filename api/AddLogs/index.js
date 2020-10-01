@@ -7,9 +7,6 @@ module.exports = async function (context, req) {
         context.log(`## Request: AddLogs`);
         const clientPrincipal = auth.getClientPrincipal(req)
         const info = clientInfo.getInfo(context, req)
-        context.log(`context: ${JSON.stringify(context)}`)
-        context.log(`request: ${JSON.stringify(req)}`)
-
 
         if (!req.query.logs && (!req.body || !req.body.logs)) {
             throw new Error('No log items provided')
