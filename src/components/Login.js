@@ -46,11 +46,6 @@ export default function Login() {
                         <ListItemText primary="Local1" />
                     </ListItemLink>
                 }
-                {isLocalDev &&
-                    <ListItemLink onClick={() => loginLocal('local2')}>
-                        <ListItemText primary="Local2" />
-                    </ListItemLink>
-                }
             </List>
         </>
     )

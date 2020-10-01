@@ -43,15 +43,15 @@ export const useAppVersionMonitor = () => {
                 // console.log(`Got remote manifest`, manifest)
                 const remoteSha = manifest.sha === '%REACT_APP_SHA%' ? '' : manifest.sha
                 const remoteBuildTime = manifest.buildTime === '%REACT_APP_BUILD_TIME%' ? '' : manifest.buildTime
-                log.info(`Checked: "${localSha.substring(0, 6)}" "${localBuildTime}"`)
+
+                log.info(`Remote version: '${remoteSha.substring(0, 6)}' '${remoteBuildTime}'`)
                 setRemoteVersion({ sha: remoteSha, buildTime: remoteBuildTime })
                 if (localSha !== remoteSha && localSha !== '' && remoteSha !== '') {
-                    log.info(`Remote: "${remoteSha.substring(0, 6)}" "${remoteBuildTime}""`)
+                    log.info(`Local version: '${localSha.substring(0, 6)}' '${localBuildTime}'`)
                     log.info("Remote version differs, reloading ...")
                     logger.flush().then(() => window.location.reload(true))
                 }
                 timeout = setTimeout(getRemoteVersion, checkRemoteInterval)
-                console.log('remote; ', `'${remoteBuildTime}'`)
             }
             catch (err) {
                 console.error("Failed get remote manifest:", err)

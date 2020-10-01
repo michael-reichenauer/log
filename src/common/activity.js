@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-
+import log from './log/log'
 
 const activityTimeout = 60 * 1000
 const activityMargin = 1000
@@ -23,7 +23,7 @@ export function useActivityMonitor() {
             }
 
             // Toggle active = true
-            console.log("Active")
+            log.info("Active")
             isDocumentActive = true
             activityStartTime = activityTime
 
@@ -44,7 +44,7 @@ export function useActivityMonitor() {
             }
 
             // Toggle active = false
-            console.log(`Inactive (total: ${Date.now() - activityStartTime} ms)`)
+            log.info(`Inactive (total: ${Date.now() - activityStartTime} ms)`)
             isDocumentActive = false
             activityStartTime = 0
 

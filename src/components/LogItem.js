@@ -58,7 +58,7 @@ export default function LogItem({ isActive, index, item }) {
 function Popup({ index, item }) {
     const classes = useStyles();
     const time = dateToLocalISO(new Date(item.time).toISOString())
-    const text = `${JSON.stringify(item.properties, null, 2)}`
+    const text = `${JSON.stringify(JSON.parse(item.properties), null, 2)}`
 
     return (
         <Paper style={{ padding: 5, backgroundColor: '#1e1e1e' }}>

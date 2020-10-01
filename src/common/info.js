@@ -1,4 +1,4 @@
-const infoLocalStorageName = 'info'
+const infoLocalStorageName = 'instanceInfo'
 
 let localInfo
 export const isLocalDev = process.env.REACT_APP_SHA === '%REACT_APP_SHA%'
@@ -10,9 +10,9 @@ export const getLocalInfo = () => {
 
     let localText = localStorage.getItem(infoLocalStorageName)
     if (!localText) {
-        const id = Math.random().toString(36).substring(2, 15);
+        const logInstanceID = Math.random().toString(36).substring(2, 15);
         console.log(`Initialize local storage`)
-        localText = JSON.stringify({ id: id })
+        localText = JSON.stringify({ logInstanceID: logInstanceID })
         localStorage.setItem(infoLocalStorageName, localText)
     }
     localInfo = JSON.parse(localText)
