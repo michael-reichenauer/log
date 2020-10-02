@@ -6,9 +6,10 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { logger } from '../common/log/log'
-import { useAppVersion } from '../common/appVersion'
 import { isLocalDev } from '../common/info'
 import { useUser } from "../common/auth";
+import { Popover } from "@material-ui/core";
+import About from "./About";
 
 const useMenuStyles = makeStyles((theme) => ({
     menuButton: {
@@ -19,10 +20,10 @@ const useMenuStyles = makeStyles((theme) => ({
 
 export function ApplicationMenu() {
     const classes = useMenuStyles();
-    const version = useAppVersion();
     const [, setUser] = useUser()
 
     const [menu, setMenu] = useState(null);
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleLogout = () => {
         setMenu(null);
@@ -38,17 +39,32 @@ export function ApplicationMenu() {
         logger.flush().then(() => window.location.reload(true))
     };
 
+
+
+    const handleAbout = (event) => {
+        setMenu(null);
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseAbout = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
     return (
-        <><Tooltip title="Customize and control">
-            <IconButton
-                edge="start"
-                className={classes.menuButton}
-                color="inherit"
-                onClick={e => setMenu(e.currentTarget)}
-            >
-                <MenuIcon />
-            </IconButton>
-        </Tooltip>
+        <>
+            <Tooltip title="Customize and control">
+                <IconButton
+                    edge="start"
+                    className={classes.menuButton}
+                    color="inherit"
+                    onClick={e => setMenu(e.currentTarget)}
+                >
+                    <MenuIcon />
+                </IconButton>
+            </Tooltip>
             <Menu
                 anchorEl={menu}
                 keepMounted
@@ -62,11 +78,26 @@ export function ApplicationMenu() {
             >
                 <MenuItem disabled={false} onClick={handleLogout}>Logout</MenuItem>
                 <MenuItem disabled={false} onClick={handleReload}>Reload</MenuItem>
-                <MenuItem disabled={true} >Local: '{version.localSha.substring(0, 6)}'</MenuItem>
-                <MenuItem disabled={true} >  {version.localBuildTime}</MenuItem>
-                <MenuItem disabled={true} >Remote: '{version.remoteSha.substring(0, 6)}'</MenuItem>
-                <MenuItem disabled={true} >  {version.remoteBuildTime}</MenuItem>
+                <MenuItem disabled={false} onClick={handleAbout}>About</MenuItem>
             </Menu>
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleCloseAbout}
+                anchorReference="anchorPosition"
+                anchorPosition={{ top: 200, left: 400 }}
+                anchorOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+            >
+                <About />
+            </Popover>
         </>
     )
 }
