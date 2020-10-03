@@ -193,11 +193,11 @@ function useLogData(count) {
     const [, setLogId] = useGlobal('logId')
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const timerRef = useRef();
+    const logTimeRef = useRef();
     const [, setIsLoading] = useLoading()
     const isRunning = useRef(false)
 
     useEffect(() => {
-        let logTime
         let snackbar
         const handleError = () => {
             snackbar = enqueueSnackbar("Failed to access server to get log",
@@ -223,13 +223,13 @@ function useLogData(count) {
                 setLogId(logs.id)
                 setTotal(logs.total)
                 let refreshTimeout = normalRefreshTimeout
-                // console.log(`logtime ${logTime} , ${logs.lastTime} (id: ${logs.id})`)
-                if (logTime !== logs.lastTime) {
-                    console.log(`logtime differs ${logTime} , ${logs.lastTime} (id: ${logs.id})`)
+                // console.log(`logtime ${logTimeRef.current} , ${logs.lastTime} (id: ${logs.id})`)
+                if (logTimeRef.current !== logs.lastTime) {
+                    console.log(`logtime differs ${logTimeRef.current} , ${logs.lastTime} (id: ${logs.id})`)
                     // Log data has changed get new data a little faster
                     refreshTimeout = fastRefreshTimeout
                 }
-                logTime = logs.lastTime
+                logTimeRef.current = logs.lastTime
                 if (isRunning.current) {
                     timerRef.current = setTimeout(updateLogData, refreshTimeout)
                 }

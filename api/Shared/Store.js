@@ -9,12 +9,8 @@ const baseTableName = 'logs'
 const entGen = azure.TableUtilities.entityGenerator;
 const partitionKeyName = 'log'
 const indexKeyName = 'index'
-
 const maxBatchSize = 100
 
-let allLogItems = {}
-// let defaultLogId = new Date().toISOString()
-// let defaultLastTime = new Date().toISOString()
 
 exports.getLogs = async (context, clientPrincipal, start, count) => {
     const tableName = baseTableName + clientPrincipal.userId
@@ -146,19 +142,16 @@ async function insertBatch(context, tableName, items, startIndex, nextIndex, ind
         item.RowKey = entGen.String(indexRowKey(nextIndex + i))
         item.index = nextIndex + i
 
-        context.log(`inserting: ${JSON.stringify(item)}`)
+        //context.log(`inserting: ${JSON.stringify(item)}`)
         batch.insertEntity(item)
     }
 
     await executeBatch(tableName, batch)
 }
 
-exports.clearLogs = (clientPrincipal) => {
-    let userLogItems = allLogItems[clientPrincipal.userId]
-    userLogItems.logItems = []
-    userLogItems.logId = new Date().toISOString()
-    userLogItems.lastTime = new Date().toISOString()
-    allLogItems[clientPrincipal.userId] = userLogItems
+exports.clearLogs = async (clientPrincipal) => {
+    // const tableName = baseTableName + clientPrincipal.userId
+    // await deleteTableIfExists(tableName)
 }
 
 
@@ -223,6 +216,19 @@ function queryEntities(tableName, tableQuery, continuationToken) {
             }
             else {
                 resolve(response.body.value);
+            }
+        })
+    })
+}
+
+function deleteTableIfExists(tableName,) {
+    return new Promise(function (resolve, reject) {
+        tableService.deleteTableIfExists(tableName, function (error, result) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve();
             }
         })
     })

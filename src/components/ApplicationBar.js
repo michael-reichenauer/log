@@ -3,7 +3,7 @@ import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } fro
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
 import log, { logger } from '../common/log/log'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import PublishIcon from '@material-ui/icons/Publish';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
@@ -21,10 +21,10 @@ export default function ApplicationBar() {
     const [, setTotal] = useGlobal('total')
 
     const classes = useAppBarStyles();
-    const clearList = async () => {
-        await logger.clear()
-        setCount(count + 1)
-    }
+    // const clearList = async () => {
+    //     await logger.clear()
+    //     setCount(count + 1)
+    // }
     const handleRefresh = async () => {
         logger.clear()
         setTotal(0)
@@ -35,7 +35,7 @@ export default function ApplicationBar() {
         for (let i = 0; i < 10; i += 1) {
             log.info(sample[i % sample.length])
         }
-        logger.flush().then(() => handleRefresh())
+        logger.flush().then(() => setCount(count + 1))
     }
 
     const handleScroll = (_, newScroll) => {
@@ -69,7 +69,7 @@ export default function ApplicationBar() {
                 </Tooltip>
 
                 <Tooltip title="Add random logs"><IconButton onClick={handleAddRandomLogs}><PlaylistAddIcon /></IconButton></Tooltip>
-                <Tooltip title="Clear list"><IconButton onClick={clearList}><CheckBoxOutlineBlankIcon /></IconButton></Tooltip>
+                {/* <Tooltip title="Clear list"><IconButton onClick={clearList}><CheckBoxOutlineBlankIcon /></IconButton></Tooltip> */}
                 <ApplicationMenu />
                 <div className={classes.search}>
                     <div className={classes.searchIcon}>

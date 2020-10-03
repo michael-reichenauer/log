@@ -7,7 +7,7 @@ import { useSnackbar } from "notistack";
 import { networkError } from './online'
 import { useLoading } from '../components/LoadProgress';
 
-const checkRemoteInterval = 1 * 60 * 1000
+const checkRemoteInterval = 30 * 60 * 1000
 const retryFailedRemoteInterval = 5 * 60 * 1000
 
 setGlobal({ ...getGlobal(), remoteVersion: { sha: '', buildTime: '' } })
