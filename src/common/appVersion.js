@@ -29,6 +29,7 @@ export const useAppVersionMonitor = () => {
         clearTimeout(timerRef.current)
         const getRemoteVersion = async () => {
             if (!isActive || !isRunning.current) {
+                isRunning.current = false
                 clearTimeout(timerRef.current)
                 return
             }

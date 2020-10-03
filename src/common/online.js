@@ -70,7 +70,7 @@ export function useOnlineMonitor() {
         let onlineTimeout
         const checkOnline = async () => {
             try {
-                // console.log(`Check online ...`)
+                console.log(`Check online ...`)
                 setIsLoading(true)
                 if (isLocalDev) {
                     const data = await axios.get(`/api/IsReady`)

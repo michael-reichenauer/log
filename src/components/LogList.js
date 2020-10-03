@@ -212,6 +212,7 @@ function useLogData(count) {
             clearTimeout(timerRef.current)
             try {
                 if (!isActive || !isOnline || !isRunning.current) {
+                    isRunning.current = false
                     clearTimeout(timerRef.current)
                     return
                 }
