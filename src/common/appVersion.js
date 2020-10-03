@@ -5,6 +5,7 @@ import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { useActivity } from './activity'
 import { useSnackbar } from "notistack";
 import { networkError } from './online'
+import { useLoading } from '../components/LoadProgress';
 
 const checkRemoteInterval = 1 * 60 * 1000
 const retryFailedRemoteInterval = 5 * 60 * 1000
@@ -21,7 +22,7 @@ export const useAppVersionMonitor = () => {
     const [, setRemoteVersion] = useGlobal('remoteVersion')
     const [isActive] = useActivity()
     const timerRef = useRef();
-    const [, setIsLoading] = useGlobal('isLoading')
+    const [, setIsLoading] = useLoading()
 
     useEffect(() => {
         clearTimeout(timerRef.current)

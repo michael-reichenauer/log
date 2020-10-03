@@ -8,6 +8,7 @@ import { useSnackbar } from "notistack";
 import { useActivity } from '../common/activity';
 import { useIsOnline, networkError } from '../common/online';
 import LogItem from './LogItem';
+import { useLoading } from './LoadProgress';
 const normalRefreshTimeout = 10 * 1000
 const fastRefreshTimeout = 500
 const refreshTimeout = 30 * 1000
@@ -192,7 +193,7 @@ function useLogData(count) {
     const [, setLogId] = useGlobal('logId')
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const timerRef = useRef();
-    const [, setIsLoading] = useGlobal('isLoading')
+    const [, setIsLoading] = useLoading()
 
     useEffect(() => {
         let logTime

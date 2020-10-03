@@ -4,6 +4,7 @@ import { useGlobal, setGlobal, getGlobal } from 'reactn'
 import { isLocalDev } from './info'
 import axios from 'axios';
 import { useUser } from './auth';
+import { useLoading } from '../components/LoadProgress';
 
 const onlineRecheckInterval = 15 * 1000
 const onlineCheckInterval = 20 * 1000
@@ -54,6 +55,7 @@ export function useOnlineMonitor() {
     const [isActive] = useActivity()
     const [isOnline, setIsOnline] = useIsOnline()
     const [user, setUser] = useUser()
+    const [, setIsLoading] = useLoading()
     const userId = user?.userId
 
     useEffect(() => {
@@ -69,6 +71,7 @@ export function useOnlineMonitor() {
         const checkOnline = async () => {
             try {
                 // console.log(`Check online ...`)
+                setIsLoading(true)
                 if (isLocalDev) {
                     const data = await axios.get(`/api/IsReady`)
                     const response = data.data
@@ -106,6 +109,9 @@ export function useOnlineMonitor() {
                     onlineTimeout = setTimeout(checkOnline, onlineRecheckInterval)
                 }
             }
+            finally {
+                setIsLoading(false)
+            }
         }
 
 
@@ -115,7 +121,5 @@ export function useOnlineMonitor() {
             clearTimeout(onlineTimeout)
             onlineTimeout = null
         }
-
-
-    }, [isActive, isOnline, setIsOnline, setUser, userId])
+    }, [isActive, isOnline, setIsOnline, setUser, userId, setIsLoading])
 }

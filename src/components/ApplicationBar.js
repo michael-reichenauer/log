@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip, Fade, CircularProgress } from "@material-ui/core";
+import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
 import log, { logger } from '../common/log/log'
@@ -12,12 +12,12 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
 import RefreshIcon from '@material-ui/icons/Refresh';
+import LoadProgress from "./LoadProgress";
 
 export default function ApplicationBar() {
     const [isTop, setIsTop] = useGlobal('isTop')
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
-    const [isLoading] = useGlobal('isLoading')
     const [, setTotal] = useGlobal('total')
 
     const classes = useAppBarStyles();
@@ -32,7 +32,7 @@ export default function ApplicationBar() {
     }
 
     const handleAddRandomLogs = () => {
-        for (let i = 0; i < 1000; i += 1) {
+        for (let i = 0; i < 10; i += 1) {
             log.info(sample[i % sample.length])
         }
         logger.flush().then(() => handleRefresh())
@@ -54,15 +54,7 @@ export default function ApplicationBar() {
         <AppBar position="static">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-                <Fade
-                    in={isLoading}
-                    style={{
-                        transitionDelay: isLoading ? '800ms' : '0ms',
-                    }}
-                    unmountOnExit
-                >
-                    <CircularProgress color="secondary" />
-                </Fade>
+                <LoadProgress />
                 <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
                 <Tooltip title="Scroll list">
                     <ToggleButtonGroup
