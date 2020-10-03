@@ -14,7 +14,7 @@ module.exports = async function (context, req) {
         let logs = (req.query.logs) ? JSON.parse(req.query.logs) : req.body.logs
 
         context.log(`## AddLogs: adding ${logs.length} logs`);
-        await log.addLogs(context, clientPrincipal, logs, [info])
+        await log.addLogs(context, clientPrincipal, logs, info)
         context.log(`## AddLogs: added ${logs.length} logs`);
 
         context.res = { status: 200, body: "" };

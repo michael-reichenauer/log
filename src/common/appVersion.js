@@ -23,11 +23,12 @@ export const useAppVersionMonitor = () => {
     const [isActive] = useActivity()
     const timerRef = useRef();
     const [, setIsLoading] = useLoading()
+    const isRunning = useRef(false)
 
     useEffect(() => {
         clearTimeout(timerRef.current)
         const getRemoteVersion = async () => {
-            if (!isActive) {
+            if (!isActive || !isRunning.current) {
                 clearTimeout(timerRef.current)
                 return
             }
@@ -49,6 +50,7 @@ export const useAppVersionMonitor = () => {
                 const remoteSha = manifest.sha === '%REACT_APP_SHA%' ? '' : manifest.sha
                 const remoteBuildTime = manifest.buildTime === '%REACT_APP_BUILD_TIME%' ? '' : manifest.buildTime
 
+                console.log(`Checking remote, active=${isActive} ...`)
                 log.info(`Remote version: '${remoteSha.substring(0, 6)}' '${remoteBuildTime}'`)
                 setRemoteVersion({ sha: remoteSha, buildTime: remoteBuildTime })
                 if (localSha !== remoteSha && localSha !== '' && remoteSha !== '') {
@@ -56,22 +58,31 @@ export const useAppVersionMonitor = () => {
                     log.info("Remote version differs, reloading ...")
                     logger.flush().then(() => window.location.reload(true))
                 }
-                timerRef.current = setTimeout(getRemoteVersion, checkRemoteInterval)
+                if (!isRunning.current) {
+                    timerRef.current = setTimeout(getRemoteVersion, checkRemoteInterval)
+                }
+
             }
             catch (err) {
                 console.error("Failed get remote manifest:", err)
                 handleError()
                 networkError(err)
-                timerRef.current = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
+                if (!isRunning.current) {
+                    timerRef.current = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
+                }
             }
             finally {
                 setIsLoading(false)
             }
         }
+        isRunning.current = true
         getRemoteVersion()
 
-        return () => { clearTimeout(timerRef.current) }
-    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar, timerRef, setIsLoading])
+        return () => {
+            isRunning.current = false
+            clearTimeout(timerRef.current)
+        }
+    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar, timerRef, setIsLoading, isRunning])
 
     return
 }

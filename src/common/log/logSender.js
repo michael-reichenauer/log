@@ -12,8 +12,8 @@ export class LogSender {
 
 
     addMsg = (level, msg, properties) => {
-        const prop = [this._defaultProperties]
-        prop.push(...properties)
+        let prop = { ...this._defaultProperties }
+        properties.forEach(p => { prop = { ...prop, ...p } })
 
         const logMsg = { level: level, time: new Date(), msg: msg, properties: prop }
         this._logs.push(logMsg)

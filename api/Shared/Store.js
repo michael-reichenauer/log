@@ -137,7 +137,8 @@ async function insertBatch(context, tableName, items, startIndex, nextIndex, ind
         const item = items[i + startIndex]
         // context.log(`item: ${i + startIndex} at index: ${nextIndex + i}`)
         if (item.properties) {
-            item.properties = JSON.stringify(item.properties.concat(generalProperties))
+            const prop = { ...item.properties, ...generalProperties }
+            item.properties = JSON.stringify(prop)
         } else {
             item.properties = JSON.stringify(generalProperties)
         }
@@ -145,7 +146,7 @@ async function insertBatch(context, tableName, items, startIndex, nextIndex, ind
         item.RowKey = entGen.String(indexRowKey(nextIndex + i))
         item.index = nextIndex + i
 
-        ///context.log(`inserting: ${JSON.stringify(item)}`)
+        context.log(`inserting: ${JSON.stringify(item)}`)
         batch.insertEntity(item)
     }
 

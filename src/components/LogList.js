@@ -194,6 +194,7 @@ function useLogData(count) {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const timerRef = useRef();
     const [, setIsLoading] = useLoading()
+    const isRunning = useRef(false)
 
     useEffect(() => {
         let logTime
@@ -210,7 +211,7 @@ function useLogData(count) {
         const updateLogData = async () => {
             clearTimeout(timerRef.current)
             try {
-                if (!isActive || !isOnline) {
+                if (!isActive || !isOnline || !isRunning.current) {
                     clearTimeout(timerRef.current)
                     return
                 }
@@ -228,14 +229,19 @@ function useLogData(count) {
                     refreshTimeout = fastRefreshTimeout
                 }
                 logTime = logs.lastTime
-                timerRef.current = setTimeout(updateLogData, refreshTimeout)
+                if (isRunning.current) {
+                    timerRef.current = setTimeout(updateLogData, refreshTimeout)
+                }
                 closeSnackbar(snackbar)
             }
             catch (err) {
                 console.error("Failed to update:", err)
                 handleError()
                 networkError(err)
-                timerRef.current = setTimeout(updateLogData, refreshTimeout)
+                if (isRunning.current) {
+
+                    timerRef.current = setTimeout(updateLogData, refreshTimeout)
+                }
             }
             finally {
                 setIsLoading(false)
@@ -248,12 +254,15 @@ function useLogData(count) {
         }
 
         if (isActive) {
+            isRunning.current = true
             updateLogData()
         } else {
             clearTimeout(timerRef.current)
         }
 
+
         return () => {
+            isRunning.current = false
             clearTimeout(timerRef.current)
             closeSnackbar(snackbar)
         }
