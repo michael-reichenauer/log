@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
+import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip, Fade, CircularProgress } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
 import log, { logger } from '../common/log/log'
@@ -17,7 +17,7 @@ export default function ApplicationBar() {
     const [isTop, setIsTop] = useGlobal('isTop')
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
-    const [user] = useGlobal('user')
+    const [isLoading] = useGlobal('isLoading')
     const [, setTotal] = useGlobal('total')
 
     const classes = useAppBarStyles();
@@ -53,7 +53,16 @@ export default function ApplicationBar() {
     return (
         <AppBar position="static">
             <Toolbar>
-                <Typography className={classes.title} variant="h6" noWrap>log/{user?.userDetails}</Typography>
+                <Typography className={classes.title} variant="h6" noWrap>log</Typography>
+                <Fade
+                    in={isLoading}
+                    style={{
+                        transitionDelay: isLoading ? '800ms' : '0ms',
+                    }}
+                    unmountOnExit
+                >
+                    <CircularProgress color="secondary" />
+                </Fade>
                 <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
                 <Tooltip title="Scroll list">
                     <ToggleButtonGroup

@@ -192,6 +192,7 @@ function useLogData(count) {
     const [, setLogId] = useGlobal('logId')
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const timerRef = useRef();
+    const [, setIsLoading] = useGlobal('isLoading')
 
     useEffect(() => {
         let logTime
@@ -212,7 +213,9 @@ function useLogData(count) {
                     clearTimeout(timerRef.current)
                     return
                 }
+                setIsLoading(true)
                 const logs = await logger.getRemote(0, 0)
+                setIsLoading(false)
 
                 setLogId(logs.id)
                 setTotal(logs.total)
@@ -233,6 +236,9 @@ function useLogData(count) {
                 networkError(err)
                 timerRef.current = setTimeout(updateLogData, refreshTimeout)
             }
+            finally {
+                setIsLoading(false)
+            }
         }
 
         if (!isOnline) {
@@ -250,7 +256,7 @@ function useLogData(count) {
             clearTimeout(timerRef.current)
             closeSnackbar(snackbar)
         }
-    }, [isActive, isOnline, setTotal, setLogId, count, enqueueSnackbar, closeSnackbar, timerRef])
+    }, [isActive, isOnline, setTotal, setLogId, count, enqueueSnackbar, closeSnackbar, timerRef, setIsLoading])
 
     return [total, setTotal]
 }

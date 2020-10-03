@@ -21,6 +21,7 @@ export const useAppVersionMonitor = () => {
     const [, setRemoteVersion] = useGlobal('remoteVersion')
     const [isActive] = useActivity()
     const timerRef = useRef();
+    const [, setIsLoading] = useGlobal('isLoading')
 
     useEffect(() => {
         clearTimeout(timerRef.current)
@@ -40,6 +41,7 @@ export const useAppVersionMonitor = () => {
 
             try {
                 // console.log(`getting manifest ...`)
+                setIsLoading(true)
                 const data = await axios.get('/manifest.json')
                 const manifest = data.data
                 // console.log(`Got remote manifest`, manifest)
@@ -61,11 +63,14 @@ export const useAppVersionMonitor = () => {
                 networkError(err)
                 timerRef.current = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
             }
+            finally {
+                setIsLoading(false)
+            }
         }
         getRemoteVersion()
 
         return () => { clearTimeout(timerRef.current) }
-    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar, timerRef])
+    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar, timerRef, setIsLoading])
 
     return
 }
