@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Typography from '@material-ui/core/Typography';
 import { VirtualizedTable } from "./VirtualizedTable";
 import { logger } from "../common/log/log"
@@ -191,10 +191,10 @@ function useLogData(count) {
     const [isOnline] = useIsOnline()
     const [, setLogId] = useGlobal('logId')
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const timerRef = useRef();
 
     useEffect(() => {
         let logTime
-        let timerId
         let snackbar
         const handleError = () => {
             snackbar = enqueueSnackbar("Failed to access server to get log",
@@ -206,8 +206,10 @@ function useLogData(count) {
         }
 
         const updateLogData = async () => {
+            clearTimeout(timerRef.current)
             try {
                 if (!isActive || !isOnline) {
+                    clearTimeout(timerRef.current)
                     return
                 }
                 const logs = await logger.getRemote(0, 0)
@@ -222,33 +224,33 @@ function useLogData(count) {
                     refreshTimeout = fastRefreshTimeout
                 }
                 logTime = logs.lastTime
-                timerId = setTimeout(updateLogData, refreshTimeout)
+                timerRef.current = setTimeout(updateLogData, refreshTimeout)
                 closeSnackbar(snackbar)
             }
             catch (err) {
                 console.error("Failed to update:", err)
                 handleError()
                 networkError(err)
-                timerId = setTimeout(updateLogData, refreshTimeout)
+                timerRef.current = setTimeout(updateLogData, refreshTimeout)
             }
         }
 
         if (!isOnline) {
-            clearTimeout(timerId)
+            clearTimeout(timerRef.current)
             return
         }
 
         if (isActive) {
             updateLogData()
         } else {
-            clearTimeout(timerId)
+            clearTimeout(timerRef.current)
         }
 
         return () => {
-            clearTimeout(timerId)
+            clearTimeout(timerRef.current)
             closeSnackbar(snackbar)
         }
-    }, [isActive, isOnline, setTotal, setLogId, count, enqueueSnackbar, closeSnackbar])
+    }, [isActive, isOnline, setTotal, setLogId, count, enqueueSnackbar, closeSnackbar, timerRef])
 
     return [total, setTotal]
 }

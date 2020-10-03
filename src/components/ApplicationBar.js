@@ -18,13 +18,16 @@ export default function ApplicationBar() {
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
     const [user] = useGlobal('user')
+    const [, setTotal] = useGlobal('total')
 
     const classes = useAppBarStyles();
     const clearList = async () => {
         await logger.clear()
-        handleRefresh()
+        setCount(count + 1)
     }
-    const handleRefresh = () => {
+    const handleRefresh = async () => {
+        logger.clear()
+        setTotal(0)
         setCount(count + 1)
     }
 

@@ -19,6 +19,7 @@ class Logger {
     }
 
     clear = async () => { this.logGetter.clear(); await this.logSender.clear() }
+    refresh = () => { this.logGetter.clear(); }
     flush = () => this.logSender.flush()
     getCached = index => this.logGetter.getCached(index)
     isCached = index => this.logGetter.isCached(index)

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import axios from 'axios';
 import log, { logger } from './log/log'
 import { useGlobal, setGlobal, getGlobal } from 'reactn'
@@ -20,11 +20,13 @@ export const useAppVersionMonitor = () => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [, setRemoteVersion] = useGlobal('remoteVersion')
     const [isActive] = useActivity()
+    const timerRef = useRef();
 
     useEffect(() => {
-        let timeout
+        clearTimeout(timerRef.current)
         const getRemoteVersion = async () => {
             if (!isActive) {
+                clearTimeout(timerRef.current)
                 return
             }
             const handleError = () => {
@@ -51,19 +53,19 @@ export const useAppVersionMonitor = () => {
                     log.info("Remote version differs, reloading ...")
                     logger.flush().then(() => window.location.reload(true))
                 }
-                timeout = setTimeout(getRemoteVersion, checkRemoteInterval)
+                timerRef.current = setTimeout(getRemoteVersion, checkRemoteInterval)
             }
             catch (err) {
                 console.error("Failed get remote manifest:", err)
                 handleError()
                 networkError(err)
-                timeout = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
+                timerRef.current = setTimeout(getRemoteVersion, retryFailedRemoteInterval)
             }
         }
         getRemoteVersion()
 
-        return () => { clearTimeout(timeout) }
-    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar])
+        return () => { clearTimeout(timerRef.current) }
+    }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar, timerRef])
 
     return
 }
