@@ -240,7 +240,6 @@ function useLogData(count) {
                 handleError()
                 networkError(err)
                 if (isRunning.current) {
-
                     timerRef.current = setTimeout(updateLogData, refreshTimeout)
                 }
             }
