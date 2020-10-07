@@ -1,7 +1,6 @@
-import { Link, makeStyles, Paper, Popover, Typography } from '@material-ui/core'
+import { makeStyles, Paper, Popover, Typography } from '@material-ui/core'
 import React from 'react'
 import Highlight from 'react-highlight.js';
-
 const fontSize = 10
 
 const useStyles = makeStyles((theme) => ({
@@ -9,15 +8,13 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         fontSize: fontSize,
         fontFamily: "Monospace",
-        color: isActive => isActive ? 'inherit' : "gray"
+        color: isActive => isActive ? 'inherit' : "gray",
     },
 }));
 
 
 export default function LogItem({ isActive, index, item }) {
     const classes = useStyles(isActive);
-    // <Typography noWrap className={classes.properties}>{JSON.stringify(item.properties)}</Typography>
-
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -31,10 +28,9 @@ export default function LogItem({ isActive, index, item }) {
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
-
     return (
         <>
-            <Link underline='none' className={classes.msg} onClick={handleClick}>{item.msg}</Link>
+            <Typography noWrap align={'left'} className={classes.msg} onClick={handleClick}>{item.msg}</Typography>
             <Popover
                 id={id}
                 open={open}

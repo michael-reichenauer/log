@@ -127,6 +127,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                                 {columns.map(({ dataKey, ...other }, index) => {
                                     return (
                                         <Column
+                                            flexShrink={0}
                                             key={dataKey}
                                             headerRenderer={(headerProps) =>
                                                 this.headerRenderer({

@@ -9,6 +9,7 @@ import { useActivity } from '../common/activity';
 import { useIsOnline, networkError } from '../common/online';
 import LogItem from './LogItem';
 import { useLoading } from './LoadProgress';
+
 const normalRefreshTimeout = 10 * 1000
 const fastRefreshTimeout = 500
 const refreshTimeout = 30 * 1000
