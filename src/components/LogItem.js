@@ -58,8 +58,8 @@ function Popup({ index, item }) {
 
     return (
         <Paper style={{ padding: 5, backgroundColor: '#1e1e1e' }}>
-            <Typography noWrap className={classes.msg}>{index} {time} {item.level}:</Typography>
-            <Typography noWrap className={classes.msg}>{item.msg}</Typography>
+            <Typography className={classes.msg}>{index} {time} {item.level}:</Typography>
+            <Typography className={classes.msg}>{item.msg}</Typography>
             <Highlight language={'json'} style={{ fontSize: 10 }}>
                 {text}
             </Highlight>
