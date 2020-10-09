@@ -24,7 +24,7 @@ const styles = (theme) => ({
     },
     tableRowHover: {
         '&:hover': {
-            backgroundColor: theme.palette.grey[200],
+            backgroundColor: theme.palette.grey[900],
         },
     },
     tableCell: {
@@ -47,7 +47,7 @@ class MuiVirtualizedTable extends React.PureComponent {
         const { classes, onRowClick } = this.props;
 
         return clsx(classes.tableRow, classes.flexContainer, {
-            [classes.tableRowHover]: index !== -1 && onRowClick != null,
+            [classes.tableRowHover]: index !== -1,
         });
     };
 
