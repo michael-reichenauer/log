@@ -51,7 +51,7 @@ export default function ApplicationBar() {
 
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" style={{ height: "55px" }}>
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
                 <LoadProgress />

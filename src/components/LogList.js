@@ -127,7 +127,7 @@ export default function LogList() {
     const scrollToIndex = isAutoScroll ? total - 1 : isTop ? 0 : undefined
 
     return (
-        <div style={{ width: "calc(100% - 2px)", height: "calc(100vh - 70px)" }} >
+        <div style={{ width: "calc(100% - 2px)", height: "calc(100vh - 60px)" }} >
             <VirtualizedTable
                 rowCount={total}
                 rowGetter={rowGetter}
