@@ -19,15 +19,17 @@ setGlobal({
 // );
 
 ReactDOM.render(
-  <SnackbarProvider
-    maxSnack={3}
-    preventDuplicate={true}
-    anchorOrigin={{
-      vertical: 'top',
-      horizontal: 'center'
-    }}>
-    <App />
-  </SnackbarProvider>,
+  <React.StrictMode>
+    <SnackbarProvider
+      maxSnack={3}
+      preventDuplicate={true}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'center'
+      }}>
+      <App />
+    </SnackbarProvider>
+  </React.StrictMode >,
   document.getElementById('root')
 );
 
