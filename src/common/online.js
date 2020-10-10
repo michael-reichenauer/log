@@ -91,7 +91,7 @@ export function useOnlineMonitor() {
                         console.log(`user not logged in`)
                     } else {
                         if (userId !== userData.clientPrincipal.userId) {
-                            log.info(`User ${userId} logged in using userData.clientPrincipal ${userData.clientPrincipal.identityProvider}`)
+                            log.info(`User ${userData.clientPrincipal.userId} logged in using ${userData.clientPrincipal.identityProvider}`)
                         }
                         setUser(userData.clientPrincipal)
                         console.log(`user:${userData.clientPrincipal.userDetails}`)
