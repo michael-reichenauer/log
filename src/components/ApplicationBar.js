@@ -2,42 +2,21 @@ import React from "react";
 import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
-import log, { logger } from '../common/log/log'
-//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import PublishIcon from '@material-ui/icons/Publish';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
+
 import SearchIcon from '@material-ui/icons/Search';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
 import RefreshIcon from '@material-ui/icons/Refresh';
-import LoadProgress from "./LoadProgress";
+import { useUser } from "../common/auth";
 
 export default function ApplicationBar({ commands }) {
     const [isTop, setIsTop] = useGlobal('isTop')
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
-    const [count, setCount] = useGlobal('count')
-    // const [, setTotal] = useGlobal('total')
-
+    const [user] = useUser()
     const classes = useAppBarStyles();
-    // const clearList = async () => {
-    //     await logger.clear()
-    //     setCount(count + 1)
-    // }
-    const handleRefresh = async () => {
-        commands.refresh()
-        // logger.clear()
-        // setTotal(0)
-        // setCount(count + 1)
-    }
-
-    const handleAddRandomLogs = () => {
-        for (let i = 0; i < 10; i += 1) {
-            log.info(sample[i % sample.length])
-        }
-        logger.flush().then(() => setCount(count + 1))
-    }
 
     const handleScroll = (_, newScroll) => {
         if (!isTop && newScroll.includes('isTop')) {
@@ -55,50 +34,44 @@ export default function ApplicationBar({ commands }) {
         <AppBar position="static" style={{ height: "55px" }}>
             <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>log</Typography>
-                <LoadProgress />
-                <Tooltip title="Refresh list" ><IconButton onClick={handleRefresh}><RefreshIcon /></IconButton></Tooltip>
-                <Tooltip title="Scroll list">
-                    <ToggleButtonGroup
-                        size="small"
-                        value={isAutoScroll && isTop ? ['isAutoScroll', 'isTop'] : isAutoScroll ? ['isAutoScroll'] : isTop ? ['isTop'] : []}
-                        onChange={handleScroll}
-                    >
-                        <ToggleButton value="isTop" ><PublishIcon /></ToggleButton>
-                        <ToggleButton value="isAutoScroll" ><GetAppIcon /></ToggleButton>
+                {
+                    user && <>
+                        <Tooltip title="Refresh list" ><IconButton onClick={commands.refresh}><RefreshIcon /></IconButton></Tooltip>
+                        <Tooltip title="Scroll list">
+                            <ToggleButtonGroup
+                                size="small"
+                                value={isAutoScroll && isTop ? ['isAutoScroll', 'isTop'] : isAutoScroll ? ['isAutoScroll'] : isTop ? ['isTop'] : []}
+                                onChange={handleScroll}
+                            >
+                                <ToggleButton value="isTop" ><PublishIcon /></ToggleButton>
+                                <ToggleButton value="isAutoScroll" ><GetAppIcon /></ToggleButton>
 
-                    </ToggleButtonGroup>
-                </Tooltip>
+                            </ToggleButtonGroup>
+                        </Tooltip>
 
-                <Tooltip title="Add random logs"><IconButton onClick={handleAddRandomLogs}><PlaylistAddIcon /></IconButton></Tooltip>
-                {/* <Tooltip title="Clear list"><IconButton onClick={clearList}><CheckBoxOutlineBlankIcon /></IconButton></Tooltip> */}
+                        <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                                <SearchIcon />
+                            </div>
+                            <InputBase
+                                placeholder="Search…"
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </div>
+                    </>
+                }
+
                 <ApplicationMenu />
-                <div className={classes.search}>
-                    <div className={classes.searchIcon}>
-                        <SearchIcon />
-                    </div>
-                    <InputBase
-                        placeholder="Search…"
-                        classes={{
-                            root: classes.inputRoot,
-                            input: classes.inputInput,
-                        }}
-                        inputProps={{ 'aria-label': 'search' }}
-                    />
-                </div>
 
             </Toolbar>
         </AppBar >
     )
 }
 
-
-const sample = [
-    'Frozen yoghurt',
-    'Eclair',
-    'Ice cream sandwich',
-    'Cupcake',
-    'Gingerbread',
-];
 
 
 const useAppBarStyles = makeStyles((theme) => ({

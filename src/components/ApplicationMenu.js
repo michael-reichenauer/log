@@ -5,22 +5,24 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Tooltip from '@material-ui/core/Tooltip';
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { logger } from '../common/log/log'
+import log, { logger } from '../common/log/log'
 import { isLocalDev } from '../common/info'
 import { useUser } from "../common/auth";
 import { Popover } from "@material-ui/core";
 import About from "./About";
+import { useGlobal } from "reactn";
 
 const useMenuStyles = makeStyles((theme) => ({
     menuButton: {
-        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(2),
     },
 }));
 
 
 export function ApplicationMenu() {
     const classes = useMenuStyles();
-    const [, setUser] = useUser()
+    const [user, setUser] = useUser()
+    const [count, setCount] = useGlobal('count')
 
     const [menu, setMenu] = useState(null);
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -33,6 +35,14 @@ export function ApplicationMenu() {
         }
         window.location.assign("/.auth/logout")
     };
+
+    const handleAddRandomLogs = () => {
+        setMenu(null);
+        for (let i = 0; i < 10; i += 1) {
+            log.info(sample[i % sample.length])
+        }
+        logger.flush().then(() => setCount(count + 1))
+    }
 
     const handleReload = () => {
         setMenu(null);
@@ -76,9 +86,10 @@ export function ApplicationMenu() {
                     },
                 }}
             >
-                <MenuItem disabled={false} onClick={handleLogout}>Logout</MenuItem>
-                <MenuItem disabled={false} onClick={handleReload}>Reload</MenuItem>
-                <MenuItem disabled={false} onClick={handleAbout}>About</MenuItem>
+                <MenuItem disabled={!user} onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem onClick={handleAddRandomLogs}>Add some random log rows</MenuItem>
+                <MenuItem onClick={handleReload}>Reload</MenuItem>
+                <MenuItem onClick={handleAbout}>About</MenuItem>
             </Menu>
             <Popover
                 id={id}
@@ -101,3 +112,12 @@ export function ApplicationMenu() {
         </>
     )
 }
+
+
+const sample = [
+    'Frozen yoghurt',
+    'Eclair',
+    'Ice cream sandwich',
+    'Cupcake',
+    'Gingerbread',
+];
