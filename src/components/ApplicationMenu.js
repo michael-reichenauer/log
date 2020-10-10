@@ -40,6 +40,7 @@ export function ApplicationMenu() {
     };
 
     const handleAddRandomLogs = () => {
+        log.info(`Adding some random logs`)
         setMenu(null);
         for (let i = 0; i < 10; i += 1) {
             log.info(sample[i % sample.length])
@@ -56,10 +57,12 @@ export function ApplicationMenu() {
 
     const handleAbout = (event) => {
         setMenu(null);
+        log.info(`Show About`)
         setAnchorEl(event.currentTarget);
     };
 
     const handleCloseAbout = () => {
+        log.info(`Hide About`)
         setAnchorEl(null);
     };
 

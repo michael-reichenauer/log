@@ -11,6 +11,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { useUser } from "../common/auth";
+import log from "../common/log/log";
 
 export default function ApplicationBar({ commands }) {
     const [isTop, setIsTop] = useGlobal('isTop')
@@ -19,6 +20,7 @@ export default function ApplicationBar({ commands }) {
     const classes = useAppBarStyles();
 
     const handleScroll = (_, newScroll) => {
+        log.info(`Scroll to ${newScroll.includes('isTop') ? 'top' : newScroll.includes('isAutoScroll') ? 'bottom' : ''}`)
         if (!isTop && newScroll.includes('isTop')) {
             setIsTop(true)
             setIsAutoScroll(false)
