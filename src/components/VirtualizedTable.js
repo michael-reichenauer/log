@@ -44,7 +44,7 @@ class MuiVirtualizedTable extends React.PureComponent {
     };
 
     getRowClassName = ({ index }) => {
-        const { classes, onRowClick } = this.props;
+        const { classes } = this.props;
 
         return clsx(classes.tableRow, classes.flexContainer, {
             [classes.tableRowHover]: index !== -1,
@@ -100,6 +100,9 @@ class MuiVirtualizedTable extends React.PureComponent {
                 rowCount={rowCount}
                 minimumBatchSize={minimumBatchSize}
                 threshold={threshold}
+                ref={ref => {
+                    this.infiniteLoaderRef = ref
+                }}
             >
                 {({ onRowsRendered, registerChild }) => (
                     <AutoSizer>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import log from './log/log'
+import { durationString } from '../utils/utils'
+import { getLocalInfo } from './info';
 
 const activityTimeout = 60 * 1000
 const activityMargin = 1000
@@ -11,6 +13,7 @@ let activityCheckTimer = null
 let isDocumentActive = false
 const monitorEvents = ["mousemove", "mousedown", "touchstart", "touchmove", "keydown", "wheel"]
 const activityEventName = 'customActivityChange'
+const id = getLocalInfo().logInstanceID.substring(0, 6)
 
 export function useActivityMonitor() {
     useEffect(() => {
@@ -23,7 +26,7 @@ export function useActivityMonitor() {
             }
 
             // Toggle active = true
-            log.info("Active")
+            log.info(`Active ${id}`)
             isDocumentActive = true
             activityStartTime = activityTime
 
@@ -44,7 +47,7 @@ export function useActivityMonitor() {
             }
 
             // Toggle active = false
-            log.info(`Inactive (total: ${Date.now() - activityStartTime} ms)`)
+            log.info(`Inactive ${id} (total: ${durationString(Date.now() - activityStartTime)})`)
             isDocumentActive = false
             activityStartTime = 0
 
@@ -66,7 +69,7 @@ export function useActivityMonitor() {
             const now = Date.now()
             if (now - activityTime < activityTimeout) {
                 // Still active, reschedule check
-                console.log(`Still active (total: ${Date.now() - activityStartTime} ms)`)
+                console.log(`Still active (total: ${durationString(Date.now() - activityStartTime)})`)
                 const timeout = activityTimeout - (now - activityTime) + activityMargin
                 activityCheckTimer = setTimeout(checkIfActive, timeout)
                 return

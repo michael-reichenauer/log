@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Paper from "@material-ui/core/Paper";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import { darkTheme } from "./theme";
@@ -14,6 +14,7 @@ import { useUser } from './common/auth';
 export default function App() {
   const [theme] = useState(darkTheme)
   const [user] = useUser()
+  const commands = useRef({ refresh: null })
   useActivityMonitor()
   useAppVersionMonitor()
   useOnlineMonitor()
@@ -22,8 +23,8 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <Paper style={{ height: "100vh", backgroundColor: "black" }} square>
-        <ApplicationBar />
-        {user && <LogList />}
+        <ApplicationBar commands={commands.current} />
+        {user && <LogList commands={commands.current} />}
         {!user && <Login />}
       </Paper>
     </ThemeProvider>

@@ -5,6 +5,7 @@ import { isLocalDev } from './info'
 import axios from 'axios';
 import { useUser } from './auth';
 import { useLoading } from '../components/LoadProgress';
+import log from './log/log';
 
 const onlineRecheckInterval = 15 * 1000
 const onlineCheckInterval = 20 * 1000
@@ -84,10 +85,14 @@ export function useOnlineMonitor() {
                     // console.log(`Got user data`, userData) 
                     if (!userData.clientPrincipal) {
                         if (userId) {
+                            log.info(`User ${userId} not logged in`)
                             setUser(undefined)
                         }
                         console.log(`user not logged in`)
                     } else {
+                        if (userId !== userData.clientPrincipal.userId) {
+                            log.info(`User ${userId} logged in using userData.clientPrincipal ${userData.clientPrincipal.identityProvider}`)
+                        }
                         setUser(userData.clientPrincipal)
                         console.log(`user:${userData.clientPrincipal.userDetails}`)
                     }

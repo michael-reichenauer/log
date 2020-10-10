@@ -14,11 +14,11 @@ import { useGlobal } from 'reactn'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import LoadProgress from "./LoadProgress";
 
-export default function ApplicationBar() {
+export default function ApplicationBar({ commands }) {
     const [isTop, setIsTop] = useGlobal('isTop')
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [count, setCount] = useGlobal('count')
-    const [, setTotal] = useGlobal('total')
+    // const [, setTotal] = useGlobal('total')
 
     const classes = useAppBarStyles();
     // const clearList = async () => {
@@ -26,9 +26,10 @@ export default function ApplicationBar() {
     //     setCount(count + 1)
     // }
     const handleRefresh = async () => {
-        logger.clear()
-        setTotal(0)
-        setCount(count + 1)
+        commands.refresh()
+        // logger.clear()
+        // setTotal(0)
+        // setCount(count + 1)
     }
 
     const handleAddRandomLogs = () => {

@@ -22,17 +22,26 @@ const rowHeight = 11
 setGlobal({ ...getGlobal(), count: 0, total: 0, logId: '', isAutoScroll: true, isTop: false })
 
 
-export default function LogList() {
+export default function LogList({ commands }) {
     const [isActive] = useActivity()
     const [isOnline] = useIsOnline()
-    const [count] = useGlobal('count')
     const [isTop, setIsTop] = useGlobal('isTop')
+    const [count, setCount] = useGlobal('count')
     const [total, setTotal] = useLogData(count)
+    const topIndexRef = useRef(0)
+
     const classes = useTableStyles(isActive);
+
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [logId, setLogId] = useGlobal('logId')
     const lineColumnWidth = total.toString().length * fontWidth + columnMargin
     const timeColumnWidth = 12 * fontWidth + columnMargin
+
+    commands.refresh = () => {
+        logger.refresh()
+        setTotal(0)
+        setCount(count + 1)
+    }
 
     const columns = [
         {
@@ -58,6 +67,7 @@ export default function LogList() {
     }
 
     const rowGetter = ({ index }) => {
+        //console.log(`rowGetter: ${index}`)
         const item = logger.getCached(index)
         if (item === undefined || item === null) {
             return { line: (<Typography className={classes.lineInvalid}>{index + 1}</Typography>) }
@@ -76,17 +86,13 @@ export default function LogList() {
     }
 
     const loadMore = async ({ startIndex, stopIndex }) => {
+        console.log(`loadMore: ${startIndex}-${stopIndex}`)
         if (!isOnline) {
             return
         }
-        // console.log(`load ${startIndex},${stopIndex} ...`)
-
-        // Trigger rendering 'loading items'
-        // setTotal(total)
 
         try {
             const logs = await logger.getRemote(startIndex, stopIndex - startIndex + 1);
-            // console.log(`loaded ${startIndex},${stopIndex}`)
             setLogId(logs.id)
             setTotal(logs.total)
         }
@@ -98,7 +104,8 @@ export default function LogList() {
     }
 
     const onScroll = (s) => {
-        // console.log('onScroll', s, s.scrollHeight - (s.scrollTop + s.clientHeight))
+        topIndexRef.current = Math.floor(s.scrollTop / rowHeight)
+        //console.log(`onScroll ${topIndex}`)
         if (s.clientHeight < 0) {
             return
         }
