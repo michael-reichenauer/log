@@ -27,8 +27,11 @@ export function ApplicationMenu() {
     const [menu, setMenu] = useState(null);
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setMenu(null);
+        log.info(`Logging out ${user.userId} from ${user.identityProvider}`)
+        await logger.flush()
+
         if (isLocalDev) {
             setUser(undefined)
             return

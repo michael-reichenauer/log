@@ -1,11 +1,11 @@
 import React from "react";
-import { Typography, fade, AppBar, Toolbar, IconButton, InputBase, Tooltip } from "@material-ui/core";
+import { Typography, fade, AppBar, Toolbar, IconButton, Tooltip } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ApplicationMenu } from "./ApplicationMenu"
 import PublishIcon from '@material-ui/icons/Publish';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
-import SearchIcon from '@material-ui/icons/Search';
+// import SearchIcon from '@material-ui/icons/Search';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { useGlobal } from 'reactn'
@@ -49,7 +49,7 @@ export default function ApplicationBar({ commands }) {
                             </ToggleButtonGroup>
                         </Tooltip>
 
-                        <div className={classes.search}>
+                        {/* <div className={classes.search}>
                             <div className={classes.searchIcon}>
                                 <SearchIcon />
                             </div>
@@ -61,7 +61,7 @@ export default function ApplicationBar({ commands }) {
                                 }}
                                 inputProps={{ 'aria-label': 'search' }}
                             />
-                        </div>
+                        </div> */}
                     </>
                 }
 
