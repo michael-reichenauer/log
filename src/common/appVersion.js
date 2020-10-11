@@ -42,20 +42,6 @@ export const useAppVersionMonitor = () => {
                     })
             }
 
-            const isInStandaloneMode = () =>
-                (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://');
-
-            console.log(`isInStandaloneMode = ${isInStandaloneMode()}`)
-
-            const isPwa = () => {
-                return ["fullscreen", "standalone", "minimal-ui"].some(
-                    (displayMode) => window.matchMedia('(display-mode: ' + displayMode + ')').matches
-                );
-            }
-
-            console.log(`isPwa = ${isPwa()}`)
-            log.info(`isInStandaloneMode = ${isInStandaloneMode()}, isPwa = ${isPwa()}`)
-
             try {
                 // console.log(`getting manifest ...`)
                 setIsLoading(true)
@@ -98,8 +84,6 @@ export const useAppVersionMonitor = () => {
             clearTimeout(timerRef.current)
         }
     }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar, timerRef, setIsLoading, isRunning])
-
-    return
 }
 
 
