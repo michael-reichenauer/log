@@ -36,7 +36,7 @@ export default function ApplicationBar({ commands }) {
     return (
         <AppBar position="static" style={{ height: "55px" }}>
             <Toolbar>
-                <Typography className={classes.title} variant="h6" noWrap>log</Typography>
+                <Typography className={classes.title} variant="h6" noWrap>Log</Typography>
                 {
                     user && <>
                         <Tooltip title="Refresh list" ><IconButton onClick={commands.refresh}><RefreshIcon /></IconButton></Tooltip>
