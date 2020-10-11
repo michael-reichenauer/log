@@ -84,8 +84,6 @@ export const useAppVersionMonitor = () => {
             clearTimeout(timerRef.current)
         }
     }, [setRemoteVersion, isActive, enqueueSnackbar, closeSnackbar, timerRef, setIsLoading, isRunning])
-
-    return
 }
 
 

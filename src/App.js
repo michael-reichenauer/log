@@ -9,12 +9,13 @@ import ApplicationBar from "./components/ApplicationBar"
 import LogList from './components/LogList';
 import Login from './components/Login';
 import { useUser } from './common/auth';
-
+import { PwaPrompt } from './common/pwa';
 
 export default function App() {
   const [theme] = useState(darkTheme)
   const [user] = useUser()
   const commands = useRef({ refresh: null })
+
   useActivityMonitor()
   useAppVersionMonitor()
   useOnlineMonitor()
@@ -26,6 +27,7 @@ export default function App() {
         <ApplicationBar commands={commands.current} />
         {user && <LogList commands={commands.current} />}
         {!user && <Login />}
+        <PwaPrompt />
       </Paper>
     </ThemeProvider>
   );

@@ -11,6 +11,7 @@ import { useUser } from "../common/auth";
 import { Popover } from "@material-ui/core";
 import About from "./About";
 import { useGlobal } from "reactn";
+import { usePwaPrompt } from "../common/pwa";
 
 const useMenuStyles = makeStyles((theme) => ({
     menuButton: {
@@ -23,6 +24,7 @@ export function ApplicationMenu() {
     const classes = useMenuStyles();
     const [user, setUser] = useUser()
     const [count, setCount] = useGlobal('count')
+    const [, setShowPwaPrompt] = usePwaPrompt()
 
     const [menu, setMenu] = useState(null);
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -47,6 +49,12 @@ export function ApplicationMenu() {
         }
         logger.flush().then(() => setCount(count + 1))
     }
+
+    const handleInstall = () => {
+        setMenu(null);
+        console.log('set false')
+        setShowPwaPrompt(true)
+    };
 
     const handleReload = () => {
         setMenu(null);
@@ -95,6 +103,7 @@ export function ApplicationMenu() {
                 <MenuItem disabled={!user} onClick={handleLogout}>Logout</MenuItem>
                 <MenuItem onClick={handleAddRandomLogs}>Add some random log rows</MenuItem>
                 <MenuItem onClick={handleReload}>Reload</MenuItem>
+                <MenuItem onClick={handleInstall}>Install App Hint</MenuItem>
                 <MenuItem onClick={handleAbout}>About</MenuItem>
             </Menu>
             <Popover
