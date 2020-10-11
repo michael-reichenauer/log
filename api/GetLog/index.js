@@ -1,16 +1,32 @@
-module.exports = async function (context, req) {
-    context.log('JavaScript HTTP trigger function processed a request.');
+var log = require('../Shared/Store.js');
+var auth = require('../Shared/auth.js');
 
-    if (req.query.name || (req.body && req.body.name)) {
-        context.res = {
-            // status: 200, /* Defaults to 200 */
-            body: "Hello " + (req.query.name || req.body.name)
-        };
+
+module.exports = async function (context, req) {
+    try {
+        context.log('## Request: GetLog');
+        const clientPrincipal = auth.getClientPrincipal(req)
+
+        if (!req.query.start || !req.query.count) {
+            throw new Error('Invalid args')
+        }
+
+        let start = parseInt(req.query.start)
+        let count = parseInt(req.query.count)
+        if (start === undefined || count == undefined || start < 0) {
+            context.res = { status: 400, body: "invalid args" };
+            return
+        }
+        context.log(`## Request: getting ${start}, ${count}`);
+
+        const logs = await log.getLogs(context, clientPrincipal, start, count)
+
+        context.log(`## Request: get ${logs.start}, ${logs.items.length} (${logs.total})`);
+
+        context.res = { status: 200, body: JSON.stringify(logs) };
+    } catch (err) {
+        context.log(`## GetLog error: '${err}'`);
+        context.res = { status: 400, body: "Error: " + err.message }
     }
-    else {
-        context.res = {
-            status: 400,
-            body: "Please pass a name on the query string or in the request body"
-        };
-    }
+    context.log(`## GetLog: done`);
 };

@@ -3,11 +3,31 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { setGlobal } from 'reactn';
+import { SnackbarProvider } from 'notistack';
+
+// Init an empty global state object, properties are initialized where they are uses 
+setGlobal({
+});
+
+
+// ReactDOM.render(
+//   <React.StrictMode>
+//     <App />
+//   </React.StrictMode>,
+//   document.getElementById('root')
+// );
 
 ReactDOM.render(
-  <React.StrictMode>
+  <SnackbarProvider
+    maxSnack={3}
+    preventDuplicate={true}
+    anchorOrigin={{
+      vertical: 'top',
+      horizontal: 'center'
+    }}>
     <App />
-  </React.StrictMode>,
+  </SnackbarProvider>,
   document.getElementById('root')
 );
 
@@ -15,3 +35,5 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+

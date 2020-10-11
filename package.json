@@ -3,12 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "@material-ui/styles": "^4.10.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.20.0",
+    "clsx": "^1.1.1",
+    "fontsource-roboto": "^3.0.3",
+    "humanize-duration": "^3.24.0",
+    "mnemonist": "^0.38.0",
+    "notistack": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-highlight.js": "^1.0.7",
+    "react-scripts": "3.4.1",
+    "react-virtualized": "^9.22.2",
+    "reactn": "^2.2.7"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,5 +43,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:7071/"
 }
