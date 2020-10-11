@@ -20,13 +20,14 @@ export default function ApplicationBar({ commands }) {
     const classes = useAppBarStyles();
 
     const handleScroll = (_, newScroll) => {
-        log.info(`Scroll to ${newScroll.includes('isTop') ? 'top' : newScroll.includes('isAutoScroll') ? 'bottom' : ''}`)
         if (!isTop && newScroll.includes('isTop')) {
+            log.info(`Scroll to top`)
             setIsTop(true)
             setIsAutoScroll(false)
             return
         }
 
+        log.info(`Scroll to ${newScroll}`)
         setIsTop(newScroll.includes('isTop'))
         setIsAutoScroll(newScroll.includes('isAutoScroll'))
     }

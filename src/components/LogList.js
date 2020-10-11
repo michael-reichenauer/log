@@ -9,6 +9,7 @@ import { useActivity } from '../common/activity';
 import { useIsOnline, networkError } from '../common/online';
 import LogItem from './LogItem';
 import { useLoading } from './LoadProgress';
+import { useCallback } from 'react';
 
 const normalRefreshTimeout = 10 * 1000
 const fastRefreshTimeout = 500
@@ -30,18 +31,18 @@ export default function LogList({ commands }) {
     const [total, setTotal] = useLogData(count)
     const topIndexRef = useRef(0)
     const virtualActions = useRef({ refresh: null })
-
     const classes = useTableStyles(isActive);
-
     const [isAutoScroll, setIsAutoScroll] = useGlobal('isAutoScroll')
     const [logId, setLogId] = useGlobal('logId')
+    commands.refresh = useCallback(() => {
+        logger.refresh()
+        virtualActions.current.refresh()
+    }, [])
+
     const lineColumnWidth = total.toString().length * fontWidth + columnMargin
     const timeColumnWidth = 12 * fontWidth + columnMargin
 
-    commands.refresh = () => {
-        logger.refresh()
-        virtualActions.current.refresh()
-    }
+
 
     const columns = [
         {
