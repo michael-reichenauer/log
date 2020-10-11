@@ -33,7 +33,7 @@ const isPwa = () => {
     );
 }
 
-const defaultIsPrompt = (!isInStandaloneMode() && !isPwa())
+const defaultIsPrompt = isIos() && (!isInStandaloneMode() && !isPwa())
 
 export const usePwaPrompt = () => {
     const [showPwaPrompt, setShowPwaPrompt] = useLocalStorage('promptPwa', defaultIsPrompt)
