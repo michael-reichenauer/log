@@ -86,8 +86,15 @@ class MuiVirtualizedTable extends React.PureComponent {
 
     render() {
         const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
-        const { rowCount, isRowLoaded, loadMoreRows, minimumBatchSize, threshold, scrollToIndex, onScroll, refreshId } = this.props
+        const { rowCount, isRowLoaded, loadMoreRows, minimumBatchSize, threshold, scrollToIndex, onScroll, refreshId, actions } = this.props
 
+        if (actions && this.infiniteLoaderRef) {
+            actions.refresh = () => {
+                console.log(`refresh virtual table`)
+                this.infiniteLoaderRef.resetLoadMoreRowsCache(true)
+                this.tableRef.forceUpdateGrid()
+            }
+        }
         if (refreshId !== this.refreshId && this.tableRef) {
             this.refreshId = refreshId
             setTimeout(this.tableRef.forceUpdateGrid, 0);

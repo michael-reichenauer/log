@@ -26,9 +26,10 @@ export default function LogList({ commands }) {
     const [isActive] = useActivity()
     const [isOnline] = useIsOnline()
     const [isTop, setIsTop] = useGlobal('isTop')
-    const [count, setCount] = useGlobal('count')
+    const [count] = useGlobal('count')
     const [total, setTotal] = useLogData(count)
     const topIndexRef = useRef(0)
+    const virtualActions = useRef({ refresh: null })
 
     const classes = useTableStyles(isActive);
 
@@ -39,8 +40,7 @@ export default function LogList({ commands }) {
 
     commands.refresh = () => {
         logger.refresh()
-        setTotal(0)
-        setCount(count + 1)
+        virtualActions.current.refresh()
     }
 
     const columns = [
@@ -147,6 +147,7 @@ export default function LogList({ commands }) {
                 scrollToIndex={scrollToIndex}
                 onScroll={onScroll}
                 refreshId={logId}
+                actions={virtualActions.current}
             />
         </div>
     );
