@@ -17,7 +17,7 @@ export class LogSender {
 
         const logMsg = { level: level, time: new Date(), msg: msg, properties: prop }
         this._logs.push(logMsg)
-        console.log(`log: ${JSON.stringify(logMsg)}`)
+        console.log(`log.${level}: ${msg}`, prop)
         this.postLogs()
     }
 
